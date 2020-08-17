@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
+import styles from './Sketch.css';
 
 export default class Sketch extends Component {
   state = { loading: true };
@@ -17,16 +18,16 @@ export default class Sketch extends Component {
     // by default all options are set to true
     const detection_options = {
       withLandmarks: true,
-      withDescriptors: false,
+      withDescriptors: true,
     };
 
     p.setup = () => {
-      p.createCanvas(360, 270);
+      p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
 
       // load up your video
       video = p.createCapture(p.VIDEO);
       video.size(p.width, p.height);
-      // video.hide(); // Hide the video element, and just show the canvas
+      video.hide(); // Hide the video element, and just show the canvas
       faceapi = ml5.faceApi(video, detection_options, modelReady);
       p.textAlign(p.RIGHT);
     };
@@ -51,31 +52,31 @@ export default class Sketch extends Component {
 
       // background(220);
       p.background(255);
-      p.image(video, 0, 0, p.width, p.height);
+      // p.image(video, 0, 0, p.width, p.height);
       if (detections) {
         if (detections.length > 0) {
           // console.log(detections)
-          drawBox(detections);
+          // drawBox(detections);
           drawLandmarks(detections);
         }
       }
       faceapi.detect(gotResults);
     }
 
-    function drawBox(detections) {
-      for (let i = 0; i < detections.length; i++) {
-        const alignedRect = detections[i].alignedRect;
-        const x = alignedRect._box._x;
-        const y = alignedRect._box._y;
-        const boxWidth = alignedRect._box._width;
-        const boxHeight = alignedRect._box._height;
+    // function drawBox(detections) {
+    //   for (let i = 0; i < detections.length; i++) {
+    //     const alignedRect = detections[i].alignedRect;
+    //     const x = alignedRect._box._x;
+    //     const y = alignedRect._box._y;
+    //     const boxWidth = alignedRect._box._width;
+    //     const boxHeight = alignedRect._box._height;
 
-        p.noFill();
-        p.stroke(161, 95, 251);
-        p.strokeWeight(2);
-        p.rect(x, y, boxWidth, boxHeight);
-      }
-    }
+    //     p.noFill();
+    //     p.stroke(161, 95, 251);
+    //     p.strokeWeight(2);
+    //     p.rect(x, y, boxWidth, boxHeight);
+    //   }
+    // }
 
     function drawLandmarks(detections) {
       p.noFill();
@@ -123,7 +124,7 @@ export default class Sketch extends Component {
     return (
       <>
         {this.state.loading && <h1>loading model...</h1>}
-        <div ref={this.myRef}></div>
+        <div className={styles.Sketch} ref={this.myRef}></div>
       </>
     );
   }

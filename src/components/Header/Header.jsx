@@ -5,8 +5,7 @@ const Header = () => {
   return (
     <>
       <section className={styles.Header}>
-        <h1>Header</h1>
-        <p>hiiiii78989iii</p>
+        <h1>shapeways</h1>
       </section>
     </>
   );
