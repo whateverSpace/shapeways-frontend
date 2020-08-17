@@ -6,6 +6,7 @@ const Header = () => {
     <>
       <section className={styles.Header}>
         <h1>Header</h1>
+        <p>hiiiiiiii</p>
       </section>
     </>
   );
