@@ -1,6 +1,6 @@
 import React from 'react';
+import Sketch from '../Sketch/Sketch';
 
 export default function App() {
-  return <h1>Hello World</h1>;
+  return <Sketch />;
 }
-  
