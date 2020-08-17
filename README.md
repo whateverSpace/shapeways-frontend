@@ -7,3 +7,5 @@
 `npm i`
 
 `npm run start`
+
+`get checkout dev`
