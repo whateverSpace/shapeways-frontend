@@ -15,7 +15,7 @@ export default class Sketch extends Component {
     };
 
     p.draw = () => {
-      p.background(0);
+      p.background(255, 255, 200, 100);
       p.fill(255);
       p.rect(x, y, 50, 50);
     };
