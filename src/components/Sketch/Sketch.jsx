@@ -3,6 +3,7 @@ import p5 from 'p5';
 import ml5 from 'ml5';
 
 export default class Sketch extends Component {
+  state = { loading: true };
   constructor(props) {
     super(props);
     this.myRef = React.createRef();
@@ -30,11 +31,15 @@ export default class Sketch extends Component {
       p.textAlign(p.RIGHT);
     };
 
-    function modelReady() {
+    const modelReady = () => {
       console.log('ready!');
       console.log(faceapi);
       faceapi.detect(gotResults);
-    }
+
+      this.setState({
+        loading: false,
+      });
+    };
 
     function gotResults(err, result) {
       if (err) {
@@ -112,10 +117,14 @@ export default class Sketch extends Component {
 
   componentDidMount() {
     this.myP5 = new p5(this.Sketch, this.myRef.current);
-    console.log('sick');
   }
 
   render() {
-    return <div ref={this.myRef}></div>;
+    return (
+      <>
+        {this.state.loading && <h1>loading model...</h1>}
+        <div ref={this.myRef}></div>
+      </>
+    );
   }
 }
