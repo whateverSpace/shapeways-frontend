@@ -9,3 +9,5 @@
 `npm run start`
 
 `get checkout dev`
+
+`code .`
