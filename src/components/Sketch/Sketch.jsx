@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import p5 from 'p5';
+import ml5 from 'ml5';
 
 export default class Sketch extends Component {
   constructor(props) {
@@ -8,21 +9,110 @@ export default class Sketch extends Component {
   }
 
   Sketch = (p) => {
-    let x = 100;
-    let y = 100;
-    p.setup = () => {
-      p.createCanvas(200, 200);
+    let faceapi;
+    let video;
+    let detections;
+
+    // by default all options are set to true
+    const detection_options = {
+      withLandmarks: true,
+      withDescriptors: false,
     };
 
-    p.draw = () => {
-      p.background(255, 255, 200, 100);
-      p.fill(255);
-      p.rect(x, y, 50, 50);
+    p.setup = () => {
+      p.createCanvas(360, 270);
+
+      // load up your video
+      video = p.createCapture(p.VIDEO);
+      video.size(p.width, p.height);
+      // video.hide(); // Hide the video element, and just show the canvas
+      faceapi = ml5.faceApi(video, detection_options, modelReady);
+      p.textAlign(p.RIGHT);
     };
+
+    function modelReady() {
+      console.log('ready!');
+      console.log(faceapi);
+      faceapi.detect(gotResults);
+    }
+
+    function gotResults(err, result) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      // console.log(result);
+      detections = result;
+
+      // background(220);
+      p.background(255);
+      p.image(video, 0, 0, p.width, p.height);
+      if (detections) {
+        if (detections.length > 0) {
+          // console.log(detections)
+          drawBox(detections);
+          drawLandmarks(detections);
+        }
+      }
+      faceapi.detect(gotResults);
+    }
+
+    function drawBox(detections) {
+      for (let i = 0; i < detections.length; i++) {
+        const alignedRect = detections[i].alignedRect;
+        const x = alignedRect._box._x;
+        const y = alignedRect._box._y;
+        const boxWidth = alignedRect._box._width;
+        const boxHeight = alignedRect._box._height;
+
+        p.noFill();
+        p.stroke(161, 95, 251);
+        p.strokeWeight(2);
+        p.rect(x, y, boxWidth, boxHeight);
+      }
+    }
+
+    function drawLandmarks(detections) {
+      p.noFill();
+      p.stroke(161, 95, 251);
+      p.strokeWeight(2);
+
+      for (let i = 0; i < detections.length; i++) {
+        const mouth = detections[i].parts.mouth;
+        const nose = detections[i].parts.nose;
+        const leftEye = detections[i].parts.leftEye;
+        const rightEye = detections[i].parts.rightEye;
+        const rightEyeBrow = detections[i].parts.rightEyeBrow;
+        const leftEyeBrow = detections[i].parts.leftEyeBrow;
+
+        drawPart(mouth, true);
+        drawPart(nose, false);
+        drawPart(leftEye, true);
+        drawPart(leftEyeBrow, false);
+        drawPart(rightEye, true);
+        drawPart(rightEyeBrow, false);
+      }
+    }
+
+    function drawPart(feature, closed) {
+      p.beginShape();
+      for (let i = 0; i < feature.length; i++) {
+        const x = feature[i]._x;
+        const y = feature[i]._y;
+        p.vertex(x, y);
+      }
+
+      if (closed === true) {
+        p.endShape(p.CLOSE);
+      } else {
+        p.endShape();
+      }
+    }
   };
 
   componentDidMount() {
     this.myP5 = new p5(this.Sketch, this.myRef.current);
+    console.log('sick');
   }
 
   render() {
