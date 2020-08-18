@@ -76,8 +76,8 @@ export default class Sketch extends Component {
       p.colorMode(p.HSB);
       p.rectMode(p.CENTER);
 
-      sideWidth_A = p.width / 16;
-      sideLength_A = p.width / 16;
+      sideWidth_A = p.width / 20;
+      sideLength_A = p.width / 20;
 
       // sets number of shapes in relation to their size and the window size
       numTris_A = p.width/sideWidth_A;
@@ -93,7 +93,6 @@ export default class Sketch extends Component {
 
 
     p.draw = () => {
-      p.translate(p.width*0.5, p.height*0.5);
 
       if (p.keyIsPressed === true && p.key ==='q'){
         q = 1;
@@ -183,9 +182,13 @@ export default class Sketch extends Component {
       p.stroke(0);
       //p.rect(0,0,sideWidth_A,sideLength_A);
       //frame for window
-      p.line(-p.width/2, -p.height/2, p.width/2, -p.height/2);
-      p.line(-p.width/2, p.height/2, p.width/2, p.height/2);
+      p.line(0, 0, p.width, 0);
+      p.line(0, p.height, p.width, p.height);
 
+
+      // begin drawing all the shapes
+      p.push();
+      p.translate(p.width*0.5, p.height*0.5);
       // drawing all the rectangles!!
       for (let i = 0; i < rects_A.length; i++){
         p.push();
@@ -212,7 +215,8 @@ export default class Sketch extends Component {
         p.pop();
       }
 
-
+      p.pop();
+      // end drawing all the shapes 
     }; // end p.draw()
 
     // do the classes below go in Sketch or outside?
