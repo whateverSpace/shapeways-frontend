@@ -9,7 +9,6 @@ export default class Sketch extends Component {
   }
 
   Sketch = (p) => {
-
     let q = 0;
     let w = 0;
     let e = 0;
@@ -46,7 +45,6 @@ export default class Sketch extends Component {
 
     let space = 0;
 
-
     let rotZ_sw_A = 0;
     let rotZ_dist_A = 0;
     let rotZ_spY_A = 0;
@@ -70,7 +68,6 @@ export default class Sketch extends Component {
     let numRects_A = 0;
     let rects_A = [];
 
-
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2, p.WEBGL);
       p.colorMode(p.HSB);
@@ -80,99 +77,97 @@ export default class Sketch extends Component {
       sideLength_A = p.width / 8;
 
       // sets number of shapes in relation to their size and the window size
-      numTris_A = p.width/sideWidth_A;
-      numRects_A = p.width/sideWidth_A;
+      numTris_A = p.width / sideWidth_A;
+      numRects_A = p.width / sideWidth_A;
 
       for (let i = 0; i < numRects_A; i++) {
-        rects_A.push(new Rects(sideLength_A*0.5, sideWidth_A*0.5));
+        rects_A.push(new Rects(sideLength_A * 0.5, sideWidth_A * 0.5));
       }
       for (let i = 0; i < numTris_A; i++) {
-        tris_A.push(new Tris(sideLength_A*0.5));
+        tris_A.push(new Tris(sideLength_A * 0.5));
       }
     }; // end p.setup()
 
-
     p.draw = () => {
-
-      if (p.keyIsPressed === true && p.key ==='q'){
+      if (p.keyIsPressed === true && p.key === 'q') {
         q = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='w'){
+      }
+      if (p.keyIsPressed === true && p.key === 'w') {
         w = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='e'){
+      }
+      if (p.keyIsPressed === true && p.key === 'e') {
         e = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='r'){
+      }
+      if (p.keyIsPressed === true && p.key === 'r') {
         r = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='t'){
+      }
+      if (p.keyIsPressed === true && p.key === 't') {
         t = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='y'){
+      }
+      if (p.keyIsPressed === true && p.key === 'y') {
         y = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='u'){
+      }
+      if (p.keyIsPressed === true && p.key === 'u') {
         u = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='i'){
+      }
+      if (p.keyIsPressed === true && p.key === 'i') {
         i = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='o'){
+      }
+      if (p.keyIsPressed === true && p.key === 'o') {
         o = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='p'){
+      }
+      if (p.keyIsPressed === true && p.key === 'p') {
         p = 1;
-      } 
+      }
 
-      if (p.keyIsPressed === true && p.key ==='a'){
+      if (p.keyIsPressed === true && p.key === 'a') {
         a = 1;
         p.background(0);
       }
-      if (p.keyIsPressed === true && p.key ==='s'){
+      if (p.keyIsPressed === true && p.key === 's') {
         s = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='d'){
+        p.background(255);
+      }
+      if (p.keyIsPressed === true && p.key === 'd') {
         d = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='f'){
+      }
+      if (p.keyIsPressed === true && p.key === 'f') {
         f = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='g'){
+      }
+      if (p.keyIsPressed === true && p.key === 'g') {
         g = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='h'){
+      }
+      if (p.keyIsPressed === true && p.key === 'h') {
         h = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='j'){
+      }
+      if (p.keyIsPressed === true && p.key === 'j') {
         j = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='k'){
+      }
+      if (p.keyIsPressed === true && p.key === 'k') {
         k = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='l'){
+      }
+      if (p.keyIsPressed === true && p.key === 'l') {
         l = 1;
-      } 
+      }
 
-      if (p.keyIsPressed === true && p.key ==='z'){
+      if (p.keyIsPressed === true && p.key === 'z') {
         z = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='c'){
+      }
+      if (p.keyIsPressed === true && p.key === 'c') {
         c = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='v'){
+      }
+      if (p.keyIsPressed === true && p.key === 'v') {
         v = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='b'){
+      }
+      if (p.keyIsPressed === true && p.key === 'b') {
         b = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='n'){
+      }
+      if (p.keyIsPressed === true && p.key === 'n') {
         n = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='m'){
+      }
+      if (p.keyIsPressed === true && p.key === 'm') {
         m = 1;
-      } 
-
+      }
 
       rotZ_sw_A = q;
       trnsX_sw_A = w;
@@ -181,14 +176,14 @@ export default class Sketch extends Component {
       p.stroke(0);
       //p.rect(0,0,sideWidth_A,sideLength_A);
       //frame for window
-      p.line(-p.width/2, -p.height/2, p.width/2, -p.height/2);
-      p.line(-p.width/2, p.height/2, p.width/2, p.height/2);
+      p.line(-p.width / 2, -p.height / 2, p.width / 2, -p.height / 2);
+      p.line(-p.width / 2, p.height / 2, p.width / 2, p.height / 2);
 
       // drawing all the rectangles!!
-      for (let i = 0; i < rects_A.length; i++){
+      for (let i = 0; i < rects_A.length; i++) {
         p.push();
-        p.translate(-p.width*0.3,0); // moves to the left of window
-        p.translate(10 * i,0 * i); // moves them more
+        p.translate(-p.width * 0.3, 0); // moves to the left of window
+        p.translate(20 * i, 0 * i); // moves them more
         p.rotate(-p.radians(p.mouseX));
 
         rects_A[i].display();
@@ -196,17 +191,15 @@ export default class Sketch extends Component {
       }
 
       // drawing all the triangles!!
-      for (let i = 0; i < tris_A.length; i++){
+      for (let i = 0; i < tris_A.length; i++) {
         p.push();
-        p.translate(p.width*0.3,0); // moves to right of window
-        p.translate(-10 * i,0 * i); // moves them more
+        p.translate(p.width * 0.3, 0); // moves to right of window
+        p.translate(-10 * i, 0 * i); // moves them more
         p.rotate(p.radians(p.mouseX));
 
         tris_A[i].display();
         p.pop();
       }
-
-
     }; // end p.draw()
 
     // do the classes below go in Sketch or outside?
@@ -215,36 +208,31 @@ export default class Sketch extends Component {
         this.len = sideLength;
         this.wid = sideWidth;
       }
-    
+
       display() {
-        p.rect(0, 0, 2*this.len, 2*this.wid);
+        p.rect(0, 0, 2 * this.len, 2 * this.wid);
       }
     } // end class Rects
-    
+
     class Tris {
       constructor(sideLength) {
         this.side = sideLength;
       }
-    
+
       display() {
         // fix center point
         p.triangle(
           0,
-          -(p.sqrt(3) * this.side)*0.5,
+          -(p.sqrt(3) * this.side) * 0.5,
           -p.cos(60) * this.side,
-          (p.sqrt(3) * this.side)*0.5,
+          p.sqrt(3) * this.side * 0.5,
           p.cos(60) * this.side,
-          (p.sqrt(3) * this.side)*0.5
+          p.sqrt(3) * this.side * 0.5
         );
       } // end display()
-
     } // end class Tris
 
-    
-
     // do the classes above go in Sketch or outside?
-
-    
   };
 
   componentDidMount() {
@@ -255,7 +243,6 @@ export default class Sketch extends Component {
     return (
       <>
         <div className={styles.Sketch} ref={this.myRef}></div>
-        <h1>whateverrrr</h1>
       </>
     );
   }
