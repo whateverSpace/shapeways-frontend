@@ -72,27 +72,28 @@ export default class Sketch extends Component {
 
 
     p.setup = () => {
-      p.createCanvas(p.windowWidth / 2, p.windowHeight / 2, p.WEBGL);
+      p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
       p.colorMode(p.HSB);
       p.rectMode(p.CENTER);
 
-      sideWidth_A = p.width / 8;
-      sideLength_A = p.width / 8;
+      sideWidth_A = p.width / 16;
+      sideLength_A = p.width / 16;
 
       // sets number of shapes in relation to their size and the window size
       numTris_A = p.width/sideWidth_A;
       numRects_A = p.width/sideWidth_A;
 
       for (let i = 0; i < numRects_A; i++) {
-        rects_A.push(new Rects(sideLength_A*0.5, sideWidth_A*0.5));
+        rects_A.push(new Rects(sideLength_A, sideWidth_A));
       }
       for (let i = 0; i < numTris_A; i++) {
-        tris_A.push(new Tris(sideLength_A*0.5));
+        tris_A.push(new Tris(sideLength_A/(2/p.sqrt(2))));
       }
     }; // end p.setup()
 
 
     p.draw = () => {
+      p.translate(p.width*0.5, p.height*0.5);
 
       if (p.keyIsPressed === true && p.key ==='q'){
         q = 1;
@@ -131,6 +132,7 @@ export default class Sketch extends Component {
       }
       if (p.keyIsPressed === true && p.key ==='s'){
         s = 1;
+        p.background(255);
       } 
       if (p.keyIsPressed === true && p.key ==='d'){
         d = 1;
@@ -187,22 +189,26 @@ export default class Sketch extends Component {
       // drawing all the rectangles!!
       for (let i = 0; i < rects_A.length; i++){
         p.push();
-        p.translate(-p.width*0.3,0); // moves to the left of window
-        p.translate(10 * i,0 * i); // moves them more
+     // p.translate(-p.width*0.3,0); // moves to the left of window
+        p.translate(sideWidth_A,0); // moves to the left of window
+       // p.translate(10 * i,0 * i); // moves them more
         p.rotate(-p.radians(p.mouseX));
 
         rects_A[i].display();
+      //  rects_A[i].inscribeEllipse();
         p.pop();
       }
 
       // drawing all the triangles!!
       for (let i = 0; i < tris_A.length; i++){
         p.push();
-        p.translate(p.width*0.3,0); // moves to right of window
-        p.translate(-10 * i,0 * i); // moves them more
+      //  p.translate(p.width*0.3,0); // moves to right of window
+        p.translate(-sideWidth_A,0); // moves to right of window
+      //  p.translate(-10 * i,0 * i); // moves them more
         p.rotate(p.radians(p.mouseX));
 
         tris_A[i].display();
+      //  tris_A[i].inscribeEllipse();
         p.pop();
       }
 
@@ -217,26 +223,34 @@ export default class Sketch extends Component {
       }
     
       display() {
-        p.rect(0, 0, 2*this.len, 2*this.wid);
+        p.rect(0, 0, 2*this.wid, 2*this.len);
+      }
+
+      inscribeEllipse(){
+       p.ellipse(0,0,2*this.wid, 2*this.len)
       }
     } // end class Rects
     
     class Tris {
-      constructor(sideLength) {
-        this.side = sideLength;
+      constructor(radiusLength) {
+        this.radius = radiusLength;
       }
     
       display() {
         // fix center point
         p.triangle(
           0,
-          -(p.sqrt(3) * this.side)*0.5,
-          -p.cos(60) * this.side,
-          (p.sqrt(3) * this.side)*0.5,
-          p.cos(60) * this.side,
-          (p.sqrt(3) * this.side)*0.5
+          this.radius * 2,
+          -this.radius * p.sqrt(3),
+          -this.radius,
+          this.radius * p.sqrt(3),
+          -this.radius
         );
       } // end display()
+
+      inscribeEllipse(){
+        p.ellipse(0,0,this.radius * 2,this.radius * 2);
+      }
 
     } // end class Tris
 
