@@ -101,6 +101,8 @@ export default class Sketch extends Component {
     }
 
     function drawPart(feature, closed) {
+      // p.translate(p.width, 0);
+      // p.scale(-1, 1);
       p.beginShape();
       for (let i = 0; i < feature.length; i++) {
         const x = feature[i]._x;
