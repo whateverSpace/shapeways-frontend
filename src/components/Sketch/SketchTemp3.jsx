@@ -81,7 +81,7 @@ export default class Sketch extends Component {
     let u = 0;
     let i = 0;
     let o = 0;
-    // let p = 0;
+    let p = 0;
 
     let Q = 0;
     let W = 0;
