@@ -9,56 +9,6 @@ export default class Sketch extends Component {
   }
 
   Sketch = (p) => {
-    let q = 0;
-    let w = 0;
-    let e = 0;
-    let r = 0;
-    let t = 0;
-    let y = 0;
-    let u = 0;
-    let i = 0;
-    let o = 0;
-    // let p = 0;
-
-    let a = 0;
-    let s = 0;
-    let d = 0;
-    let f = 0;
-    let g = 0;
-    let h = 0;
-    let j = 0;
-    let k = 0;
-    let l = 0;
-
-    let z = 0;
-    let x = 0;
-    let c = 0;
-    let v = 0;
-    let b = 0;
-    let n = 0;
-    let m = 0;
-
-    let up = 0;
-    let down = 0;
-    let left = 0;
-    let right = 0;
-
-    let space = 0;
-
-    let rotZ_sw_A = 0;
-    let rotZ_dist_A = 0;
-    let rotZ_spY_A = 0;
-    let rotZ_spD_A = 0;
-
-    let trnsX_sw_A = 0;
-    let trnsY_sw_A = 0;
-    let trnsX_dist_A = 0;
-    let trnsY_dist_A = 0;
-    let trnsX_spU_A = 0;
-    let trnsX_spD_A = 0;
-    let trnsY_spU_A = 0;
-    let trnsY_spD_A = 0;
-
     let sideWidth_A = 0;
     let sideLength_A = 0;
 
@@ -89,89 +39,12 @@ export default class Sketch extends Component {
     }; // end p.setup()
 
     p.draw = () => {
-      if (p.keyIsPressed === true && p.key === 'q') {
-        q = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'w') {
-        w = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'e') {
-        e = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'r') {
-        r = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 't') {
-        t = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'y') {
-        y = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'u') {
-        u = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'i') {
-        i = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'o') {
-        o = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'p') {
-        p = 1;
-      }
-
-      if (p.keyIsPressed === true && p.key === 'a') {
-        a = 1;
+      if (p.key === 'a') {
         p.background(0);
       }
-      if (p.keyIsPressed === true && p.key === 's') {
-        s = 1;
+      if (p.key === 's') {
         p.background(255);
       }
-      if (p.keyIsPressed === true && p.key === 'd') {
-        d = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'f') {
-        f = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'g') {
-        g = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'h') {
-        h = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'j') {
-        j = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'k') {
-        k = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'l') {
-        l = 1;
-      }
-
-      if (p.keyIsPressed === true && p.key === 'z') {
-        z = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'c') {
-        c = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'v') {
-        v = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'b') {
-        b = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'n') {
-        n = 1;
-      }
-      if (p.keyIsPressed === true && p.key === 'm') {
-        m = 1;
-      }
-
-      rotZ_sw_A = q;
-      trnsX_sw_A = w;
-      trnsY_sw_A = e;
 
       p.stroke(0);
       //p.rect(0,0,sideWidth_A,sideLength_A);
