@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import p5 from 'p5';
+import ml5 from 'ml5';
 import styles from './Sketch.css';
 
 export default class Sketch extends Component {
@@ -9,6 +10,10 @@ export default class Sketch extends Component {
   }
 
   Sketch = (p) => {
+    let video;
+    let poseNet;
+    let poses = [];
+
     let sideWidth_A = 0;
     let sideLength_A = 0;
 
@@ -20,6 +25,16 @@ export default class Sketch extends Component {
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2, p.WEBGL);
+
+      video = p.createCapture(p.VIDEO);
+      video.size(p.width, p.height);
+
+      poseNet = ml5.poseNet(video, modelReady);
+      poseNet.on('pose', function (results) {
+        poses = results;
+      });
+      video.hide();
+
       p.colorMode(p.HSB);
       p.rectMode(p.CENTER);
 
@@ -38,7 +53,18 @@ export default class Sketch extends Component {
       }
     }; // end p.setup()
 
+    function getDistance(pos1, pos2) {
+      return Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
+    }
+
+    function modelReady() {
+      console.log('model loaded');
+    }
+
     p.draw = () => {
+      p.strokeWeight(2);
+      p.stroke(255);
+
       if (p.key === 'a') {
         p.background(0);
       }
@@ -73,6 +99,34 @@ export default class Sketch extends Component {
         tris_A[i].display();
         p.pop();
       }
+
+      //pose tracking illustration
+      if (poses.length > 0) {
+        let pose = poses[0].pose;
+        let right = pose['rightWrist'];
+        let left = pose['leftWrist'];
+
+        p.noFill();
+        p.quad(
+          right.x,
+          right.y,
+          right.x,
+          right.y - getDistance(left, right),
+          left.x,
+          left.y - getDistance(left, right),
+          left.x,
+          left.y
+        );
+
+        p.fill(255, 0, 0);
+        p.ellipse(right.x, right.y, 20);
+
+        p.fill(255, 0, 0);
+        p.ellipse(left.x, left.y, 20);
+      }
+      p.image(video, 0, 0, p.width, p.height);
+      // p.image(video, -500, -215, p.width, p.height);
+      // };
     }; // end p.draw()
 
     // do the classes below go in Sketch or outside?
