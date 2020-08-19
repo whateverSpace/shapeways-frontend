@@ -723,6 +723,139 @@ export default class Sketch extends Component {
       }
     }
 
+    p.draw() {
+      trnsXposSwA = f;
+      trnsXnegSwA = s;
+      trnsYposSwA = c; // down
+      trnsYnegSwA = e; // up
+
+      rotXcwSwA = q;
+      rotXccwSwA = w;
+      rotYcwSwA = z;
+      rotYccwSwA = x;
+      rotZcwSwA = r;
+      rotZccwSwA = v;
+
+      // TRANSLATION
+      if (trnsXposSwA != 0) {
+        trnsXdistA += trnsXposSpU;
+      }
+      if (trnsXnegSwA != 0) {
+        trnsXdistA -= trnsXnegSpU;
+      }
+      if (trnsXposSwA === 0 && trnsXnegSwA === 0) {
+        if (trnsXdistA > 0) {
+          trnsXdistA -= trnsXposSpD;
+        }
+        if (trnsXdistA < 0) {
+          trnsXdistA += trnsXnegSpD;
+        }
+      }
+
+      if (trnsYposSwA != 0) {
+        trnsYdistA += trnsYposSpU;
+      }
+      if (trnsYnegSwA != 0) {
+        trnsYdistA -= trnsYnegSpU;
+      }
+      if (trnsYposSwA === 0 && trnsYnegSwA === 0) {
+        if (trnsYdistA > 0) {
+          trnsYdistA -= trnsYposSpD;
+        }
+        if (trnsYdistA < 0) {
+          trnsYdistA += trnsYnegSpD;
+        }
+      }
+
+      // ROTATION CCW
+      if (rotXcwSwA != 0) {
+        rotXcwRtA += rotXcwSpU;
+      }
+      if (rotXcwSwA === 0) {
+        rotXcwRtA -= rotXcwSpD;
+        if (rotXcwRtA < 0) {
+          rotXcwRtA = 0;
+        }
+      }
+      if (rotYcwSwA != 0) {
+        rotYcwRtA += rotYcwSpU;
+      }
+      if (rotYcwSwA === 0) {
+        rotYcwRtA -= rotYcwSpD;
+        if (rotYcwRtA < 0) {
+          rotYcwRtA = 0;
+        }
+      }
+      if (rotZcwSwA != 0) {
+        rotZcwRtA += rotZcwSpU;
+      }
+      if (rotZcwSwA === 0) {
+        rotZcwRtA -= rotZcwSpD;
+        if (rotZcwRtA < 0) {
+          rotZcwRtA = 0;
+        }
+      }
+
+      // ROTATE CCW
+      if (rotXccwSwA != 0) {
+        rotXccwRtA += rotXccwSpU;
+      }
+      if (rotXccwSwA == 0) {
+        rotXccwRtA -= rotXccwSpD;
+        if (rotXccwRtA < 0) {
+          rotXccwRtA = 0;
+        }
+      }
+      if (rotYccwSwA != 0) {
+        rotYccwRtA += rotYccwSpU;
+      }
+      if (rotYccwSwA == 0) {
+        rotYccwRtA -= rotYccwSpD;
+        if (rotYccwRtA < 0) {
+          rotYccwRtA = 0;
+        }
+      }
+      if (rotZccwSwA != 0) {
+        rotZccwRtA += rotZccwSpU;
+      }
+      if (rotZccwSwA == 0) {
+        rotZccwRtA -= rotZccwSpD;
+        if (rotZccwRtA < 0) {
+          rotZccwRtA = 0;
+        }
+      }
+
+      //for (let i = 0; i < numCubes; i ++){
+      for (let i = 0; i < tetras.length; i++) {
+        p.push();
+
+        //translate(mouseX,mouseY);
+        p.rotateX(rotXcwRtA * (i + 1));
+        p.rotateX(rotXccwRtA * (-i + 1));
+        p.rotateY(rotYcwRtA * (i + 1));
+        p.rotateY(rotYccwRtA * (-i + 1));
+        p.rotateZ(rotZcwRtA * (i + 1));
+        p.rotateZ(rotZccwRtA * (-i + 1));
+        p.translate(trnsXdistA * i, 0, 0);
+        p.translate(0, trnsYdistA * i, 0);
+        // rotateY(radians(rotYcwRtA*(i+1)));
+        // rotateZ(radians(rotZcwRtA*(i+1)));
+        //rect(0,0,sideLength,sideLength);
+        //	box(sideLength);
+
+        //putting a lone tetraheron in this for loop will create a large
+        // number of them, but they move very slowly, as all calculations
+        // are being done on each one everytime. now i shall make an array
+        // of tetrahedrons.
+        //tetrahed.display();
+
+        tetras[i].display();
+
+        p.pop();
+      }
+    }
+    
+
     // function drawBox(detections) {
     //   for (let i = 0; i < detections.length; i++) {
     //     const alignedRect = detections[i].alignedRect;

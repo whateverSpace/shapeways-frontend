@@ -15,6 +15,15 @@ export default class Sketch extends Component {
     let poseNet;
     let poses = [];
 
+    let faceapi;
+    let detections;
+
+    let targetRightX = 0; // Target variables used to smooth movement of points
+    let targetRightY = 0; // These may be consolidated to a list or table later
+    let targetLeftX = 0;
+    let targetLeftY = 0;
+    let lerpRate = 0.2; // lerpRate between 0 and 1 determines the easement
+
     let sideWidth_A = 0;
     let sideLength_A = 0;
 
@@ -26,7 +35,12 @@ export default class Sketch extends Component {
 
     let shapeNumber = 8;
 
-    let slider;
+    // let slider;
+
+    const detection_options = {
+      withLandmarks: true,
+      withDescriptors: true,
+    };
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
@@ -40,11 +54,13 @@ export default class Sketch extends Component {
         poses = results;
       });
 
+      faceapi = ml5.faceApi(video, detection_options, modelReady);
+
       p.colorMode(p.HSB);
       p.rectMode(p.CENTER);
 
-      slider = p.createSlider(0, 255, 100);
-      slider.position(20, 20);
+      // slider = p.createSlider(0, 255, 100);
+      // slider.position(20, 20);
 
       sideWidth_A = p.width / shapeNumber;
       sideLength_A = p.width / shapeNumber;
@@ -61,58 +77,188 @@ export default class Sketch extends Component {
       }
     }; // end p.setup()
 
-    function getDistance(pos1, pos2) {
-      return Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
+    function getDistance(pos1, pos2, pos3, pos4) {
+      return Math.sqrt((pos1 - pos2) ** 2 + (pos3 - pos4) ** 2);
     }
 
-    function modelReady() {
-      console.log('model loaded');
+    // function modelReady() {
+    //   console.log('model loaded');
+    // }
+
+    const modelReady = () => {
+      console.log('ready!');
+      console.log(faceapi);
+      faceapi.detect(gotResults);
+    };
+
+    function gotResults(err, result) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      // console.log(result);
+      detections = result;
+
+      // background(220);
+      p.background(255);
+      // p.image(video, 0, 0, p.width, p.height);
+      p.fill(0);
+      p.stroke(255);
+      p.fill(30, 255, 255, 120);
+      // p.translate(p.width, 0);
+      // p.scale(-1, 1);
+
+      if (detections) {
+        if (detections.length > 0) {
+          // console.log(detections)
+          // drawBox(detections);
+          drawLandmarks(detections);
+        }
+      }
+      faceapi.detect(gotResults);
     }
+
+    function drawLandmarks(detections) {
+      p.noFill();
+      p.stroke(161, 95, 251);
+      p.strokeWeight(2);
+
+      for (let i = 0; i < detections.length; i++) {
+        const mouth = detections[i].parts.mouth;
+        const nose = detections[i].parts.nose;
+        const leftEye = detections[i].parts.leftEye;
+        const rightEye = detections[i].parts.rightEye;
+        const rightEyeBrow = detections[i].parts.rightEyeBrow;
+        const leftEyeBrow = detections[i].parts.leftEyeBrow;
+
+        drawPart(mouth, true);
+        drawPart(nose, false);
+        drawPart(leftEye, true);
+        drawPart(leftEyeBrow, false);
+        drawPart(rightEye, true);
+        drawPart(rightEyeBrow, false);
+      }
+    }
+
+    function drawPart(feature, closed) {
+      p.beginShape();
+      for (let i = 0; i < feature.length; i++) {
+        const x = feature[i]._x;
+        const y = feature[i]._y;
+        p.vertex(x, y);
+      }
+
+      if (closed === true) {
+        p.endShape(p.CLOSE);
+      } else {
+        p.endShape();
+      }
+    }
+
+    //     Id	Part
+    // 0	nose
+    // 1	leftEye
+    // 2	rightEye
+    // 3	leftEar
+    // 4	rightEar
+    // 5	leftShoulder
+    // 6	rightShoulder
+    // 7	leftElbow
+    // 8	rightElbow
+    // 9	leftWrist
+    // 10	rightWrist
+    // 11	leftHip
+    // 12	rightHip
+    // 13	leftKnee
+    // 14	rightKnee
+    // 15	leftAnkle
+    // 16	rightAnkle
 
     p.draw = () => {
       // p.background(255);
       // p.image(video, 0, 0, p.width, p.height);
 
       //pose tracking illustration
+      // console.log(poses);
       if (poses.length > 0) {
+        this.setState({
+          loading: false,
+        });
         let pose = poses[0].pose;
         let right = pose['rightWrist'];
         // console.log(right);
         let left = pose['leftWrist'];
+        targetRightX = p.lerp(targetRightX, right.x, lerpRate);
+        targetRightY = p.lerp(targetRightY, right.y, lerpRate);
+        targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
+        targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
-        const sliderThing = slider.value();
-        p.background(right.x, left.x, sliderThing);
+        // const sliderThing = slider.value();
+        // p.background(right.x, left.x, sliderThing);
+        p.background(255);
+
+        // p.push();
+        // p.translate(p.width, 0);
+        // p.scale(-1.0, 1.0);
+        // p.image(video, 0, 0, p.width, p.height);
+        // p.pop();
+
         // const distanceThing = getDistance(left, right) * 0.25;
 
         p.noFill();
-        p.quad(
-          right.x,
-          right.y,
-          right.x,
-          right.y - getDistance(left, right),
-          left.x,
-          left.y - getDistance(left, right),
-          left.x,
-          left.y
-        );
+        // p.quad(
+        //   right.x,
+        //   right.y,
+        //   right.x,
+        //   right.y - getDistance(left, right),
+        //   left.x,
+        //   left.y - getDistance(left, right),
+        //   left.x,
+        //   left.y
+        // );
+
+        p.push();
+
+        p.translate(p.width, 0);
+        p.scale(-1.0, 1.0);
+
+        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(targetRightX, targetRightY, 20);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(targetLeftX, targetLeftY, 20);
+
+        p.pop();
 
         // console.log(getDistance(left, right) * 0.25);
 
         // p.fill(255, 0, 0);
-        p.ellipse(right.x, right.y, 20);
+        // p.ellipse(right.x, right.y, 20);
 
-        // p.fill(255, 0, 0);
-        p.ellipse(left.x, left.y, 20);
-        p.strokeWeight(2);
-        p.stroke(255);
+        // // p.fill(255, 0, 0);
+        // p.ellipse(left.x, left.y, 20);
+        // p.strokeWeight(2);
+        // p.stroke(255);
 
-        if (p.key === 'a') {
-          p.background(255);
-          // p.noFill();
-        }
-        if (p.key === 's') {
-          // p.background(0);
-        }
+        // let distInPixels = getDistance(
+        //   targetLeftX,
+        //   targetRightX,
+        //   targetLeftY,
+        //   targetRightY
+        // );
+        // console.log(distInPixels);
+        // let mappedDistance = p.map(distInPixels, 30, 530, 0.0, 1.0, true);
+        // console.log(distInPixels, mappedDistance);
+
+        // if (p.key === 'a') {
+        //   p.background(255);
+        //   // p.noFill();
+        // }
+        // if (p.key === 's') {
+        //   // p.background(0);
+        // }
 
         p.stroke(0);
         //p.rect(0,0,sideWidth_A,sideLength_A);
@@ -146,11 +292,42 @@ export default class Sketch extends Component {
         }
 
         p.pop();
+
+        // };
+        // end p.draw()
       }
 
-      // p.image(video, -500, -215, p.width, p.height);
-      // };
-    }; // end p.draw()
+      if (detections) {
+        // drawNumberedLandmarks(); // uncomment for debugging
+        p.translate(p.width, 0);
+        p.scale(-1.0, 1.0);
+        p.fill(0);
+        p.stroke(255);
+        p.fill(30, 255, 255, 120);
+        drawLandmarks(detections);
+      }
+    };
+
+    // function drawNumberedLandmarks() {
+    //   if (detections) {
+    //     p.textSize(12);
+    //     p.fill(200);
+    //     for (let formIdx = 0; formIdx < detections.length; formIdx++) {
+    //       let landmarks = detections[formIdx].landmarks._positions;
+    //       for (
+    //         let landmarkIdx = 0;
+    //         landmarkIdx < landmarks.length;
+    //         landmarkIdx++
+    //       ) {
+    //         p.text(
+    //           landmarkIdx,
+    //           p.width - landmarks[landmarkIdx]._x,
+    //           landmarks[landmarkIdx]._y
+    //         );
+    //       }
+    //     }
+    //   }
+    // }
 
     // do the classes below go in Sketch or outside?
     class Rects {
@@ -198,6 +375,7 @@ export default class Sketch extends Component {
   render() {
     return (
       <>
+        {this.state.loading && <h1>loading models...</h1>}
         <div className={styles.Sketch} ref={this.myRef}></div>
       </>
     );
