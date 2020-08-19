@@ -16,8 +16,9 @@ export default class Sketch extends Component {
     let poses = [];
 
     p.setup = () => {
-      p.createCanvas(800,600);
+      p.createCanvas(640, 480);
       capture = p.createCapture(p.VIDEO);
+      capture.size = (p.width, p.height);
 
       poseNet = ml5.poseNet(capture, modelReady);
       poseNet.on('pose', function(results) {
@@ -49,7 +50,16 @@ export default class Sketch extends Component {
         let left = pose['leftWrist'];
 
         p.noFill();
-        p.quad(right.x, right.y, right.x, right.y - getDistance(left, right), left.x, left.y - getDistance(left, right), left.x, left.y);
+        p.quad(
+          right.x, 
+          right.y, 
+          right.x, 
+          right.y - getDistance(left, right), 
+          left.x, 
+          left.y - getDistance(left, right), 
+          left.x, 
+          left.y
+          );
 
         p.fill(255, 0, 0);
         p.ellipse(right.x, right.y, 20);
