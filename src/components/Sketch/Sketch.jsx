@@ -18,8 +18,62 @@ export default class Sketch extends Component {
     let targetRightY = 0; // These may be consolidated to a list or table later
     let targetLeftX = 0;
     let targetLeftY = 0;
-    let lerpRate = 0.2;   // lerpRate between 0 and 1 determines the easement
-                          // where 0 is slowest to reach target and 1 is fastest
+    let lerpRate = 0.2;   // lerpRate between 0 and 1 determines the easement where 0 is slowest to reach target and 1 is fastest
+    let segments = [];
+    let rows = 2;
+    let columns = 3;
+
+    class Segment {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.w = p.width/3;
+        this.h = p.height/2;
+        this.hit = false;
+      }
+
+      display() {
+        if (this.hit) {
+          p.fill('rgba(255, 0, 255, 0.3)');
+          p.rect(this.x, this.y, p.width/3, p.height/2);
+        } else {
+          p.fill('rgba(0, 0, 0, 0)');
+          p.rect(this.x, this.y, p.width/3, p.height/2);
+        }
+      }
+
+      checkCollision(target) {
+        this.hit = collision(target.x, target.y, 5, this.x, this.y, this.w, this.h)
+      }
+    }
+
+    function collision(targetX, targetY, radius, segX, segY, segW, segH) {
+      let testX = targetX;
+      let testY = targetY;
+
+      if (targetX < segX) {testX = segX}
+      else if (targetX > segX+segW) {testX = segX + segW}
+
+      if (targetY < segY) {testY = segY}
+      else if (targetY > segY+segH) {testY = segY + segH}
+
+      let distX = targetX - testX;
+      let distY = targetY - testY;
+      let distance = Math.sqrt((distX*distX) + (distY * distY));
+
+      if (distance <= radius) {
+        return true;
+      }
+      return false;
+    }
+    
+    function getDistance (pos1, pos2, pos3, pos4) {
+      return Math.sqrt((pos1 - pos2) ** 2 + (pos3 - pos4) ** 2);
+    }
+
+    function modelReady () {
+      console.log('model loaded');
+    }
 
     p.setup = () => {
       p.createCanvas(640, 480);
@@ -33,14 +87,6 @@ export default class Sketch extends Component {
       });
     }
 
-    function getDistance (pos1, pos2, pos3, pos4) {
-      return Math.sqrt((pos1 - pos2) ** 2 + (pos3 - pos4) ** 2);
-    }
-
-    function modelReady () {
-      console.log('model loaded');
-    }
-
     p.draw = () => {
 
       if (poses.length > 0) {   // Draw loop using PoseNet features needs to be in this if statement
@@ -51,11 +97,37 @@ export default class Sketch extends Component {
         targetRightY = p.lerp(targetRightY, right.y, lerpRate);
         targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
-          
-        p.image(capture, 0, 0, p.width, p.height);
-        p.strokeWeight(2);
-        p.stroke(255);
+        
+        /*
+        // Mirror the camera output: 
+        p.translate(p.width, 0);
+        p.scale(-1.0, 1.0);
+        */
 
+        p.image(capture, 0, 0, p.width, p.height);
+        p.noStroke();
+        segments[0] = new Segment(0, 0);
+        segments[1] = new Segment(p.width/3, 0);
+        segments[2] = new Segment(p.width/3 * 2, 0);
+        segments[3] = new Segment(0, p.height/2);
+        segments[4] = new Segment(p.width/3, p.height/2);
+        segments[5] = new Segment(p.width/3 * 2, p.height/2);
+
+        for (let i = 0; i < segments.length; i++) {
+          segments[i].checkCollision(left)
+          if (segments[i].hit == false) {
+            segments[i].checkCollision(right); 
+          }
+          segments[i].display();
+        }
+
+        p.stroke(50);
+        p.line(p.width/3, 0, p.width/3, p.height);
+        p.line(p.width/3 *2, 0, p.width/3 * 2, p.height);
+        p.line(0, p.height/2, p.width, p.height/2); 
+
+        p.stroke(255);
+        p.strokeWeight(2);
         p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
         
         p.fill(255, 0, 0);
@@ -64,10 +136,11 @@ export default class Sketch extends Component {
         p.fill(255, 0, 0);
         p.ellipse(targetLeftX, targetLeftY, 20);
 
+        
+
         // Gets distance in pixels and mapped from 0 to 1 between wrist points 
         let distInPixels = getDistance(targetLeftX, targetRightX, targetLeftY, targetRightY);
-        let mappedDistance = p.map(distInPixels, 0, 640, 0.0, 1.0, true);
-        console.log(distInPixels, mappedDistance);
+        let mappedDistance = p.map(distInPixels, 0, p.width, 0.0, 1.0, true);
       }
     }
   };
