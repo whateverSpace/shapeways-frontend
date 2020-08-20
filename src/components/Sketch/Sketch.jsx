@@ -24,6 +24,8 @@ export default class Sketch extends Component {
     let targetLeftY = 0;
     let lerpRate = 0.2; // lerpRate between 0 and 1 determines the easement
 
+    let segments = [];
+
     let sideWidth_A = 0;
     let sideLength_A = 0;
 
@@ -41,6 +43,73 @@ export default class Sketch extends Component {
     //   withLandmarks: true,
     //   withDescriptors: true,
     // };
+
+    class Segment {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.w = p.width / 3;
+        this.h = p.height / 2;
+        this.hit = false;
+        this.alpha = 0;
+      }
+
+      display() {
+        if (this.hit) {
+          this.alpha = p.lerp(this.alpha, 255, 0.3);
+          p.push();
+          p.translate((p.width / 6) * 5, p.height / 4);
+          p.scale(-1.0, 1.0);
+          p.fill(270, 255, 255, 0.3);
+          p.rect(this.x, this.y, p.width / 3, p.height / 2);
+          p.pop();
+        } else {
+          this.alpha = p.lerp(this.alpha, 0, 0.1);
+          // p.translate(p.width, 0);
+          // p.scale(-1.0, 1.0);
+          // p.fill(255, 0, 0, this.alpha);
+          // p.rect(this.x, this.y, p.width / 2, p.height);
+        }
+      }
+
+      checkCollision(target) {
+        this.hit = collision(
+          target.x,
+          target.y,
+          5,
+          this.x,
+          this.y,
+          this.w,
+          this.h
+        );
+      }
+    }
+
+    function collision(targetX, targetY, radius, segX, segY, segW, segH) {
+      let testX = targetX;
+      let testY = targetY;
+
+      if (targetX < segX) {
+        testX = segX;
+      } else if (targetX > segX + segW) {
+        testX = segX + segW;
+      }
+
+      if (targetY < segY) {
+        testY = segY;
+      } else if (targetY > segY + segH) {
+        testY = segY + segH;
+      }
+
+      let distX = targetX - testX;
+      let distY = targetY - testY;
+      let distance = Math.sqrt(distX * distX + distY * distY);
+
+      if (distance <= radius) {
+        return true;
+      }
+      return false;
+    }
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
@@ -199,21 +268,26 @@ export default class Sketch extends Component {
         targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
+        // let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+        // // console.log(mappedNoseColor);
+        // let mappedThing = p.int(mappedNoseColor);
+        // p.background(mappedThing, mappedThing, mappedThing);
+
+        //uncomment to see webcam image
+        p.push();
+        p.translate(p.width, 0);
+        p.scale(-1.0, 1.0);
+        p.image(video, 0, 0, p.width, p.height);
+        p.pop();
+
         // const sliderThing = slider.value();
 
         // console.log(nose.x);
         // p.background(255);
 
-        //uncomment to see webcam image
-        // p.push();
-        // p.translate(p.width, 0);
-        // p.scale(-1.0, 1.0);
-        // p.image(video, 0, 0, p.width, p.height);
-        // p.pop();
-
         // const distanceThing = getDistance(left, right) * 0.25;
 
-        p.noFill();
+        // p.noFill();
         // p.quad(
         //   right.x,
         //   right.y,
@@ -270,34 +344,8 @@ export default class Sketch extends Component {
           true
         );
 
-        let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-        // console.log(mappedNoseColor);
-        let mappedThing = p.int(mappedNoseColor);
-        p.background(mappedThing, mappedThing, mappedThing);
-        console.log(mappedThing);
+        // console.log(mappedThing);
 
-        p.push();
-
-        p.translate(p.width, 0);
-        p.scale(-1.0, 1.0);
-
-        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
-
-        // p.fill(255, 0, 0);
-        p.ellipse(nose.x, nose.y, 20);
-        p.ellipse(nose.x, nose.y, 150);
-        p.ellipse(leftEye.x, leftEye.y, 20);
-        p.ellipse(rightEye.x, rightEye.y, 20);
-        p.ellipse(leftEye.x, leftEye.y, 10);
-        p.ellipse(rightEye.x, rightEye.y, 10);
-        // p.ellipse(leftEar.x, leftEar.y, 20);
-        // p.ellipse(rightEar.x, rightEar.y, 20);
-        p.ellipse(targetRightX, targetRightY, 20);
-
-        // p.fill(255, 0, 0);
-        p.ellipse(targetLeftX, targetLeftY, 20);
-
-        p.pop();
         // console.log(mappedThing);
         // console.log(distInPixels, mappedDistanceShapeScale);
 
@@ -312,8 +360,8 @@ export default class Sketch extends Component {
         p.stroke(0);
         //p.rect(0,0,sideWidth_A,sideLength_A);
         //frame for window
-        p.line(0, 0, p.width, 0);
-        p.line(0, p.height, p.width, p.height);
+        // p.line(0, 0, p.width, 0);
+        // p.line(0, p.height, p.width, p.height);
 
         // drawing all the rectangles!!
         p.push();
@@ -347,6 +395,54 @@ export default class Sketch extends Component {
         }
 
         p.pop();
+
+        p.push();
+
+        p.translate(p.width, 0);
+        p.scale(-1.0, 1.0);
+
+        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(nose.x, nose.y, 20);
+        // p.ellipse(nose.x, nose.y, 150);
+        p.ellipse(leftEye.x, leftEye.y, 20);
+        p.ellipse(rightEye.x, rightEye.y, 20);
+        p.ellipse(leftEye.x, leftEye.y, 10);
+        p.ellipse(rightEye.x, rightEye.y, 10);
+        // p.ellipse(leftEar.x, leftEar.y, 20);
+        // p.ellipse(rightEar.x, rightEar.y, 20);
+        p.ellipse(targetRightX, targetRightY, 20);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(targetLeftX, targetLeftY, 20);
+
+        p.pop();
+
+        p.push();
+        p.noStroke();
+
+        segments[0] = new Segment(0, 0);
+
+        segments[1] = new Segment(p.width / 3, 0);
+        segments[2] = new Segment((p.width / 3) * 2, 0);
+        segments[3] = new Segment(0, p.height / 2);
+        segments[4] = new Segment(p.width / 3, p.height / 2);
+        segments[5] = new Segment((p.width / 3) * 2, p.height / 2);
+        p.pop();
+
+        for (let i = 0; i < segments.length; i++) {
+          segments[i].checkCollision(left);
+          if (segments[i].hit == false) {
+            segments[i].checkCollision(right);
+          }
+          segments[i].display();
+        }
+
+        p.stroke(50);
+        p.line(p.width / 3, 0, p.width / 3, p.height);
+        p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
+        p.line(0, p.height / 2, p.width, p.height / 2);
 
         // };
         // end p.draw()
