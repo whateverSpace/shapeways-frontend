@@ -54,7 +54,7 @@ export default class Sketch extends Component {
         poses = results;
       });
 
-      faceapi = ml5.faceApi(video, detection_options, modelReady);
+      // faceapi = ml5.faceApi(video, detection_options, modelReady);
 
       p.colorMode(p.HSB);
       p.rectMode(p.CENTER);
@@ -81,79 +81,79 @@ export default class Sketch extends Component {
       return Math.sqrt((pos1 - pos2) ** 2 + (pos3 - pos4) ** 2);
     }
 
-    // function modelReady() {
-    //   console.log('model loaded');
+    function modelReady() {
+      console.log('model loaded');
+    }
+
+    // const modelReady = () => {
+    //   console.log('ready!');
+    //   console.log(faceapi);
+    //   faceapi.detect(gotResults);
+    // };
+
+    // function gotResults(err, result) {
+    //   if (err) {
+    //     console.log(err);
+    //     return;
+    //   }
+    //   // console.log(result);
+    //   detections = result;
+
+    //   // background(220);
+    //   p.background(255);
+    //   // p.image(video, 0, 0, p.width, p.height);
+    //   p.fill(0);
+    //   p.stroke(255);
+    //   p.fill(30, 255, 255, 120);
+    //   // p.translate(p.width, 0);
+    //   // p.scale(-1, 1);
+
+    //   if (detections) {
+    //     if (detections.length > 0) {
+    //       // console.log(detections)
+    //       // drawBox(detections);
+    //       drawLandmarks(detections);
+    //     }
+    //   }
+    //   faceapi.detect(gotResults);
     // }
 
-    const modelReady = () => {
-      console.log('ready!');
-      console.log(faceapi);
-      faceapi.detect(gotResults);
-    };
+    // function drawLandmarks(detections) {
+    //   p.noFill();
+    //   p.stroke(161, 95, 251);
+    //   p.strokeWeight(2);
 
-    function gotResults(err, result) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      // console.log(result);
-      detections = result;
+    //   for (let i = 0; i < detections.length; i++) {
+    //     const mouth = detections[i].parts.mouth;
+    //     const nose = detections[i].parts.nose;
+    //     const leftEye = detections[i].parts.leftEye;
+    //     const rightEye = detections[i].parts.rightEye;
+    //     const rightEyeBrow = detections[i].parts.rightEyeBrow;
+    //     const leftEyeBrow = detections[i].parts.leftEyeBrow;
 
-      // background(220);
-      p.background(255);
-      // p.image(video, 0, 0, p.width, p.height);
-      p.fill(0);
-      p.stroke(255);
-      p.fill(30, 255, 255, 120);
-      // p.translate(p.width, 0);
-      // p.scale(-1, 1);
+    //     drawPart(mouth, true);
+    //     drawPart(nose, false);
+    //     drawPart(leftEye, true);
+    //     drawPart(leftEyeBrow, false);
+    //     drawPart(rightEye, true);
+    //     drawPart(rightEyeBrow, false);
+    //   }
+    // }
 
-      if (detections) {
-        if (detections.length > 0) {
-          // console.log(detections)
-          // drawBox(detections);
-          drawLandmarks(detections);
-        }
-      }
-      faceapi.detect(gotResults);
-    }
+    // function drawPart(feature, closed) {
+    //   p.beginShape();
+    //   for (let i = 0; i < feature.length; i++) {
+    //     const x = feature[i]._x;
+    //     const y = feature[i]._y;
+    //     p.vertex(x, y);
+    //   }
 
-    function drawLandmarks(detections) {
-      p.noFill();
-      p.stroke(161, 95, 251);
-      p.strokeWeight(2);
-
-      for (let i = 0; i < detections.length; i++) {
-        const mouth = detections[i].parts.mouth;
-        const nose = detections[i].parts.nose;
-        const leftEye = detections[i].parts.leftEye;
-        const rightEye = detections[i].parts.rightEye;
-        const rightEyeBrow = detections[i].parts.rightEyeBrow;
-        const leftEyeBrow = detections[i].parts.leftEyeBrow;
-
-        drawPart(mouth, true);
-        drawPart(nose, false);
-        drawPart(leftEye, true);
-        drawPart(leftEyeBrow, false);
-        drawPart(rightEye, true);
-        drawPart(rightEyeBrow, false);
-      }
-    }
-
-    function drawPart(feature, closed) {
-      p.beginShape();
-      for (let i = 0; i < feature.length; i++) {
-        const x = feature[i]._x;
-        const y = feature[i]._y;
-        p.vertex(x, y);
-      }
-
-      if (closed === true) {
-        p.endShape(p.CLOSE);
-      } else {
-        p.endShape();
-      }
-    }
+    //   if (closed === true) {
+    //     p.endShape(p.CLOSE);
+    //   } else {
+    //     p.endShape();
+    //   }
+    // }
 
     //     Id	Part
     // 0	nose
@@ -188,15 +188,19 @@ export default class Sketch extends Component {
         let right = pose['rightWrist'];
         // console.log(right);
         let left = pose['leftWrist'];
+        let nose = pose['nose'];
+        // console.log(nose);
         targetRightX = p.lerp(targetRightX, right.x, lerpRate);
         targetRightY = p.lerp(targetRightY, right.y, lerpRate);
         targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
         // const sliderThing = slider.value();
-        // p.background(right.x, left.x, sliderThing);
-        p.background(255);
+        // p.background(mappedNoseColor, mappedNoseColor, mappedNoseColor);
+        // console.log(nose.x);
+        p.background(0);
 
+        //uncomment to see webcam image
         // p.push();
         // p.translate(p.width, 0);
         // p.scale(-1.0, 1.0);
@@ -242,15 +246,44 @@ export default class Sketch extends Component {
         // p.strokeWeight(2);
         // p.stroke(255);
 
-        // let distInPixels = getDistance(
-        //   targetLeftX,
-        //   targetRightX,
-        //   targetLeftY,
-        //   targetRightY
-        // );
+        let distInPixels = getDistance(
+          targetLeftX,
+          targetRightX,
+          targetLeftY,
+          targetRightY
+        );
         // console.log(distInPixels);
         // let mappedDistance = p.map(distInPixels, 30, 530, 0.0, 1.0, true);
-        // console.log(distInPixels, mappedDistance);
+        // console.log(targetLeftY);
+        let mappedDistanceShapeScale = p.map(
+          distInPixels,
+          30.0,
+          530.0,
+          0.0,
+          2.0,
+          true
+        );
+        let mappedDistanceShapeRotateLeft = p.map(
+          targetLeftY,
+          50,
+          450,
+          0.0,
+          700.0,
+          true
+        );
+
+        let mappedDistanceShapeRotateRight = p.map(
+          targetRightY,
+          50,
+          450,
+          0.0,
+          700.0,
+          true
+        );
+
+        let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+        console.log(mappedNoseColor);
+        // console.log(distInPixels, mappedDistanceShapeScale);
 
         // if (p.key === 'a') {
         //   p.background(255);
@@ -273,8 +306,12 @@ export default class Sketch extends Component {
           p.push();
           p.translate(-p.width * 0.3, 0); // moves to the left of window
           p.translate(20 * i, 0 * i); // moves them more
-          p.rotate(-p.radians(p.mouseX));
-          // p.scale(distanceThing - 50);
+          // p.rotate(-p.radians(p.mouseX));
+          p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
+
+          // const mouseThing = p.mouseX;
+          // console.log(mouseThing);
+          p.scale(mappedDistanceShapeScale);
 
           rects_A[i].display();
           p.pop();
@@ -285,7 +322,9 @@ export default class Sketch extends Component {
           p.push();
           p.translate(p.width * 0.3, 0); // moves to right of window
           p.translate(-10 * i, 0 * i); // moves them more
-          p.rotate(p.radians(p.mouseX));
+          // p.rotate(p.radians(p.mouseX));
+          p.rotate(-p.radians(mappedDistanceShapeRotateRight));
+          p.scale(mappedDistanceShapeScale);
 
           tris_A[i].display();
           p.pop();
@@ -297,15 +336,15 @@ export default class Sketch extends Component {
         // end p.draw()
       }
 
-      if (detections) {
-        // drawNumberedLandmarks(); // uncomment for debugging
-        p.translate(p.width, 0);
-        p.scale(-1.0, 1.0);
-        p.fill(0);
-        p.stroke(255);
-        p.fill(30, 255, 255, 120);
-        drawLandmarks(detections);
-      }
+      // if (detections) {
+      //   // drawNumberedLandmarks(); // uncomment for debugging
+      //   p.translate(p.width, 0);
+      //   p.scale(-1.0, 1.0);
+      //   p.fill(0);
+      //   p.stroke(255);
+      //   p.fill(30, 255, 255, 120);
+      //   drawLandmarks(detections);
+      // }
     };
 
     // function drawNumberedLandmarks() {
