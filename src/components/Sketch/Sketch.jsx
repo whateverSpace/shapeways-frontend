@@ -15,8 +15,8 @@ export default class Sketch extends Component {
     let poseNet;
     let poses = [];
 
-    let faceapi;
-    let detections;
+    // let faceapi;
+    // let detections;
 
     let targetRightX = 0; // Target variables used to smooth movement of points
     let targetRightY = 0; // These may be consolidated to a list or table later
@@ -37,10 +37,10 @@ export default class Sketch extends Component {
 
     // let slider;
 
-    const detection_options = {
-      withLandmarks: true,
-      withDescriptors: true,
-    };
+    // const detection_options = {
+    //   withLandmarks: true,
+    //   withDescriptors: true,
+    // };
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
@@ -189,6 +189,10 @@ export default class Sketch extends Component {
         // console.log(right);
         let left = pose['leftWrist'];
         let nose = pose['nose'];
+        let leftEye = pose['leftEye'];
+        let rightEye = pose['rightEye'];
+        // let leftEar = pose['leftEar'];
+        // let rightEar = pose['rightEar'];
         // console.log(nose);
         targetRightX = p.lerp(targetRightX, right.x, lerpRate);
         targetRightY = p.lerp(targetRightY, right.y, lerpRate);
@@ -196,9 +200,9 @@ export default class Sketch extends Component {
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
         // const sliderThing = slider.value();
-        // p.background(mappedNoseColor, mappedNoseColor, mappedNoseColor);
+
         // console.log(nose.x);
-        p.background(0);
+        // p.background(255);
 
         //uncomment to see webcam image
         // p.push();
@@ -220,21 +224,6 @@ export default class Sketch extends Component {
         //   left.x,
         //   left.y
         // );
-
-        p.push();
-
-        p.translate(p.width, 0);
-        p.scale(-1.0, 1.0);
-
-        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
-
-        // p.fill(255, 0, 0);
-        p.ellipse(targetRightX, targetRightY, 20);
-
-        // p.fill(255, 0, 0);
-        p.ellipse(targetLeftX, targetLeftY, 20);
-
-        p.pop();
 
         // console.log(getDistance(left, right) * 0.25);
 
@@ -282,7 +271,34 @@ export default class Sketch extends Component {
         );
 
         let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-        console.log(mappedNoseColor);
+        // console.log(mappedNoseColor);
+        let mappedThing = p.int(mappedNoseColor);
+        p.background(mappedThing, mappedThing, mappedThing);
+        console.log(mappedThing);
+
+        p.push();
+
+        p.translate(p.width, 0);
+        p.scale(-1.0, 1.0);
+
+        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(nose.x, nose.y, 20);
+        p.ellipse(nose.x, nose.y, 150);
+        p.ellipse(leftEye.x, leftEye.y, 20);
+        p.ellipse(rightEye.x, rightEye.y, 20);
+        p.ellipse(leftEye.x, leftEye.y, 10);
+        p.ellipse(rightEye.x, rightEye.y, 10);
+        // p.ellipse(leftEar.x, leftEar.y, 20);
+        // p.ellipse(rightEar.x, rightEar.y, 20);
+        p.ellipse(targetRightX, targetRightY, 20);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(targetLeftX, targetLeftY, 20);
+
+        p.pop();
+        // console.log(mappedThing);
         // console.log(distInPixels, mappedDistanceShapeScale);
 
         // if (p.key === 'a') {
