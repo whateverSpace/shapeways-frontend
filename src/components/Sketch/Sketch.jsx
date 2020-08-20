@@ -20,8 +20,6 @@ export default class Sketch extends Component {
     let targetLeftY = 0;
     let lerpRate = 0.2;   // lerpRate between 0 and 1 determines the easement where 0 is slowest to reach target and 1 is fastest
     let segments = [];
-    let rows = 2;
-    let columns = 3;
 
     class Segment {
       constructor(x, y) {
@@ -30,14 +28,17 @@ export default class Sketch extends Component {
         this.w = p.width/3;
         this.h = p.height/2;
         this.hit = false;
+        this.alpha = 0;
       }
 
       display() {
         if (this.hit) {
-          p.fill('rgba(255, 0, 255, 0.3)');
+          this.alpha = p.lerp(this.alpha, 255, 0.3)
+          p.fill(255, 0, 255, this.alpha);
           p.rect(this.x, this.y, p.width/3, p.height/2);
         } else {
-          p.fill('rgba(0, 0, 0, 0)');
+          this.alpha = p.lerp(this.alpha, 0, 0.1)
+          p.fill(255, 0, 0, this.alpha);
           p.rect(this.x, this.y, p.width/3, p.height/2);
         }
       }
@@ -135,8 +136,6 @@ export default class Sketch extends Component {
 
         p.fill(255, 0, 0);
         p.ellipse(targetLeftX, targetLeftY, 20);
-
-        
 
         // Gets distance in pixels and mapped from 0 to 1 between wrist points 
         let distInPixels = getDistance(targetLeftX, targetRightX, targetLeftY, targetRightY);
