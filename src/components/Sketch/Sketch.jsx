@@ -67,9 +67,10 @@ export default class Sketch extends Component {
     let numTris_A = 0;
     let tris_A = [];
 
-    let numRects_A = 0;
+    let numRects_A = 20;
     let rects_A = [];
 
+    let groupTest;
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
@@ -89,41 +90,16 @@ export default class Sketch extends Component {
       for (let i = 0; i < numTris_A; i++) {
         tris_A.push(new Tris(sideLength_A/(2/p.sqrt(2))));
       }
+
+      groupTest = new RectsGroup(20,20);
+      groupTest.intitialize(10);
     }; // end p.setup()
 
 
     p.draw = () => {
 
-      if (p.keyIsPressed === true && p.key ==='q'){
-        q = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='w'){
-        w = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='e'){
-        e = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='r'){
-        r = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='t'){
-        t = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='y'){
-        y = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='u'){
-        u = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='i'){
-        i = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='o'){
-        o = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='p'){
-        p = 1;
-      } 
+
+
 
       if (p.keyIsPressed === true && p.key ==='a'){
         a = 1;
@@ -132,46 +108,6 @@ export default class Sketch extends Component {
       if (p.keyIsPressed === true && p.key ==='s'){
         s = 1;
         p.background(255);
-      } 
-      if (p.keyIsPressed === true && p.key ==='d'){
-        d = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='f'){
-        f = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='g'){
-        g = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='h'){
-        h = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='j'){
-        j = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='k'){
-        k = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='l'){
-        l = 1;
-      } 
-
-      if (p.keyIsPressed === true && p.key ==='z'){
-        z = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='c'){
-        c = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='v'){
-        v = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='b'){
-        b = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='n'){
-        n = 1;
-      } 
-      if (p.keyIsPressed === true && p.key ==='m'){
-        m = 1;
       } 
 
 
@@ -217,7 +153,103 @@ export default class Sketch extends Component {
 
       p.pop();
       // end drawing all the shapes 
+
+      p.push();
+     // p.translate(40,40);
+     // groupTest.addShapes();
+
+      //groupTest.removeShapes();
+      groupTest.spread(0,0,p.mouseX,p.mouseY);
+     // groupTest.sizeGradient();
+      groupTest.rotateEach(p.radians(p.frameCount));
+     // groupTest.rotateAll(p.radians(45));
+      groupTest.display();
+      p.pop();
     }; // end p.draw()
+
+    class RectsGroup{
+      constructor(sideWidth, sideLength){
+
+        this.wid = sideWidth;
+        this.len = sideLength;
+
+        //this.numb = numRects; // may end up deleting
+        // needs to integrate size gradient
+        this.allRects = [];
+
+        // for sizeGradient() method
+        this.sizeTruth = false;
+        this.sizeChange = 0;
+
+        // for rotateEach() method
+        this.rotateEachTruth = false;
+        this.rotateEachAmount = 0;
+
+        // for rotateAll() method
+        this.rotateAllTruth = false;
+        this.rotateAllAmount = 0;
+
+        // for spread() method
+        this.spreadTruth = false;
+        this.spreadAmountX = 0;
+        this.spreadAmountY = 0;
+
+
+      } // end constructor
+
+      display(){
+        for (let i = 0; i < this.allRects.length; i++){ // i<this.numb
+          p.push();
+          p.rotate(i*this.rotateAllAmount);
+          p.push();
+            p.translate(i*this.spreadAmountX,i*this.spreadAmountY);
+            p.rotate(this.rotateEachAmount);
+            this.allRects[i].display();
+            //p.rect(0, 0, this.wid -  (i * this.sizeChange), this.len - (i * this.sizeChange));
+          p.pop();
+          p.pop();
+          }
+      } // end display()
+
+      intitialize(amount){
+        for (let i = 0; i < amount; i++){
+          this.allRects.push(new Rects(this.wid,this.len));
+        }
+      }
+
+      spread(startX, startY, endX, endY){
+        this.spreadTruth = true;
+        this.spreadAmountX = (endX-startX)/this.allRects.length;
+        this.spreadAmountY = (endY-startY)/this.allRects.length;
+
+      }
+
+      rotateEach(amount){
+        this.rotateEachTruth = true;
+        this.rotateEachAmount = amount;
+      }
+      
+      rotateAll(amount){
+        this.rotateAllTruth = true;
+        this.rotateAllAmount = amount;
+      }
+
+      sizeGradient(){
+        this.sizeTruth = true;
+        this.sizeChange = this.numb/this.wid;
+      }
+
+      addShapes(){
+          this.allRects.push(new Rects(this.wid,this.len));
+
+      }
+
+      removeShapes(){
+        this.allRects.pop(new Rects(this.wid,this.len));
+      }
+
+    } // end class RectsGroup()
+
 
     // do the classes below go in Sketch or outside?
     class Rects {
