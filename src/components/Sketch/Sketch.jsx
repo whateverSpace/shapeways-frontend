@@ -268,17 +268,17 @@ export default class Sketch extends Component {
         targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
-        // let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+        let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
         // // console.log(mappedNoseColor);
-        // let mappedThing = p.int(mappedNoseColor);
-        // p.background(mappedThing, mappedThing, mappedThing);
+        let mappedThing = p.int(mappedNoseColor);
+        p.background(mappedThing, mappedThing, mappedThing);
 
         //uncomment to see webcam image
-        p.push();
-        p.translate(p.width, 0);
-        p.scale(-1.0, 1.0);
-        p.image(video, 0, 0, p.width, p.height);
-        p.pop();
+        // p.push();
+        // p.translate(p.width, 0);
+        // p.scale(-1.0, 1.0);
+        // p.image(video, 0, 0, p.width, p.height);
+        // p.pop();
 
         // const sliderThing = slider.value();
 
@@ -404,12 +404,15 @@ export default class Sketch extends Component {
         p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
 
         // p.fill(255, 0, 0);
-        p.ellipse(nose.x, nose.y, 20);
+        p.ellipse(nose.x, nose.y, 10);
         // p.ellipse(nose.x, nose.y, 150);
         p.ellipse(leftEye.x, leftEye.y, 20);
         p.ellipse(rightEye.x, rightEye.y, 20);
-        p.ellipse(leftEye.x, leftEye.y, 10);
-        p.ellipse(rightEye.x, rightEye.y, 10);
+        p.push();
+        p.fill(360, 255, 255);
+        p.ellipse(leftEye.x, leftEye.y, 5);
+        p.ellipse(rightEye.x, rightEye.y, 5);
+        p.pop();
         // p.ellipse(leftEar.x, leftEar.y, 20);
         // p.ellipse(rightEar.x, rightEar.y, 20);
         p.ellipse(targetRightX, targetRightY, 20);
