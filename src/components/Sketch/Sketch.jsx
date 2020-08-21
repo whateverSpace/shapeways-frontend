@@ -38,6 +38,9 @@ export default class Sketch extends Component {
 
     // let shapeNumber = 8;
 
+    // let leftWristX;
+    // let leftWristY;
+
     let groupTest;
     let numShapesStart = 10;
     let numShapesMin = 10;
@@ -422,58 +425,14 @@ export default class Sketch extends Component {
         // p.pop();
 
         p.push();
-
-        p.translate(p.width, 0);
-        p.scale(-1.0, 1.0);
-
-        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
-
-        // p.fill(255, 0, 0);
-        p.ellipse(nose.x, nose.y, 10);
-        p.ellipse(leftEye.x, leftEye.y, 20);
-        p.ellipse(rightEye.x, rightEye.y, 20);
-        p.push();
-        p.fill(360, 255, 255);
-        p.ellipse(leftEye.x, leftEye.y, 5);
-        p.ellipse(rightEye.x, rightEye.y, 5);
-        p.pop();
-        // p.ellipse(leftEar.x, leftEar.y, 20);
-        // p.ellipse(rightEar.x, rightEar.y, 20);
-        p.ellipse(targetRightX, targetRightY, 20);
-
-        // p.fill(255, 0, 0);
-        p.ellipse(targetLeftX, targetLeftY, 20);
-
-        p.pop();
-
-        // p.push();
-        // p.noStroke();
-
-        // segments[0] = new Segment(0, 0);
-
-        // segments[1] = new Segment(p.width / 3, 0);
-        // segments[2] = new Segment((p.width / 3) * 2, 0);
-        // segments[3] = new Segment(0, p.height / 2);
-        // segments[4] = new Segment(p.width / 3, p.height / 2);
-        // segments[5] = new Segment((p.width / 3) * 2, p.height / 2);
-        // p.pop();
-
-        for (let i = 0; i < segments.length; i++) {
-          segments[i].checkCollision(left);
-          if (segments[i].hit == false) {
-            segments[i].checkCollision(right);
-          }
-          segments[i].display();
-        }
-
-        p.stroke(50);
-        p.line(p.width / 3, 0, p.width / 3, p.height);
-        p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
-        p.line(0, p.height / 2, p.width, p.height / 2);
-        p.push();
         // p.translate(p.width/2, p.height/2);
 
         // p.translate(40,40);
+
+        p.push();
+        groupTest.spread(targetLeftX, targetLeftY, targetRightX, targetRightY);
+
+        p.pop();
 
         if (p.keyIsPressed === true && p.key === 'a') {
           p.background(0);
@@ -528,6 +487,56 @@ export default class Sketch extends Component {
 
         groupTest.display();
         p.pop();
+
+        p.push();
+
+        p.translate(p.width, 0);
+        p.scale(-1.0, 1.0);
+
+        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(nose.x, nose.y, 10);
+        p.ellipse(leftEye.x, leftEye.y, 20);
+        p.ellipse(rightEye.x, rightEye.y, 20);
+        p.push();
+        p.fill(360, 255, 255);
+        p.ellipse(leftEye.x, leftEye.y, 5);
+        p.ellipse(rightEye.x, rightEye.y, 5);
+        p.pop();
+        // p.ellipse(leftEar.x, leftEar.y, 20);
+        // p.ellipse(rightEar.x, rightEar.y, 20);
+        p.ellipse(targetRightX, targetRightY, 20);
+
+        // p.fill(255, 0, 0);
+        p.ellipse(targetLeftX, targetLeftY, 20);
+
+        p.pop();
+
+        // p.push();
+        // p.noStroke();
+
+        // segments[0] = new Segment(0, 0);
+
+        // segments[1] = new Segment(p.width / 3, 0);
+        // segments[2] = new Segment((p.width / 3) * 2, 0);
+        // segments[3] = new Segment(0, p.height / 2);
+        // segments[4] = new Segment(p.width / 3, p.height / 2);
+        // segments[5] = new Segment((p.width / 3) * 2, p.height / 2);
+        // p.pop();
+
+        for (let i = 0; i < segments.length; i++) {
+          segments[i].checkCollision(left);
+          if (segments[i].hit == false) {
+            segments[i].checkCollision(right);
+          }
+          segments[i].display();
+        }
+
+        p.stroke(50);
+        p.line(p.width / 3, 0, p.width / 3, p.height);
+        p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
+        p.line(0, p.height / 2, p.width, p.height / 2);
 
         // };
         // end p.draw()
@@ -618,14 +627,16 @@ export default class Sketch extends Component {
         for (let i = 0; i < this.allRects.length; i++) {
           // i<this.numb
           p.push();
+          p.translate(p.width, 0);
+          p.scale(-1, 1);
           p.rotate(i * this.rotateAllAmount);
           p.push();
           p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
           p.rotate(this.rotateEachAmount);
-          // this.allRects[i].display();
+
           p.rect(
-            0,
-            0,
+            targetLeftX,
+            targetLeftY,
             this.wid - i * this.sizeChange,
             this.len - i * this.sizeChange
           );
