@@ -42,21 +42,27 @@ export default class Sketch extends Component {
 
     let segments = [];
 
-    let sideWidth_A = 0;
+    // let sideWidth_A = 0;
 
-    let sideLength_A = 0;
+    // let sideLength_A = 0;
 
-    let numTris_A = 0;
+    // let numTris_A = 0;
 
-    let tris_A = [];
+    // let tris_A = [];
 
-    let numRects_A = 0;
+    // let numRects_A = 0;
 
-    let rects_A = [];
+    // let rects_A = [];
 
-    let shapeNumber = 8;
+    // let shapeNumber = 8;
 
     let groupTest;
+    let numShapesStart = 10;
+    let numShapesMin = 10;
+    let numShapesMax = 30;
+    let sideLengthStart = 20;
+    let sideLengthMin = 20;
+    let sideLengthMax = 100;
 
     // const detection_options = {
 
@@ -219,7 +225,7 @@ export default class Sketch extends Component {
 
       segments[4] = new Segment(p.width / 3, p.height / 2);
 
-      segments[5] = new Segment((p.width / 3) * 2, p.height / 2);     
+      segments[5] = new Segment((p.width / 3) * 2, p.height / 2);
 
 
       video = p.createCapture(p.VIDEO);
@@ -240,8 +246,8 @@ export default class Sketch extends Component {
 
 
 
-      groupTest = new RectsGroup(20,20);
-      groupTest.intitialize(10);
+      groupTest = new RectsGroup(sideLengthStart, sideLengthStart);
+      groupTest.intitialize(numShapesStart);
 
       // sets number of shapes in relation to their size and the window size
 
@@ -312,17 +318,17 @@ export default class Sketch extends Component {
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
 
-       //(un)comment to see webcam image
+        //(un)comment to see webcam image
 
-        p.push();
+        // p.push();
 
-        p.translate(p.width, 0);
+        // p.translate(p.width, 0);
 
-        p.scale(-1.0, 1.0);
+        // p.scale(-1.0, 1.0);
 
-        p.image(video, 0, 0, p.width, p.height);
+        // p.image(video, 0, 0, p.width, p.height);
 
-        p.pop();
+        // p.pop();
 
         let distInPixels = getDistance(
 
@@ -503,18 +509,64 @@ export default class Sketch extends Component {
       } // end if(poses.length > 0) SHOULD ALL THIS STUFF BE IN THIS LOOP???
 
       p.push();
-      p.translate(p.width/2, p.height/2);
+      // p.translate(p.width/2, p.height/2);
+
       // p.translate(40,40);
-      // groupTest.addShapes();
- 
-       //groupTest.removeShapes();
-       //groupTest.spread(0,0,p.mouseX,p.mouseY);
-       groupTest.spread(targetLeftX, targetLeftY, targetRightX, targetRightY);
-      // groupTest.sizeGradient();
-       groupTest.rotateEach(p.radians(p.frameCount));
-      // groupTest.rotateAll(p.radians(45));
-       groupTest.display();
-       p.pop();
+
+      if (p.keyIsPressed === true && p.key ==='a'){
+        p.background(0);
+      }
+      if (p.keyIsPressed === true && p.key ==='s'){
+        p.background(255);
+      } 
+
+      if (p.mouseIsPressed && p.mouseButton === p.LEFT){
+        groupTest.spread(0, 0, p.mouseX, p.mouseY);
+        // groupTest.spread(targetLeftX, targetLeftY, targetRightX, targetRightY);
+      }
+
+      // on or off, can smooth out transition between on/off later
+      if (p.keyIsPressed === true && p.key === 'q') {
+        groupTest.sizeGradient();
+      }
+
+      if (p.keyIsPressed === true && p.key === 'w') {
+          groupTest.addShapes();
+      }
+
+      if (p.keyIsPressed === true && p.key === 'e') {
+          groupTest.removeShapes();
+      }
+
+      if (p.keyIsPressed === true && p.key === 'r') {
+        groupTest.rotateEach(p.radians(p.frameCount));
+      }
+
+      if (p.keyIsPressed === true && p.key === 't') {
+        groupTest.rotateAll(p.radians(p.frameCount*0.01));
+      } else {
+        groupTest.rotateAll(0);
+      }
+
+      if (p.keyIsPressed === true && p.key === 'y') {
+        groupTest.growAll(1);
+      }
+
+      if (p.keyIsPressed === true && p.key === 'u') {
+        groupTest.shrinkAll(1);
+      }
+
+      if (p.keyIsPressed === true && p.key === 'i') {
+        groupTest.fillColor(120,.5);
+      }
+
+      if (p.keyIsPressed === true && p.key === 'o') {
+        groupTest.strokeColor(220,1);
+      }
+
+
+      groupTest.display();
+      p.pop();
 
     }; // end draw()
 
@@ -584,46 +636,9 @@ export default class Sketch extends Component {
 
     } // end class Rects
 
-    class Tris {
-
-      constructor(radiusLength) {
-
-        this.radius = radiusLength;
-
-      }
-
-      display() {
-
-        // fix center point
-
-        p.triangle(
-
-          0,
-
-          this.radius * 2,
-
-          -this.radius * p.sqrt(3),
-
-          -this.radius,
-
-          this.radius * p.sqrt(3),
-
-          -this.radius
-
-        );
-
-      } // end display()
-
-      inscribeEllipse() {
-
-        p.ellipse(0, 0, this.radius * 2, this.radius * 2);
-
-      }
-
-    } // end class Tris
-
-    class RectsGroup{
-      constructor(sideWidth, sideLength){
+ 
+    class RectsGroup {
+      constructor(sideWidth, sideLength) {
 
         this.wid = sideWidth;
         this.len = sideLength;
@@ -633,7 +648,7 @@ export default class Sketch extends Component {
         this.allRects = [];
 
         // for sizeGradient() method
-        this.sizeTruth = false;
+        this.sizeGradientTruth = false;
         this.sizeChange = 0;
 
         // for rotateEach() method
@@ -649,58 +664,86 @@ export default class Sketch extends Component {
         this.spreadAmountX = 0;
         this.spreadAmountY = 0;
 
+        // for growAll() method
+        this.growAllTruth = false;
+        
+        // for shrinkAll() method
+        this.shrinkAllTruth = false;
+
 
       } // end constructor
 
-      display(){
-        for (let i = 0; i < this.allRects.length; i++){ // i<this.numb
+      display() {
+        for (let i = 0; i < this.allRects.length; i++) { // i<this.numb
           p.push();
-          p.rotate(i*this.rotateAllAmount);
+          p.rotate(i * this.rotateAllAmount);
           p.push();
-            p.translate(i*this.spreadAmountX,i*this.spreadAmountY);
-            p.rotate(this.rotateEachAmount);
-            this.allRects[i].display();
-            //p.rect(0, 0, this.wid -  (i * this.sizeChange), this.len - (i * this.sizeChange));
+          p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+          p.rotate(this.rotateEachAmount);
+         // this.allRects[i].display();
+          p.rect(0, 0, this.wid -  (i * this.sizeChange), this.len - (i * this.sizeChange));
           p.pop();
           p.pop();
-          }
+        }
       } // end display()
 
-      intitialize(amount){
-        for (let i = 0; i < amount; i++){
-          this.allRects.push(new Rects(this.wid,this.len));
+      intitialize(amount) {
+        for (let i = 0; i < amount; i++) {
+          this.allRects.push(new Rects(this.wid, this.len));
         }
       }
 
-      spread(startX, startY, endX, endY){
-        this.spreadTruth = true;
-        this.spreadAmountX = (endX-startX)/this.allRects.length;
-        this.spreadAmountY = (endY-startY)/this.allRects.length;
+      growAll(speed) {
+        this.growAllTruth = true;
+        this.wid += speed;
+        this.len += speed;
 
       }
 
-      rotateEach(amount){
+      shrinkAll(speed) {
+        this.shrinkAllTruth = true;
+        this.wid -= speed;
+        this.len -= speed;
+
+      }
+
+      spread(startX, startY, endX, endY) {
+        this.spreadTruth = true;
+        this.spreadAmountX = (endX - startX) / this.allRects.length;
+        this.spreadAmountY = (endY - startY) / this.allRects.length;
+
+      }
+
+      rotateEach(amount) {
         this.rotateEachTruth = true;
         this.rotateEachAmount = amount;
       }
-      
-      rotateAll(amount){
+
+      rotateAll(amount) {
         this.rotateAllTruth = true;
         this.rotateAllAmount = amount;
       }
 
-      sizeGradient(){
-        this.sizeTruth = true;
-        this.sizeChange = this.numb/this.wid;
+      sizeGradient() {
+        this.sizeGradientTruth = true;
+        this.sizeChange = this.allRects.length / this.wid;
       }
 
-      addShapes(){
-          this.allRects.push(new Rects(this.wid,this.len));
-
+      addShapes() {
+        this.allRects.push(new Rects(this.wid, this.len));
+        //console.log(allRects.length);
       }
 
-      removeShapes(){
-        this.allRects.pop(new Rects(this.wid,this.len));
+      removeShapes() {
+        this.allRects.pop(new Rects(this.wid, this.len));
+      }
+
+      fillColor(hue, alpha){
+        p.fill(hue, 255,255, alpha);
+      }
+
+      strokeColor(hue, alpha){
+        p.stroke(hue, 255,255, alpha);
       }
 
     } // end class RectsGroup()
@@ -731,6 +774,45 @@ export default class Sketch extends Component {
 
 } // end export default class sketch
 
+
+// this class is not currently  being used
+class Tris {
+
+  constructor(radiusLength) {
+
+    this.radius = radiusLength;
+
+  }
+
+  display() {
+
+    // fix center point
+
+    p.triangle(
+
+      0,
+
+      this.radius * 2,
+
+      -this.radius * p.sqrt(3),
+
+      -this.radius,
+
+      this.radius * p.sqrt(3),
+
+      -this.radius
+
+    );
+
+  } // end display()
+
+  inscribeEllipse() {
+
+    p.ellipse(0, 0, this.radius * 2, this.radius * 2);
+
+  }
+
+} // end class Tris
 
 
     //     Face Id Parts
