@@ -28,7 +28,8 @@
     "ml5": "^0.5.0",
     "p5": "^1.1.9",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "tone": "^14.7.39"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",

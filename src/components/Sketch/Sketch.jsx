@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
+import * as Tone from 'tone';
 import styles from './Sketch.css';
 
 export default class Sketch extends Component {
@@ -8,6 +9,10 @@ export default class Sketch extends Component {
   constructor(props) {
     super(props);
     this.myRef = React.createRef();
+
+    // INITIALIZE TONE
+    this.synth = new Tone.FMSynth().toDestination();
+    this.tempo = 0;
   }
 
   Sketch = (p) => {
@@ -268,6 +273,12 @@ export default class Sketch extends Component {
         targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
+
+        // TONE SET TEMPO
+        this.setState({ tempo: targetLeftX - targetRightX });
+        Tone.Transport.bpm.value = targetLeftX - targetRightX;
+
+
         let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
         // // console.log(mappedNoseColor);
         let mappedThing = p.int(mappedNoseColor);
@@ -524,6 +535,24 @@ export default class Sketch extends Component {
 
   componentDidMount() {
     this.myP5 = new p5(this.Sketch, this.myRef.current);
+
+    // TONE SET MELODY SYNTH
+    let bassPattern = [
+      ['0:0:0', 'C4'],
+      ['0:0:3', 'G3'],
+      ['0:1:2', 'E2'],
+      ['0:2:0', 'C3'],
+      ['0:2:3', 'G3']
+    ];
+
+    let melodyLine = new Tone.Part((time, note) => {
+      this.synth.triggerAttackRelease(note, 0.1, time);
+    }, bassPattern).start();
+    melodyLine.loop = true;
+    melodyLine.loopStart = 0;
+    melodyLine.loopEnd = '1m';
+
+    Tone.Transport.start();
   }
 
   render() {
@@ -531,6 +560,7 @@ export default class Sketch extends Component {
       <>
         {this.state.loading && <h1>loading models...</h1>}
         <div className={styles.Sketch} ref={this.myRef}></div>
+        <button onClick={() => Tone.start()}>Start</button>
       </>
     );
   }
