@@ -8,6 +8,6 @@
 
 `npm run start`
 
-`get checkout dev`
+`git checkout dev`
 
 `code .`
