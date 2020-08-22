@@ -49,6 +49,9 @@ export default class Sketch extends Component {
     let sideLengthMin = 20;
     let sideLengthMax = 100;
 
+    let mappedDistanceShapeScale;
+    let mappedDistanceShapeRotateLeft;
+
     // let slider;
 
     // const detection_options = {
@@ -346,15 +349,15 @@ export default class Sketch extends Component {
         // console.log(distInPixels);
         // let mappedDistance = p.map(distInPixels, 30, 530, 0.0, 1.0, true);
         // console.log(targetLeftY);
-        let mappedDistanceShapeScale = p.map(
+        mappedDistanceShapeScale = p.map(
           distInPixels,
           30.0,
           530.0,
-          0.0,
-          2.0,
+          10.0,
+          100.0,
           true
         );
-        let mappedDistanceShapeRotateLeft = p.map(
+        mappedDistanceShapeRotateLeft = p.map(
           targetLeftY,
           50,
           450,
@@ -533,6 +536,14 @@ export default class Sketch extends Component {
           segments[i].display();
         }
 
+        if (segments[2].hit == true) {
+          groupTest.addShapes();
+        }
+
+        if (segments[0].hit == true) {
+          groupTest.removeShapes();
+        }
+
         p.stroke(50);
         p.line(p.width / 3, 0, p.width / 3, p.height);
         p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
@@ -629,16 +640,20 @@ export default class Sketch extends Component {
           p.push();
           p.translate(p.width, 0);
           p.scale(-1, 1);
+          // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
           p.rotate(i * this.rotateAllAmount);
           p.push();
           p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
           p.rotate(this.rotateEachAmount);
+          // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
+
+          // console.log(this.rotateEachAmount);
 
           p.rect(
             targetLeftX,
             targetLeftY,
-            this.wid - i * this.sizeChange,
-            this.len - i * this.sizeChange
+            mappedDistanceShapeScale,
+            mappedDistanceShapeScale
           );
           p.pop();
           p.pop();
