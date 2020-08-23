@@ -5,7 +5,7 @@ import styles from './Sketch.css';
 import Synth from '../Synth/Synth';
 
 export default class Sketch extends Component {
-  state = { loading: true };
+  state = { loading: true, segForSynth: [false, false, false, false, false, false] };
 
   constructor(props) {
     super(props);
@@ -80,6 +80,7 @@ export default class Sketch extends Component {
           p.fill(270, 255, 255, 0.3);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
           p.pop();
+          
         } else {
           this.alpha = p.lerp(this.alpha, 0, 0.1);
           // p.translate(p.width, 0);
@@ -98,7 +99,7 @@ export default class Sketch extends Component {
           this.y,
           this.w,
           this.h
-        );
+        ); 
       }
     }
 
@@ -549,6 +550,13 @@ export default class Sketch extends Component {
           groupTest.removeShapes();
         }
 
+        const segChange = this.state.segForSynth.map((segment, i) => {
+          if (segment !== segments[i].hit) {
+            return segments[i].hit;
+          } else return segment;
+        });
+        this.setState({ segForSynth: segChange });
+
         p.stroke(50);
         p.line(p.width / 3, 0, p.width / 3, p.height);
         p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
@@ -754,7 +762,7 @@ export default class Sketch extends Component {
       <>
         {this.state.loading && <h1>loading models...</h1>}
         <div className={styles.Sketch} ref={this.myRef}></div>
-        <Synth distForSynth={this.distForSynth}/>
+        <Synth distForSynth={this.distForSynth} segForSynth={this.state.segForSynth}/>
       </>
     );
   }

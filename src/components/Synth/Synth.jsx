@@ -3,25 +3,34 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 
-export default function Synth({ distForSynth }) {
+export default function Synth({ distForSynth, segForSynth }) {
   const [isPlaying, setIsPlaying] = useState(false);
-  // const [melodyPatern, setMelodyPatern] = useState([]);
+  const [segChange, setSegChange] = useState([false, false, false, false, false, false]);
   const synth = useRef(null);
   const melodyRNN = useRef(null);
   const melodyPart = useRef(null);
 
   if (distForSynth.current) Tone.Transport.bpm.value = distForSynth.current;
+  segForSynth.forEach((segment, i) => {
+    if (segment !== segChange[i]) setSegChange(segForSynth);
+  });
   
   useEffect(() => {
-    synth.current = new Tone.FMSynth().toDestination();
+    synth.current = new Tone.PolySynth().toDestination();
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
     let melodyRnnLoaded = melodyRNN.current.initialize();
     rnnStart(melodyRnnLoaded);
   }, []);
 
+  useEffect(() => {
+    if (melodyRNN.current.initialized) rnnStart();
+  }, [segChange]);
+
   const rnnStart = async(melodyRnnLoaded) => {
     if (melodyRnnLoaded) await melodyRnnLoaded;
-    if (melodyPart.current) melodyPart.current.dispose();
+    if (melodyPart.current) {
+      melodyPart.current.clear();
+    }
 
     let seed = {
       notes: [
@@ -39,13 +48,25 @@ export default function Synth({ distForSynth }) {
       return [Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(), { note: Tone.Frequency(note.pitch, 'midi').toNote(), durration: Tone.Time(((note.quantizedEndStep - note.quantizedStartStep) / 4)).toNotation() }];
     });
 
-    melodyPart.current = new Tone.Part((time, value) => {
-      synth.current.triggerAttackRelease(value.note, value.durration, time);
-    }, melodyTest).start(); 
-    melodyPart.current.mute = false;
-    melodyPart.current.loop = true;
-    melodyPart.current.loopStart = 0;
-    melodyPart.current.loopEnd = '2m';
+    if (melodyPart.current) {
+      melodyPart.current.clear();
+      melodyTest.forEach(event => {
+        console.log(event);
+        melodyPart.current.add(event[0], event[1]);
+      });
+    }
+    else {
+      melodyPart.current = new Tone.Part((time, value) => {
+        synth.current.triggerAttackRelease(value.note, value.durration, time);
+      }, melodyTest).start(); 
+      melodyPart.current.mute = false;
+      melodyPart.current.loop = true;
+      melodyPart.current.loopStart = 0;
+      melodyPart.current.loopEnd = '2m';
+    }
+    console.log(melodyPart.current);
+
+    
   };
 
   const startMusic = async () => {
@@ -73,5 +94,6 @@ export default function Synth({ distForSynth }) {
 }
 
 Synth.propTypes = {
-  distForSynth: PropTypes.object
+  distForSynth: PropTypes.object,
+  segForSynth: PropTypes.array
 };
