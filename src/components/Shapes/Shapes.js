@@ -1,4 +1,6 @@
 import React from 'react';
+// import Sketch { p } from '../Sketch/Sketch';
+import p5 from 'p5';
 
 export class Rects {
   constructor(sideLength, sideWidth) {
@@ -6,11 +8,11 @@ export class Rects {
     this.wid = sideWidth;
   }
 
-  display(p) {
+  display() {
     p.rect(0, 0, 2 * this.wid, 2 * this.len);
   }
 
-  inscribeEllipse(p) {
+  inscribeEllipse() {
     p.ellipse(0, 0, 2 * this.wid, 2 * this.len);
   }
 } // end class Rects
@@ -49,7 +51,7 @@ export default class RectsGroup extends React.Component {
     this.shrinkAllTruth = false;
   } // end constructor
 
-  display(p) {
+  display() {
     for (let i = 0; i < this.allRects.length; i++) {
       // i<this.numb
       p.push();

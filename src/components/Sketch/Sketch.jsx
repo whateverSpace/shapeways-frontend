@@ -458,10 +458,14 @@ export default class Sketch extends Component {
 
   render() {
     return (
-      <>
-        {this.state.loading && <h1>loading models...</h1>}
-        <div className={styles.Sketch} ref={this.myRef}></div>
-      </>
+      <section>
+        {this.state.loading && (
+          <h1 className={styles.loading}>loading models...</h1>
+        )}
+        <div className={styles.box}>
+          <div ref={this.myRef}></div>
+        </div>
+      </section>
     );
   }
 }

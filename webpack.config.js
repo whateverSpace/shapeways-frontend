@@ -8,26 +8,24 @@ module.exports = {
   entry: './src/index.js',
   output: {
     filename: 'bundle.[hash].js',
-    publicPath: '/'
+    publicPath: '/',
   },
   devServer: {
     port: 7891,
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   plugins: [
     new HtmlPlugin({ template: './src/index.html' }),
     new CleanWebpackPlugin(),
     new Dotenv({
-      systemvars: true
+      systemvars: true,
     }),
     new CopyPlugin({
-      patterns: [
-        { from: 'public' },
-      ]
-    })
+      patterns: [{ from: 'public' }],
+    }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
   },
   module: {
     rules: [
@@ -37,23 +35,23 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true
-          }
-        }
+            cacheDirectory: true,
+          },
+        },
       },
       {
         test: /\.css$/,
         use: [
           {
-            loader: 'style-loader'
+            loader: 'style-loader',
           },
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
               modules: true,
-              importLoaders: 1
-            }
+              importLoaders: 1,
+            },
           },
           {
             loader: 'postcss-loader',
@@ -63,11 +61,11 @@ module.exports = {
                 require('postcss-import')(),
                 require('autoprefixer')(),
                 require('postcss-nested')(),
-                require('postcss-simple-vars')()
-              ]
-            }
-          }
-        ]
+                require('postcss-simple-vars')(),
+              ],
+            },
+          },
+        ],
       },
       {
         test: /\.(jpeg|jpg|png|svg)$/,
@@ -75,7 +73,11 @@ module.exports = {
           loader: 'url-loader',
           options: { limit: 1000 },
         },
-      }
-    ]
-  }
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        loader: 'file-loader',
+      },
+    ],
+  },
 };
