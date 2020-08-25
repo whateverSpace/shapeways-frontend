@@ -14,7 +14,7 @@ export default function Synth({ distForSynth, segForSynth }) {
   segForSynth.forEach((segment, i) => {
     if (segment !== segChange[i]) setSegChange(segForSynth);
   });
-  
+
   useEffect(() => {
     synth.current = new Tone.PolySynth().toDestination();
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
@@ -45,7 +45,7 @@ export default function Synth({ distForSynth, segForSynth }) {
     let result = await melodyRNN.current.continueSequence(seed, steps, temperature, chordProgression);
 
     const melodyTest = result.notes.map(note => {
-      return [Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(), { note: Tone.Frequency(note.pitch, 'midi').toNote(), durration: Tone.Time(((note.quantizedEndStep - note.quantizedStartStep) / 4)).toNotation() }];
+      return [Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(), { note: Tone.Frequency(note.pitch, 'midi').toNote(), duration: Tone.Time(((note.quantizedEndStep - note.quantizedStartStep) / 4)).toNotation() }];
     });
 
     if (melodyPart.current) {
@@ -57,8 +57,8 @@ export default function Synth({ distForSynth, segForSynth }) {
     }
     else {
       melodyPart.current = new Tone.Part((time, value) => {
-        synth.current.triggerAttackRelease(value.note, value.durration, time);
-      }, melodyTest).start(); 
+        synth.current.triggerAttackRelease(value.note, value.duration, time);
+      }, melodyTest).start();
       melodyPart.current.mute = false;
       melodyPart.current.loop = true;
       melodyPart.current.loopStart = 0;
@@ -66,7 +66,7 @@ export default function Synth({ distForSynth, segForSynth }) {
     }
     console.log(melodyPart.current);
 
-    
+
   };
 
   const startMusic = async () => {
@@ -76,8 +76,8 @@ export default function Synth({ distForSynth, segForSynth }) {
     setIsPlaying(true);
   };
 
-  const stopMusic = () => {    
-    if (!isPlaying) return;  
+  const stopMusic = () => {
+    if (!isPlaying) return;
     console.log('stopping');
     Tone.Transport.stop();
     setIsPlaying(false);
