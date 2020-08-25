@@ -17,13 +17,13 @@ export default function Synth({ distForSynth, segForSynth }) {
 
   useEffect(() => {
     synth.current = new Tone.PolySynth().toDestination();
-    melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
+    melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'); // TRY DIFFERENT CHECKPOINTS
     let melodyRnnLoaded = melodyRNN.current.initialize();
     rnnStart(melodyRnnLoaded);
   }, []);
 
   useEffect(() => {
-    if (melodyRNN.current.initialized) rnnStart();
+    // if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
 
   const rnnStart = async(melodyRnnLoaded) => {
@@ -34,19 +34,24 @@ export default function Synth({ distForSynth, segForSynth }) {
 
     let seed = {
       notes: [
-        { pitch: Tone.Frequency('C3').toMidi(), quantizedStartStep: 0, quantizedEndStep: 4 }
+        { pitch: Tone.Frequency('C4').toMidi(), quantizedStartStep: 0, quantizedEndStep: 4 },
+        { pitch: Tone.Frequency('E4').toMidi(), quantizedStartStep: 5, quantizedEndStep: 8 },
+        { pitch: Tone.Frequency('G4').toMidi(), quantizedStartStep: 9, quantizedEndStep: 12 }
       ],
       totalQuantizedSteps: 4,
       quantizationInfo: { stepsPerQuarter: 4 }
     };
     let steps = 16;
-    let temperature = 1.2;
-    let chordProgression = ['C', 'Am', 'G'];
-    let result = await melodyRNN.current.continueSequence(seed, steps, temperature, chordProgression);
+    let temperature = 0.7; // RANDOMNESS OF NOTES
+    // let chordProgression = ['C', 'Am', 'G'];
+    let result = await melodyRNN.current.continueSequence(seed, steps, temperature);
+    // let result = await melodyRNN.current.continueSequence(seed, steps, temperature, chordProgress); // WORKS FOR chord_pitches_improv CHECKPOINT
 
     const melodyTest = result.notes.map(note => {
       return [Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(), { note: Tone.Frequency(note.pitch, 'midi').toNote(), duration: Tone.Time(((note.quantizedEndStep - note.quantizedStartStep) / 4)).toNotation() }];
     });
+
+    console.log(melodyTest);
 
     if (melodyPart.current) {
       melodyPart.current.clear();
