@@ -8,6 +8,7 @@ export default function Synth({ distForSynth, segForSynth }) {
   const [segChange, setSegChange] = useState([false, false, false, false, false, false]);
   const synth = useRef(null);
   const melodyRNN = useRef(null);
+  const melodyVAE = useRef(null);
   const melodyPart = useRef(null);
 
   if (distForSynth.current) Tone.Transport.bpm.value = distForSynth.current;
@@ -17,8 +18,13 @@ export default function Synth({ distForSynth, segForSynth }) {
 
   useEffect(() => {
     synth.current = new Tone.PolySynth().toDestination();
-    melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'); // TRY DIFFERENT CHECKPOINTS
+    melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
     let melodyRnnLoaded = melodyRNN.current.initialize();
+
+    melodyVAE.current = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords');
+    let melodyVAELoaded = melodyVAE.current.initialize();
+    // TRY DIFFERENT CHECKPOINTS
+
     rnnStart(melodyRnnLoaded);
   }, []);
 
@@ -72,6 +78,53 @@ export default function Synth({ distForSynth, segForSynth }) {
     console.log(melodyPart.current);
 
 
+  };
+
+
+
+
+  const generateMelodies = async() => {
+    let input = {
+      notes: [],
+      totalQuantizedSteps: 32,
+      quantizationInfo: { stepsPerQuarter: 4 }
+    };
+    let pattern = sequencer.matrix.pattern;
+    for (let row = 0; row < pattern.length; row++) {
+      for (let col = 0; col < pattern[row].length; col++) {
+        if (pattern[row][col]) {
+          input.notes.push({
+            quantizedStartStep: col,
+            quantizedEndStep: col + 2,
+            pitch: Tone.Frequency(sequencerRows[row]).toMidi()
+          });
+        }
+      }
+    }
+    console.log(input);
+
+    let z = await melodyVAE.current.encode([input], { chordProgression: ['C#m7'] });
+
+    let one = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['C#m7'] });
+    let two = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['F#m'] });
+    let three = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['A'] });
+    let four = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['C#m7'] });
+
+    let all = mm.core.sequences.concatenate(
+      one
+        .concat(two)
+        .concat(three)
+        .concat(four)
+    );
+
+    melodyVAE.current.clear();
+    for (let note of all.notes) {
+      melodyVAE.current.at(
+        { '16n': note.quantizedStartStep },
+        Tone.Frequency(note.pitch, 'midi').toNote()
+      );
+    }
+    console.log(one, two, three, four);
   };
 
   const startMusic = async () => {
