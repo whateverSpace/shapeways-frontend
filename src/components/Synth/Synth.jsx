@@ -157,7 +157,7 @@ export default function Synth({ distForSynth, segForSynth }) {
         <div>segments:{`${segForSynth}`}</div>
       </div>
       <div className={styles.controls}>
-        <Sequencer size={[400, 200]} columns={32} rows={6} onChange={generateMelodies}/>
+        <Sequencer size={[400, 200]} columns={32} rows={6} />
       </div>
     </>
   );
