@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
+import { Sequencer } from 'react-nexusui';
 import styles from './Synth.css';
 export default function Synth({ distForSynth, segForSynth }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -141,7 +142,6 @@ export default function Synth({ distForSynth, segForSynth }) {
     setIsPlaying(false);
   };
 
-
   return (
     <>
       <div className={styles.controls}>
@@ -155,6 +155,9 @@ export default function Synth({ distForSynth, segForSynth }) {
       </div>
       <div className={styles.controls}>
         <div>segments:{`${segForSynth}`}</div>
+      </div>
+      <div className={styles.controls}>
+        <Sequencer size={[400, 200]} columns={32} rows={6} onChange={generateMelodies}/>
       </div>
     </>
   );

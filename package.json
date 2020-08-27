@@ -27,9 +27,11 @@
   "dependencies": {
     "@magenta/music": "^1.19.0",
     "ml5": "^0.5.0",
+    "nexusui": "2.1.5",
     "p5": "^1.1.9",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-nexusui": "0.1.7",
     "tone": "^14.7.39"
   },
   "devDependencies": {
