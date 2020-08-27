@@ -26,6 +26,7 @@ export default function Synth({ distForSynth, segForSynth }) {
     // TRY DIFFERENT CHECKPOINTS
 
     rnnStart(melodyRnnLoaded);
+    generateMelodies(melodyVAELoaded);
   }, []);
 
   useEffect(() => {
@@ -76,39 +77,27 @@ export default function Synth({ distForSynth, segForSynth }) {
       melodyPart.current.loopEnd = '2m';
     }
     console.log(melodyPart.current);
-
-
   };
-
-
-
 
   const generateMelodies = async() => {
     let input = {
-      notes: [],
+      notes: [
+        { pitch: Tone.Frequency('C4').toMidi(), quantizedStartStep: 0, quantizedEndStep: 4 },
+        { pitch: Tone.Frequency('E4').toMidi(), quantizedStartStep: 5, quantizedEndStep: 8 },
+        { pitch: Tone.Frequency('G4').toMidi(), quantizedStartStep: 9, quantizedEndStep: 12 }
+      ],
       totalQuantizedSteps: 32,
       quantizationInfo: { stepsPerQuarter: 4 }
     };
-    let pattern = sequencer.matrix.pattern;
-    for (let row = 0; row < pattern.length; row++) {
-      for (let col = 0; col < pattern[row].length; col++) {
-        if (pattern[row][col]) {
-          input.notes.push({
-            quantizedStartStep: col,
-            quantizedEndStep: col + 2,
-            pitch: Tone.Frequency(sequencerRows[row]).toMidi()
-          });
-        }
-      }
-    }
+
     console.log(input);
 
-    let z = await melodyVAE.current.encode([input], { chordProgression: ['C#m7'] });
+    let z = await melodyVAE.current.encode([input], { chordProgression: ['Cmaj7'] });
 
-    let one = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['C#m7'] });
+    let one = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['Cmaj7'] });
     let two = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['F#m'] });
     let three = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['A'] });
-    let four = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['C#m7'] });
+    let four = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['Cmaj7'] });
 
     let all = mm.core.sequences.concatenate(
       one
