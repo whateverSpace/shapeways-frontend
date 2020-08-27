@@ -15,12 +15,11 @@ export default class Sketch extends Component {
     let capture;
     let poseNet;
     let poses = [];
-    let targetRightX = 0; // Target variables used to smooth movement of points
-    let targetRightY = 0; // These may be consolidated to a list or table later
-    let targetLeftX = 0;
-    let targetLeftY = 0;
+    let targetRight = {x: 0, y: 0}; // Target variables used to smooth movement of points
+    let targetLeft = {x: 0, y: 0};
     let lerpRate = 0.1;   // lerpRate between 0 and 1 determines the easing where 0 is slowest to reach target and 1 is fastest
     let segments = [];
+    
     let distInPixels;
     let distX;
     let distY;
@@ -32,12 +31,13 @@ export default class Sketch extends Component {
         this.y = y;
         this.w = p.width/3;
         this.h = p.height/2;
-        this.hit = false;
+        this.hitLeft = false;
+        this.hitRight = false;
         this.alpha = 0;
       }
 
       display() {
-        if (this.hit) {
+        if (this.hitLeft || this.hitRight) {
           this.alpha = p.lerp(this.alpha, 255, 0.3)
           p.fill(255, 0, 255, this.alpha);
           p.rect(this.x, this.y, p.width/3, p.height/2);
@@ -48,12 +48,9 @@ export default class Sketch extends Component {
         }
       }
 
-      checkCollision(target) {
-        this.hit = collision(target.x, target.y, 5, this.x, this.y, this.w, this.h)
-      }
-
-      checkCollisionTwoPoint(targetX, targetY) {
-        this.hit = collision(targetX, targetY, 5, this.x, this.y, this.w, this.h)
+      checkCollision(targetL, targetR) {
+        this.hitLeft = collision(targetL.x, targetL.y, 5, this.x, this.y, this.w, this.h)
+        this.hitRight = collision(targetR.x, targetR.y, 5, this.x, this.y, this.w, this.h)
       }
     }
 
@@ -77,12 +74,17 @@ export default class Sketch extends Component {
       return false;
     }
     
-    function getDistance (pos1, pos2, pos3, pos4) {
-      return Math.sqrt((pos1 - pos2) ** 2 + (pos3 - pos4) ** 2);
+    function getDistance (pos1, pos2) {
+      return Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
     }
 
     function modelReady () {
       console.log('model loaded');
+    }
+
+    function jitter () {
+      let val = p.random(-1, 1);
+      return val;
     }
 
     p.setup = () => {
@@ -123,10 +125,14 @@ export default class Sketch extends Component {
         segments[5] = new Segment(p.width/3 * 2, p.height/2);
         
         for (let i = 0; i < segments.length; i++) {
-          segments[i].checkCollisionTwoPoint(targetLeftX, targetLeftY)
-          if (segments[i].hit == false) {
-            segments[i].checkCollisionTwoPoint(targetRightX, targetRightY);
-          } 
+          segments[i].checkCollision(targetLeft, targetRight)
+          if (segments[i].hitLeft && segments[i].hitRight) {
+            console.log('Hand clap.')
+          } else if (segments[i].hitLeft) {
+            console.log(`Segment ${i} hit by left.`)
+          } else if (segments[i].hitRight) { 
+            console.log(`Segment ${i} hit by right.`)
+          }
           segments[i].display();
         }
         
@@ -137,41 +143,43 @@ export default class Sketch extends Component {
 
         p.stroke(255);
         p.strokeWeight(2);
-        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
+        p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
 
         if (scoreRight > 0.3 ) {
-          targetRightX = p.lerp(targetRightX, right.x, lerpRate);
-          targetRightY = p.lerp(targetRightY, right.y, lerpRate);
+          targetRight.x = p.lerp(targetRight.x, right.x, lerpRate);
+          targetRight.y = p.lerp(targetRight.y, right.y, lerpRate);
           p.fill(255, 0, 0);
-          p.ellipse(targetRightX, targetRightY, 20);
+          p.ellipse(targetRight.x, targetRight.y, 20);
         } else {
+          targetRight.x += jitter()
+          targetRight.y += jitter()
           p.fill(50);
-          p.ellipse(targetRightX, targetRightY, 20);
+          p.ellipse(targetRight.x, targetRight.y, 20);
         }
 
         if (scoreLeft > 0.3) { 
-          targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
-          targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
+          targetLeft.x = p.lerp(targetLeft.x, left.x, lerpRate);
+          targetLeft.y = p.lerp(targetLeft.y, left.y, lerpRate);
           p.fill(255, 0, 0);
-          p.ellipse(targetLeftX, targetLeftY, 20);
+          p.ellipse(targetLeft.x, targetLeft.y, 20);
         } else {
+          targetLeft.x += jitter()
+          targetLeft.y += jitter()
           p.fill(50);
-          p.ellipse(targetLeftX, targetLeftY, 20);
+          p.ellipse(targetLeft.x, targetLeft.y, 20);
         }
 
         // Data streams
 
         // Gets distance in pixels and mapped from 0 to 1 between wrist points 
-        distInPixels = Math.floor(getDistance(targetLeftX, targetRightX, targetLeftY, targetRightY));
-        distX = Math.floor(targetLeftX - targetRightX);
-        distY = Math.floor(Math.abs(targetLeftY - targetRightY));
+        distInPixels = Math.floor(getDistance(targetLeft, targetRight));
+        distX = Math.floor(targetLeft.x - targetRight.x);
+        distY = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         mappedDistance = p.map(distInPixels, 0, p.width, 0.0, 1.0, true);
 
         console.log(`Distance between wrists at x-axis: ${distX}`)
         console.log(`Distance between wrists at y-axis: ${distY}`)
         console.log(`Total distance between wrists: ${distInPixels}`)
-
-        return distX;
       }
     }
   };
@@ -183,9 +191,7 @@ export default class Sketch extends Component {
   render() {
     return (
       <>
-        <div className={styles.Sketch} ref={this.myRef}>
-          <h1></h1>
-        </div>
+        <div className={styles.Sketch} ref={this.myRef}></div>
       </>
     );
   }
