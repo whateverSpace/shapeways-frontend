@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
-
+import styles from './Synth.css';
 export default function Synth({ distForSynth, segForSynth }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [segChange, setSegChange] = useState([false, false, false, false, false, false]);
@@ -143,18 +143,20 @@ export default function Synth({ distForSynth, segForSynth }) {
 
 
   return (
-    <div className={styles.controls}>
-    <button onClick={() => startMusic()}>Start</button>
-    <button onClick={() => stopMusic()}>Stop</button>
-    <button onClick={() => rnnStart()}>Change Melody</button>
-  </div>
+    <>
+      <div className={styles.controls}>
+        <button onClick={() => startMusic()}>Start</button>
+        <button onClick={() => stopMusic()}>Stop</button>
+        <button onClick={() => rnnStart()}>Change Melody</button>
+      </div>
 
-  <div className={styles.controls}>
-    <div>distance:{`${distForSynth.current}`}</div>
-  </div>
-  <div className={styles.controls}>
-    <div>segments:{`${segForSynth}`}</div>
-  </div>
+      <div className={styles.controls}>
+        <div>distance:{`${distForSynth.current}`}</div>
+      </div>
+      <div className={styles.controls}>
+        <div>segments:{`${segForSynth}`}</div>
+      </div>
+    </>
   );
 }
 
