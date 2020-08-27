@@ -143,11 +143,18 @@ export default function Synth({ distForSynth, segForSynth }) {
 
 
   return (
-    <div>
-      <button onClick={() => startMusic()}>Start</button>
-      <button onClick={() => stopMusic()}>Stop</button>
-      <button onClick={() => rnnStart()}>Change Melody</button>
-    </div>
+    <div className={styles.controls}>
+    <button onClick={() => startMusic()}>Start</button>
+    <button onClick={() => stopMusic()}>Stop</button>
+    <button onClick={() => rnnStart()}>Change Melody</button>
+  </div>
+
+  <div className={styles.controls}>
+    <div>distance:{`${distForSynth.current}`}</div>
+  </div>
+  <div className={styles.controls}>
+    <div>segments:{`${segForSynth}`}</div>
+  </div>
   );
 }
 
