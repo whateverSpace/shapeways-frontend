@@ -5,7 +5,10 @@ import styles from './Sketch.css';
 // import RectsGroup from '../Shapes/Shapes';
 
 export default class Sketch extends Component {
-  state = { loading: true, segForSynth: [false, false, false, false, false, false] };
+  state = {
+    loading: true,
+    segForSynth: [false, false, false, false, false, false],
+  };
 
   constructor(props) {
     super(props);
@@ -66,7 +69,6 @@ export default class Sketch extends Component {
           p.fill(270, 255, 255, 0.3);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
           p.pop();
-          
         } else {
           this.alpha = p.lerp(this.alpha, 0, 0.1);
         }
@@ -81,7 +83,7 @@ export default class Sketch extends Component {
           this.y,
           this.w,
           this.h
-        ); 
+        );
       }
     }
 
@@ -175,12 +177,7 @@ export default class Sketch extends Component {
         targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
-<<<<<<< HEAD
-
-        let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-=======
         mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
->>>>>>> e05ba3c5a305b1e97f9eead997d550d3af3eb6ef
         // // console.log(mappedNoseColor);
         mappedThing = p.int(mappedNoseColor);
         p.background(mappedThing, mappedThing, mappedThing);
@@ -198,15 +195,6 @@ export default class Sketch extends Component {
           targetLeftY,
           targetRightY
         );
-<<<<<<< HEAD
-        this.distForSynth.current = distInPixels;
-
-        // console.log(distInPixels);
-        // let mappedDistance = p.map(distInPixels, 30, 530, 0.0, 1.0, true);
-        // console.log(targetLeftY);
-=======
-
->>>>>>> e05ba3c5a305b1e97f9eead997d550d3af3eb6ef
         mappedDistanceShapeScale = p.map(
           distInPixels,
           30.0,
@@ -501,13 +489,6 @@ export default class Sketch extends Component {
 
   render() {
     return (
-<<<<<<< HEAD
-      <>
-        {this.state.loading && <h1>loading models...</h1>}
-        <div className={styles.Sketch} ref={this.myRef}></div>
-        <Synth distForSynth={this.distForSynth} segForSynth={this.state.segForSynth}/>
-      </>
-=======
       <section>
         {this.state.loading && (
           <h1 className={styles.loading}>loading models...</h1>
@@ -516,7 +497,6 @@ export default class Sketch extends Component {
           <div ref={this.myRef}></div>
         </div>
       </section>
->>>>>>> e05ba3c5a305b1e97f9eead997d550d3af3eb6ef
     );
   }
 }
