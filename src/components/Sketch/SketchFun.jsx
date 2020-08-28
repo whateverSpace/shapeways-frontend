@@ -379,20 +379,6 @@ const Sketch = () => {
         }
       } // end display()
 
-      // display(){
-      //   for (let i = 0; i < this.allRects.length; i++){ // i<this.numb
-      //     p.push();
-      //     p.rotate(i*this.rotateAllAmount);
-      //     p.push();
-      //       p.translate(i*this.spreadAmountX,i*this.spreadAmountY);
-      //       p.rotate(this.rotateEachAmount);
-      //       this.allRects[i].display();
-      //       //p.rect(0, 0, this.wid -  (i * this.sizeChange), this.len - (i * this.sizeChange));
-      //     p.pop();
-      //     p.pop();
-      //     }
-      // } // end display()
-
       initialize(amount) {
         for (let i = 0; i < amount; i++) {
           this.allRects.push(new Rects(this.wid, this.len));
