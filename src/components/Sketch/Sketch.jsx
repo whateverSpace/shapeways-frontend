@@ -238,7 +238,8 @@ export default class Sketch extends Component {
         }
 
         if (p.keyIsPressed === true && p.key === 'r') {
-          groupTest.rotateEach(p.radians(p.frameCount));
+          groupTest.rotateEach(p.PI / 3.0);
+          // console.log(groupTest.rotateEach(p.radians(p.frameCount)));
         }
 
         if (p.key === 't') {

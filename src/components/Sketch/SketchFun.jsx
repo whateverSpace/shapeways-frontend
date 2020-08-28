@@ -251,6 +251,8 @@ const Sketch = () => {
 
         if (p.key === 'r') {
           groupTest.rotateEach(p.radians(p.frameCount));
+        } else {
+          groupTest.rotateEach(0);
         }
 
         if (p.key === 't') {
@@ -384,10 +386,11 @@ const Sketch = () => {
           p.rotate(i * this.rotateAllAmount);
           p.push();
           p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+          // p.rotate(0);
           p.rotate(this.rotateEachAmount);
           // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
 
-          // console.log(this.rotateEachAmount);
+          console.log(this.rotateEachAmount);
 
           p.rect(
             targetLeftX,
