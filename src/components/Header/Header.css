@@ -12,5 +12,5 @@ h1 {
 .Header {
   margin-top: -20rem;
   z-index: -1;
-  background-color: #ddfff7;
+  background-color: rgba(221, 255, 247, 0.01);
 }
