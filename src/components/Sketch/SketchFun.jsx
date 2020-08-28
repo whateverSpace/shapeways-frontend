@@ -1,19 +1,27 @@
-import React, { Component } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
-import styles from './Sketch.css';
 // import RectsGroup from '../Shapes/Shapes';
+// import Rects from '../Shapes/Shapes';
+// import Segment from '../Shapes/Shapes';
+import Synth from '../Synth/Synth';
+import styles from './Sketch.css';
 
-export default class Sketch extends Component {
-  state = { loading: true, segForSynth: [false, false, false, false, false, false] };
+const Sketch = () => {
+  const myRef = useRef(null);
+  const myP5 = useRef(null);
+  const distForSynth = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [segForSynth, setSegForSynth] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
-  constructor(props) {
-    super(props);
-    this.myRef = React.createRef();
-    this.distForSynth = React.createRef();
-  }
-
-  Sketch = (p) => {
+  const sketchStuff = (p) => {
     let video;
     let poseNet;
     let poses = [];
@@ -66,7 +74,6 @@ export default class Sketch extends Component {
           p.fill(270, 255, 255, 0.3);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
           p.pop();
-          
         } else {
           this.alpha = p.lerp(this.alpha, 0, 0.1);
         }
@@ -81,7 +88,7 @@ export default class Sketch extends Component {
           this.y,
           this.w,
           this.h
-        ); 
+        );
       }
     }
 
@@ -110,6 +117,9 @@ export default class Sketch extends Component {
       }
       return false;
     }
+    p.setup = () => {
+      p.createCanvas(800, 400);
+    };
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
@@ -157,12 +167,13 @@ export default class Sketch extends Component {
     function modelReady() {
       console.log('model loaded');
     }
-
     p.draw = () => {
+      // p.background(0);
+
+      // p.fill(255);
+      // p.ellipse(0, 0, 200, 200);
       if (poses.length > 0) {
-        this.setState({
-          loading: false,
-        });
+        setLoading(false);
 
         pose = poses[0].pose;
         right = pose['rightWrist'];
@@ -175,12 +186,7 @@ export default class Sketch extends Component {
         targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
         targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
 
-<<<<<<< HEAD
-
-        let mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-=======
         mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
->>>>>>> e05ba3c5a305b1e97f9eead997d550d3af3eb6ef
         // // console.log(mappedNoseColor);
         mappedThing = p.int(mappedNoseColor);
         p.background(mappedThing, mappedThing, mappedThing);
@@ -198,15 +204,9 @@ export default class Sketch extends Component {
           targetLeftY,
           targetRightY
         );
-<<<<<<< HEAD
-        this.distForSynth.current = distInPixels;
 
-        // console.log(distInPixels);
-        // let mappedDistance = p.map(distInPixels, 30, 530, 0.0, 1.0, true);
-        // console.log(targetLeftY);
-=======
+        distForSynth.current = distInPixels;
 
->>>>>>> e05ba3c5a305b1e97f9eead997d550d3af3eb6ef
         mappedDistanceShapeScale = p.map(
           distInPixels,
           30.0,
@@ -249,7 +249,7 @@ export default class Sketch extends Component {
           groupTest.removeShapes();
         }
 
-        if (p.keyIsPressed === true && p.key === 'r') {
+        if (p.key === 'r') {
           groupTest.rotateEach(p.radians(p.frameCount));
         }
 
@@ -311,12 +311,13 @@ export default class Sketch extends Component {
           groupTest.removeShapes();
         }
 
-        const segChange = this.state.segForSynth.map((segment, i) => {
+        const segChange = segForSynth.map((segment, i) => {
           if (segment !== segments[i].hit) {
             return segments[i].hit;
           } else return segment;
         });
-        this.setState({ segForSynth: segChange });
+        // this.setState({ segForSynth: segChange });
+        setSegForSynth(segChange);
 
         p.stroke(50);
         p.line(p.width / 3, 0, p.width / 3, p.height);
@@ -325,8 +326,6 @@ export default class Sketch extends Component {
         // end draw
       }
     };
-
-    // do the classes below go in Sketch or outside?
     class Rects {
       constructor(sideLength, sideWidth) {
         this.len = sideLength;
@@ -401,20 +400,6 @@ export default class Sketch extends Component {
         }
       } // end display()
 
-      // display(){
-      //   for (let i = 0; i < this.allRects.length; i++){ // i<this.numb
-      //     p.push();
-      //     p.rotate(i*this.rotateAllAmount);
-      //     p.push();
-      //       p.translate(i*this.spreadAmountX,i*this.spreadAmountY);
-      //       p.rotate(this.rotateEachAmount);
-      //       this.allRects[i].display();
-      //       //p.rect(0, 0, this.wid -  (i * this.sizeChange), this.len - (i * this.sizeChange));
-      //     p.pop();
-      //     p.pop();
-      //     }
-      // } // end display()
-
       initialize(amount) {
         for (let i = 0; i < amount; i++) {
           this.allRects.push(new Rects(this.wid, this.len));
@@ -471,52 +456,23 @@ export default class Sketch extends Component {
         p.stroke(hue, 255, 255, alpha);
       }
     } // end class RectsGroup()
-
-    // class Tris {
-    //   constructor(radiusLength) {
-    //     this.radius = radiusLength;
-    //   }
-
-    //   display() {
-    //     // fix center point
-    //     p.triangle(
-    //       0,
-    //       this.radius * 2,
-    //       -this.radius * p.sqrt(3),
-    //       -this.radius,
-    //       this.radius * p.sqrt(3),
-    //       -this.radius
-    //     );
-    //   } // end display()
-
-    //   inscribeEllipse() {
-    //     p.ellipse(0, 0, this.radius * 2, this.radius * 2);
-    //   }
-    // } // end class Tris
   };
 
-  componentDidMount() {
-    this.myP5 = new p5(this.Sketch, this.myRef.current);
-  }
+  useEffect(() => {
+    myP5.current = new p5(sketchStuff, myRef.current);
+  }, []);
 
-  render() {
-    return (
-<<<<<<< HEAD
-      <>
-        {this.state.loading && <h1>loading models...</h1>}
-        <div className={styles.Sketch} ref={this.myRef}></div>
-        <Synth distForSynth={this.distForSynth} segForSynth={this.state.segForSynth}/>
-      </>
-=======
+  return (
+    <>
       <section>
-        {this.state.loading && (
-          <h1 className={styles.loading}>loading models...</h1>
-        )}
+        {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
-          <div ref={this.myRef}></div>
+          <div ref={myRef}></div>
         </div>
+        <Synth distForSynth={distForSynth} segForSynth={segForSynth} />
       </section>
->>>>>>> e05ba3c5a305b1e97f9eead997d550d3af3eb6ef
-    );
-  }
-}
+    </>
+  );
+};
+
+export default Sketch;

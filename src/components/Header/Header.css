@@ -1,3 +1,16 @@
+@font-face {
+  font-family: 'shapeFont';
+  src: local('shapeFont'), url(../../fonts/shapeFont.otf) format('opentype');
+}
+
 h1 {
-  color: purple;
+  color: navy;
+  font-family: 'shapeFont';
+  font-size: 3vw;
+}
+
+.Header {
+  margin-top: -25vh;
+  z-index: -1;
+  background-color: rgba(221, 255, 247, 0.01);
 }
