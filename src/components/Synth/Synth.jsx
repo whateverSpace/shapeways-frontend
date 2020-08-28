@@ -25,10 +25,11 @@ export default function Synth({ distForSynth, segForSynth }) {
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
     let melodyRnnLoaded = melodyRNN.current.initialize();
 
-    
+
     melodyVAE.current = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords');
     let melodyVAELoaded = melodyVAE.current.initialize();
     // TRY DIFFERENT CHECKPOINTS
+    makeNotesFromSegmentData(segForSynth);
 
     rnnStart(melodyRnnLoaded);
     generateMelodies(melodyVAELoaded);
@@ -81,6 +82,19 @@ export default function Synth({ distForSynth, segForSynth }) {
       melodyPart.current.loopEnd = '2m';
     }
     console.log(melodyPart.current);
+  };
+
+  const makeNotesFromSegmentData = (segForSynth) => {
+    let noteList = [];
+    let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
+    segForSynth.forEach((segment, i) => {
+      if (segment[i]) {
+        console.log(segment[i]);
+        noteList.push(segmentNoteMap[i]);
+      }
+    });
+    console.log(noteList);
+    return noteList;
   };
 
   const generateMelodies = async(melodyVAELoaded) => {
