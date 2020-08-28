@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
 import styles from './Sketch.css';
+// import Segment from '../Classes/Segment.js'
 
 export default class Sketch extends Component {
   state = { loading: true };
@@ -9,7 +10,6 @@ export default class Sketch extends Component {
     super(props);
     this.myRef = React.createRef();
   }
-  
 
   Sketch = (p) => {
     let capture;
@@ -108,12 +108,10 @@ export default class Sketch extends Component {
         let scoreRight = poses[0].pose.keypoints[10].score;
         let scoreLeft = poses[0].pose.keypoints[9].score;
 
-        /*
-        // Mirror the camera output: 
-        p.translate(p.width, 0);
-        p.scale(-1.0, 1.0);
-        */
-
+        // MIRROR CAMERA OUTPUT 
+        // p.translate(p.width, 0);
+        // p.scale(-1.0, 1.0);
+        
         p.image(capture, 0, 0, p.width, p.height);
         p.noStroke();
 
@@ -145,7 +143,7 @@ export default class Sketch extends Component {
         p.strokeWeight(2);
         p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
 
-        if (scoreRight > 0.3 ) {
+        if (scoreRight > 0.2 ) {
           targetRight.x = p.lerp(targetRight.x, right.x, lerpRate);
           targetRight.y = p.lerp(targetRight.y, right.y, lerpRate);
           p.fill(255, 0, 0);
@@ -157,7 +155,7 @@ export default class Sketch extends Component {
           p.ellipse(targetRight.x, targetRight.y, 20);
         }
 
-        if (scoreLeft > 0.3) { 
+        if (scoreLeft > 0.2) { 
           targetLeft.x = p.lerp(targetLeft.x, left.x, lerpRate);
           targetLeft.y = p.lerp(targetLeft.y, left.y, lerpRate);
           p.fill(255, 0, 0);
