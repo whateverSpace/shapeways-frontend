@@ -4,9 +4,9 @@
 
 export class Rects {
   constructor(p, sideLength, sideWidth) {
+    this.p = p;
     this.len = sideLength;
     this.wid = sideWidth;
-    this.p = p;
   }
 
   display() {
@@ -18,7 +18,7 @@ export class Rects {
   }
 } // end class Rects
 
-export default class RectsGroup {
+export default class RectsGroup extends Rects {
   constructor(
     p,
     sideWidth,
@@ -27,7 +27,7 @@ export default class RectsGroup {
     targetLeftY,
     mappedDistanceShapeScale
   ) {
-    // super();
+    super();
     this.p = p;
     this.wid = sideWidth;
     this.len = sideLength;
