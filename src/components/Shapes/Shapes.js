@@ -145,3 +145,59 @@ export default class RectsGroup extends Rects {
     this.p.stroke(hue, 255, 255, alpha);
   }
 } // end class RectsGroup()
+
+export class Segment {
+  constructor(p, x, y) {
+    this.x = x;
+    this.y = y;
+    this.w = p.width / 3;
+    this.h = p.height / 2;
+    this.hit = false;
+    this.alpha = 0;
+    this.p = p;
+  }
+
+  display() {
+    if (this.hit) {
+      this.alpha = this.p.lerp(this.alpha, 255, 0.3);
+      this.p.push();
+      this.p.translate((this.p.width / 6) * 5, this.p.height / 4);
+      this.p.scale(-1.0, 1.0);
+      this.p.fill(270, 255, 255, 0.3);
+      this.p.rect(this.x, this.y, this.p.width / 3, this.p.height / 2);
+      this.p.pop();
+    } else {
+      this.alpha = this.p.lerp(this.alpha, 0, 0.1);
+    }
+  }
+
+  checkCollision(target) {
+    this.hit = collision(target.x, target.y, 5, this.x, this.y, this.w, this.h);
+  }
+}
+
+function collision(targetX, targetY, radius, segX, segY, segW, segH) {
+  let testX = targetX;
+  let testY = targetY;
+
+  if (targetX < segX) {
+    testX = segX;
+  } else if (targetX > segX + segW) {
+    testX = segX + segW;
+  }
+
+  if (targetY < segY) {
+    testY = segY;
+  } else if (targetY > segY + segH) {
+    testY = segY + segH;
+  }
+
+  let distX = targetX - testX;
+  let distY = targetY - testY;
+  let distance = Math.sqrt(distX * distX + distY * distY);
+
+  if (distance <= radius) {
+    return true;
+  }
+  return false;
+}

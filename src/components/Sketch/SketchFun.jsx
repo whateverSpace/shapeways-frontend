@@ -3,6 +3,7 @@ import p5 from 'p5';
 import ml5 from 'ml5';
 // import RectsGroup from '../Shapes/Shapes';
 // import Rects from '../Shapes/Shapes';
+// import Segment from '../Shapes/Shapes';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
 
@@ -116,9 +117,9 @@ const Sketch = () => {
       }
       return false;
     }
-    // p.setup = () => {
-    //   p.createCanvas(800, 400);
-    // };
+    p.setup = () => {
+      p.createCanvas(800, 400);
+    };
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
