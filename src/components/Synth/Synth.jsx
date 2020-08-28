@@ -21,7 +21,14 @@ export default function Synth({ distForSynth, segForSynth }) {
 
   useEffect(() => {
     synth.current = new Tone.PolySynth().toDestination();
-    synth2.current = new Tone.PluckSynth().toDestination();
+    synth2.current = new Tone.MonoSynth({
+      oscillator: {
+        type: 'square'
+      },
+      envelope: {
+        attack: 0.1
+      }
+    }).toDestination();
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
     let melodyRnnLoaded = melodyRNN.current.initialize();
 
@@ -36,9 +43,23 @@ export default function Synth({ distForSynth, segForSynth }) {
   }, []);
 
   useEffect(() => {
-    
+
     if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
+
+  const makeNotesFromSegmentData = (segForSynth, step) => {
+    let noteList = [];
+    let counter = 0;
+    segForSynth.forEach((segment, i) => {
+      let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
+      if (segment) {
+        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * step), quantizedEndStep: ((counter * step) + step) });
+        counter++;
+      }
+    });
+    console.log(noteList);
+    return noteList;
+  };
 
   const rnnStart = async(melodyRnnLoaded) => {
     if (melodyRnnLoaded) await melodyRnnLoaded;
@@ -49,11 +70,11 @@ export default function Synth({ distForSynth, segForSynth }) {
 
     let seed = {
       notes: noteList,
-      totalQuantizedSteps: 4,
+      totalQuantizedSteps: 6,
       quantizationInfo: { stepsPerQuarter: 4 }
     };
     let steps = 16;
-    let temperature = 1; // RANDOMNESS OF NOTES
+    let temperature = 1.1; // RANDOMNESS OF NOTES
     // let chordProgression = ['C', 'Am', 'G'];
     let result = await melodyRNN.current.continueSequence(seed, steps, temperature);
     // let result = await melodyRNN.current.continueSequence(seed, steps, temperature, chordProgress); // WORKS FOR chord_pitches_improv CHECKPOINT
@@ -82,27 +103,15 @@ export default function Synth({ distForSynth, segForSynth }) {
     console.log(melodyPart.current);
   };
 
-  const makeNotesFromSegmentData = (segForSynth, step) => {
-    let noteList = [];
-    let counter = 0;
-    segForSynth.forEach((segment, i) => {
-      let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
-      if (segment) {
-        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * step), quantizedEndStep: ((counter * step) + step) });
-        counter++;
-      }
-    });
-    console.log(noteList);
-    return noteList;
-  };
+
 
 
   const generateMelodies = async(melodyVAELoaded, segForSynth) => {
     if (melodyVAELoaded) await melodyVAELoaded;
-    let noteList = makeNotesFromSegmentData(segForSynth, 4);
+    let noteList = makeNotesFromSegmentData(segForSynth, 1);
     let input = {
       notes: noteList,
-      totalQuantizedSteps: 32,
+      totalQuantizedSteps: 16,
       quantizationInfo: { stepsPerQuarter: 4 }
     };
 
@@ -137,9 +146,6 @@ export default function Synth({ distForSynth, segForSynth }) {
         Tone.Frequency(note.pitch, 'midi').toNote()
       );
     }
-
-    // console.log(one, two, three, four)
-    // console.log(newPart.current._events);
     newPart.current._events.forEach(event => {
       // console.log(event.value);
     });
