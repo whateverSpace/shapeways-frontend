@@ -1,27 +1,39 @@
-import React from 'react';
+// import React from 'react';
 // import Sketch { p } from '../Sketch/Sketch';
-import p5 from 'p5';
+// import p5 as p from 'p5';
 
 export class Rects {
-  constructor(sideLength, sideWidth) {
+  constructor(p, sideLength, sideWidth) {
     this.len = sideLength;
     this.wid = sideWidth;
+    this.p = p;
   }
 
   display() {
-    p.rect(0, 0, 2 * this.wid, 2 * this.len);
+    this.p.rect(0, 0, 2 * this.wid, 2 * this.len);
   }
 
   inscribeEllipse() {
-    p.ellipse(0, 0, 2 * this.wid, 2 * this.len);
+    this.p.ellipse(0, 0, 2 * this.wid, 2 * this.len);
   }
 } // end class Rects
 
-export default class RectsGroup extends React.Component {
-  constructor(sideWidth, sideLength) {
-    super();
+export default class RectsGroup {
+  constructor(
+    p,
+    sideWidth,
+    sideLength,
+    targetLeftX,
+    targetLeftY,
+    mappedDistanceShapeScale
+  ) {
+    // super();
+    this.p = p;
     this.wid = sideWidth;
     this.len = sideLength;
+    this.targetLeftX = targetLeftX;
+    this.targetLeftY = targetLeftY;
+    this.mappedDistanceShapeScale = mappedDistanceShapeScale;
 
     //this.numb = numRects; // may end up deleting
     // needs to integrate size gradient
@@ -54,26 +66,26 @@ export default class RectsGroup extends React.Component {
   display() {
     for (let i = 0; i < this.allRects.length; i++) {
       // i<this.numb
-      p.push();
-      p.translate(p.width, 0);
-      p.scale(-1, 1);
-      // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
-      p.rotate(i * this.rotateAllAmount);
-      p.push();
-      p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
-      p.rotate(this.rotateEachAmount);
-      // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
+      this.p.push();
+      this.p.translate(this.p.width, 0);
+      this.p.scale(-1, 1);
+      // this.p.rotate(-this.p.radians(mappedDistanceShapeRotateLeft));
+      this.p.rotate(i * this.rotateAllAmount);
+      this.p.push();
+      this.p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+      this.p.rotate(this.rotateEachAmount);
+      // this.p.rotate(-this.p.radians(mappedDistanceShapeRotateLeft));
 
       // console.log(this.rotateEachAmount);
 
-      p.rect(
-        targetLeftX,
-        targetLeftY,
-        mappedDistanceShapeScale,
-        mappedDistanceShapeScale
+      this.p.rect(
+        this.targetLeftX,
+        this.targetLeftY,
+        this.mappedDistanceShapeScale,
+        this.mappedDistanceShapeScale
       );
-      p.pop();
-      p.pop();
+      this.p.pop();
+      this.p.pop();
     }
   } // end display()
 
@@ -126,10 +138,10 @@ export default class RectsGroup extends React.Component {
   }
 
   fillColor(hue, alpha) {
-    p.fill(hue, 255, 255, alpha);
+    this.p.fill(hue, 255, 255, alpha);
   }
 
   strokeColor(hue, alpha) {
-    p.stroke(hue, 255, 255, alpha);
+    this.p.stroke(hue, 255, 255, alpha);
   }
 } // end class RectsGroup()
