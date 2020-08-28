@@ -16,12 +16,7 @@ body {
   color: #fff;
 }
 .box {
-  width: 101vh;
-  height: 20vh;
-
-  background-color: #ddfff7;
-  position: relative;
-  box-shadow: 10px 10px 42px 0 rgba(0, 0, 0, 0.75);
+  background-color: rgba(221, 255, 247, 0.1);
 }
 .box:after,
 .box:before {

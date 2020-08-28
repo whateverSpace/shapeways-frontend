@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
 // import RectsGroup from '../Shapes/Shapes';
@@ -8,6 +8,7 @@ import styles from './Sketch.css';
 const Sketch = () => {
   const myRef = useRef(null);
   const myP5 = useRef(null);
+  const [loading, setLoading] = useState(true);
 
   const sketchStuff = (p) => {
     let video;
@@ -161,9 +162,7 @@ const Sketch = () => {
       // p.fill(255);
       // p.ellipse(0, 0, 200, 200);
       if (poses.length > 0) {
-        // this.setState({
-        //   loading: false,
-        // });
+        setLoading(false);
 
         pose = poses[0].pose;
         right = pose['rightWrist'];
@@ -455,9 +454,11 @@ const Sketch = () => {
   useEffect(() => {
     myP5.current = new p5(sketchStuff, myRef.current);
   }, []);
+
   return (
     <>
       <section>
+        {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
