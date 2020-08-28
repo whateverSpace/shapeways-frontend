@@ -3,12 +3,22 @@ import p5 from 'p5';
 import ml5 from 'ml5';
 // import RectsGroup from '../Shapes/Shapes';
 // import Rects from '../Shapes/Shapes';
+import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
 
 const Sketch = () => {
   const myRef = useRef(null);
   const myP5 = useRef(null);
+  const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [segForSynth, setSegForSynth] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   const sketchStuff = (p) => {
     let video;
@@ -194,6 +204,8 @@ const Sketch = () => {
           targetRightY
         );
 
+        distForSynth.current = distInPixels;
+
         mappedDistanceShapeScale = p.map(
           distInPixels,
           30.0,
@@ -297,6 +309,14 @@ const Sketch = () => {
         if (segments[0].hit == true) {
           groupTest.removeShapes();
         }
+
+        const segChange = segForSynth.map((segment, i) => {
+          if (segment !== segments[i].hit) {
+            return segments[i].hit;
+          } else return segment;
+        });
+        // this.setState({ segForSynth: segChange });
+        setSegForSynth(segChange);
 
         p.stroke(50);
         p.line(p.width / 3, 0, p.width / 3, p.height);
@@ -448,6 +468,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
+        <Synth distForSynth={distForSynth} segForSynth={segForSynth} />
       </section>
     </>
   );
