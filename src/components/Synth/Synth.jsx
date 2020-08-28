@@ -29,13 +29,14 @@ export default function Synth({ distForSynth, segForSynth }) {
     melodyVAE.current = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords');
     let melodyVAELoaded = melodyVAE.current.initialize();
     // TRY DIFFERENT CHECKPOINTS
-    makeNotesFromSegmentData(segForSynth);
+
 
     rnnStart(melodyRnnLoaded);
-    generateMelodies(melodyVAELoaded);
+    generateMelodies(melodyVAELoaded, segForSynth);
   }, []);
 
   useEffect(() => {
+    makeNotesFromSegmentData(segForSynth);
     // if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
 
@@ -86,26 +87,24 @@ export default function Synth({ distForSynth, segForSynth }) {
 
   const makeNotesFromSegmentData = (segForSynth) => {
     let noteList = [];
-    let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
+    let counter = 0;
     segForSynth.forEach((segment, i) => {
-      if (segment[i]) {
-        console.log(segment[i]);
-        noteList.push(segmentNoteMap[i]);
+      let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
+      if (segment) {
+        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * 4), quantizedEndStep: (counter * 4 + i) });
+        counter++;
       }
     });
     console.log(noteList);
     return noteList;
   };
 
-  const generateMelodies = async(melodyVAELoaded) => {
-    if (melodyVAELoaded) await melodyVAELoaded;
 
+  const generateMelodies = async(melodyVAELoaded, segForSynth) => {
+    if (melodyVAELoaded) await melodyVAELoaded;
+    let noteList = makeNotesFromSegmentData(segForSynth);
     let input = {
-      notes: [
-        { pitch: Tone.Frequency('D4').toMidi(), quantizedStartStep: 0, quantizedEndStep: 4 },
-        { pitch: Tone.Frequency('F#4').toMidi(), quantizedStartStep: 5, quantizedEndStep: 8 },
-        { pitch: Tone.Frequency('A4').toMidi(), quantizedStartStep: 9, quantizedEndStep: 12 }
-      ],
+      notes: noteList,
       totalQuantizedSteps: 32,
       quantizationInfo: { stepsPerQuarter: 4 }
     };
