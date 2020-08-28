@@ -291,11 +291,11 @@ export default class Sketch extends Component {
 
         let pose = poses[0].pose;
 
-        let right = pose['rightShoulder'];
+        let right = pose['rightWrist'];
 
         // console.log(right);
 
-        let left = pose['leftShoulder'];
+        let left = pose['leftWrist'];
 
         let nose = pose['nose'];
 
@@ -448,41 +448,41 @@ export default class Sketch extends Component {
 
         // p.pop();
 
-        p.push();
+        // p.push();
 
-        p.translate(p.width, 0);
+        // p.translate(p.width, 0);
 
-        p.scale(-1.0, 1.0);
+        // p.scale(-1.0, 1.0);
 
-        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
+        // p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
 
-        // p.fill(255, 0, 0);
+        // // p.fill(255, 0, 0);
 
-        p.ellipse(nose.x, nose.y, 20);
+        // p.ellipse(nose.x, nose.y, 20);
 
-        // p.ellipse(nose.x, nose.y, 150);
+        // // p.ellipse(nose.x, nose.y, 150);
 
-        p.ellipse(leftEye.x, leftEye.y, 20);
+        // p.ellipse(leftEye.x, leftEye.y, 20);
 
-        p.ellipse(rightEye.x, rightEye.y, 20);
+        // p.ellipse(rightEye.x, rightEye.y, 20);
 
-        p.ellipse(leftEye.x, leftEye.y, 10);
+        // p.ellipse(leftEye.x, leftEye.y, 10);
 
-        p.ellipse(rightEye.x, rightEye.y, 10);
+        // p.ellipse(rightEye.x, rightEye.y, 10);
 
-        // p.ellipse(leftEar.x, leftEar.y, 20);
+        // // p.ellipse(leftEar.x, leftEar.y, 20);
 
-        // p.ellipse(rightEar.x, rightEar.y, 20);
+        // // p.ellipse(rightEar.x, rightEar.y, 20);
 
-        p.ellipse(targetRightX, targetRightY, 20);
+        // p.ellipse(targetRightX, targetRightY, 20);
 
-        // p.fill(255, 0, 0);
+        // // p.fill(255, 0, 0);
 
-        p.ellipse(targetLeftX, targetLeftY, 20);
+        // p.ellipse(targetLeftX, targetLeftY, 20);
 
-        p.pop();
+        // p.pop();
 
-        p.push();
+        // p.push();
 
         for (let i = 0; i < segments.length; i++) {
 
@@ -513,13 +513,14 @@ export default class Sketch extends Component {
 
       // p.translate(40,40);
 
-      if (p.keyIsPressed === true && p.key ==='a'){
+      if (p.key ==='a'){
         p.background(0);
       }
-      if (p.keyIsPressed === true && p.key ==='s'){
+      if (p.key ==='s'){
         p.background(255);
       } 
 
+      groupTest.spread(0, 0, p.width, p.height);
       if (p.mouseIsPressed && p.mouseButton === p.LEFT){
         groupTest.spread(0, 0, p.mouseX, p.mouseY);
         // groupTest.spread(targetLeftX, targetLeftY, targetRightX, targetRightY);
