@@ -36,7 +36,7 @@ export default function Synth({ distForSynth, segForSynth }) {
   }, []);
 
   useEffect(() => {
-    makeNotesFromSegmentData(segForSynth);
+    makeNotesFromSegmentData(segForSynth, 2);
     // if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
 
@@ -45,13 +45,10 @@ export default function Synth({ distForSynth, segForSynth }) {
     if (melodyPart.current) {
       melodyPart.current.clear();
     }
+    let noteList = makeNotesFromSegmentData(segForSynth, 2);
 
     let seed = {
-      notes: [
-        { pitch: Tone.Frequency('C4').toMidi(), quantizedStartStep: 0, quantizedEndStep: 4 },
-        { pitch: Tone.Frequency('E4').toMidi(), quantizedStartStep: 5, quantizedEndStep: 8 },
-        { pitch: Tone.Frequency('G4').toMidi(), quantizedStartStep: 9, quantizedEndStep: 12 }
-      ],
+      notes: noteList,
       totalQuantizedSteps: 4,
       quantizationInfo: { stepsPerQuarter: 4 }
     };
@@ -85,13 +82,13 @@ export default function Synth({ distForSynth, segForSynth }) {
     console.log(melodyPart.current);
   };
 
-  const makeNotesFromSegmentData = (segForSynth) => {
+  const makeNotesFromSegmentData = (segForSynth, step) => {
     let noteList = [];
     let counter = 0;
     segForSynth.forEach((segment, i) => {
       let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
       if (segment) {
-        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * 4), quantizedEndStep: (counter * 4 + i) });
+        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * step), quantizedEndStep: ((counter * step) + step) });
         counter++;
       }
     });
@@ -102,7 +99,7 @@ export default function Synth({ distForSynth, segForSynth }) {
 
   const generateMelodies = async(melodyVAELoaded, segForSynth) => {
     if (melodyVAELoaded) await melodyVAELoaded;
-    let noteList = makeNotesFromSegmentData(segForSynth);
+    let noteList = makeNotesFromSegmentData(segForSynth, 4);
     let input = {
       notes: noteList,
       totalQuantizedSteps: 32,
