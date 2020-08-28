@@ -20,8 +20,8 @@ export default function Synth({ distForSynth, segForSynth }) {
   });
 
   useEffect(() => {
-    synth.current = new Tone.PluckSynth().toDestination();
-    synth2.current = new Tone.PolySynth().toDestination();
+    synth.current = new Tone.PolySynth().toDestination();
+    synth2.current = new Tone.PluckSynth().toDestination();
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
     let melodyRnnLoaded = melodyRNN.current.initialize();
 
@@ -36,8 +36,8 @@ export default function Synth({ distForSynth, segForSynth }) {
   }, []);
 
   useEffect(() => {
-    makeNotesFromSegmentData(segForSynth, 2);
-    // if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
+    
+    if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
 
   const rnnStart = async(melodyRnnLoaded) => {
