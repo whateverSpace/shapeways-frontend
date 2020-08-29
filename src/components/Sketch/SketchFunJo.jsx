@@ -1,31 +1,37 @@
-import React, { Component } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
-import styles from './Sketch.css';
 // import RectsGroup from '../Shapes/Shapes';
+// import Rects from '../Shapes/Shapes';
+// import Segment from '../Shapes/Shapes';
+import Synth from '../Synth/Synth';
+import styles from './Sketch.css';
 
-export default class Sketch extends Component {
-  state = {
-    loading: true,
-    segForSynth: [false, false, false, false, false, false],
-  };
+const Sketch = () => {
+  const myRef = useRef(null);
+  const myP5 = useRef(null);
+  const distForSynth = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [segForSynth, setSegForSynth] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
-  constructor(props) {
-    super(props);
-    this.myRef = React.createRef();
-    this.distForSynth = React.createRef();
-  }
-
-  Sketch = (p) => {
+  const sketchStuff = (p) => {
     let video;
     let poseNet;
     let poses = [];
 
-    let targetRightX = 0; // Target variables used to smooth movement of points
-    let targetRightY = 0; // These may be consolidated to a list or table later
-    let targetLeftX = 0;
-    let targetLeftY = 0;
-    let lerpRate = 0.2; // lerpRate between 0 and 1 determines the easement
+    let targetRight = {x: 0, y: 0} 
+    let targetLeft = {x: 0, y: 0};
+    let scoreRight;
+    let scoreLeft;
+    let scoreThreshold = 0.2;
+    let lerpRate = 0.1; // lerpRate between 0 and 1 determines the easing amount
 
     let segments = [];
 
@@ -49,6 +55,10 @@ export default class Sketch extends Component {
     let mappedNoseColor;
     let mappedThing;
     let distInPixels;
+    let distance = {x: 0, y: 0};
+    let mappedDistanceWrists;
+
+    // Begin Segment class
 
     class Segment {
       constructor(x, y) {
@@ -57,11 +67,14 @@ export default class Sketch extends Component {
         this.w = p.width / 3;
         this.h = p.height / 2;
         this.hit = false;
+        this.hitState = {l: 0, r: 0, n: 0};
+        this.counter = 0;
         this.alpha = 0;
       }
 
       display() {
-        if (this.hit) {
+        if (this.hitState.l > 0 || this.hitState.r > 0 || this.hitState.n > 0) {
+          this.hit = true;
           this.alpha = p.lerp(this.alpha, 255, 0.3);
           p.push();
           p.translate((p.width / 6) * 5, p.height / 4);
@@ -70,14 +83,33 @@ export default class Sketch extends Component {
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
           p.pop();
         } else {
+          this.hit = false;
           this.alpha = p.lerp(this.alpha, 0, 0.1);
         }
       }
 
-      checkCollision(target) {
-        this.hit = collision(
-          target.x,
-          target.y,
+      checkCollision(targetL, targetR, targetN) {
+        this.hitState.l = collision(
+          targetL.x,
+          targetL.y,
+          5,
+          this.x,
+          this.y,
+          this.w,
+          this.h
+        );
+        this.hitState.r = collision(
+          targetR.x,
+          targetR.y,
+          5,
+          this.x,
+          this.y,
+          this.w,
+          this.h
+        );
+        this.hitState.n = collision(
+          targetN.x,
+          targetN.y,
           5,
           this.x,
           this.y,
@@ -108,10 +140,12 @@ export default class Sketch extends Component {
       let distance = Math.sqrt(distX * distX + distY * distY);
 
       if (distance <= radius) {
-        return true;
+        return 1;
       }
-      return false;
+      return 0;
     }
+
+    // P5 Sketch
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
@@ -145,26 +179,35 @@ export default class Sketch extends Component {
         p,
         sideLengthStart,
         sideLengthStart,
-        targetLeftX,
-        targetLeftY,
+        targetLeft.x,
+        targetLeft.y,
         mappedDistanceShapeScale
       );
       groupTest.initialize(numShapesStart);
-    }; // end p.setup()
+    }; 
+    
+    // end p.setup()
 
-    function getDistance(pos1, pos2, pos3, pos4) {
-      return Math.sqrt((pos1 - pos2) ** 2 + (pos3 - pos4) ** 2);
+    function getDistance(pos1, pos2) {
+      return Math.sqrt((pos1.x - pos2.x) ** 2 + (pos1.y - pos2.y) ** 2);
     }
 
     function modelReady() {
       console.log('model loaded');
     }
 
+    function jitter () {
+      let val = p.random(-0.5, 0.5);
+      return val;
+    }
+
     p.draw = () => {
+      // p.background(0);
+
+      // p.fill(255);
+      // p.ellipse(0, 0, 200, 200);
       if (poses.length > 0) {
-        this.setState({
-          loading: false,
-        });
+        setLoading(false);
 
         pose = poses[0].pose;
         right = pose['rightWrist'];
@@ -172,13 +215,10 @@ export default class Sketch extends Component {
         nose = pose['nose'];
         leftEye = pose['leftEye'];
         rightEye = pose['rightEye'];
-        targetRightX = p.lerp(targetRightX, right.x, lerpRate);
-        targetRightY = p.lerp(targetRightY, right.y, lerpRate);
-        targetLeftX = p.lerp(targetLeftX, left.x, lerpRate);
-        targetLeftY = p.lerp(targetLeftY, left.y, lerpRate);
+        scoreRight = poses[0].pose.keypoints[10].score;
+        scoreLeft = poses[0].pose.keypoints[9].score;
 
         mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-        // // console.log(mappedNoseColor);
         mappedThing = p.int(mappedNoseColor);
         p.background(mappedThing, mappedThing, mappedThing);
 
@@ -189,12 +229,6 @@ export default class Sketch extends Component {
         // p.image(video, 0, 0, p.width, p.height);
         // p.pop();
 
-        distInPixels = getDistance(
-          targetLeftX,
-          targetRightX,
-          targetLeftY,
-          targetRightY
-        );
         mappedDistanceShapeScale = p.map(
           distInPixels,
           30.0,
@@ -208,7 +242,7 @@ export default class Sketch extends Component {
         p.push();
 
         p.push();
-        groupTest.spread(targetLeftX, targetLeftY, targetRightX, targetRightY);
+        groupTest.spread(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
 
         p.pop();
 
@@ -237,9 +271,10 @@ export default class Sketch extends Component {
           groupTest.removeShapes();
         }
 
-        if (p.keyIsPressed === true && p.key === 'r') {
-          groupTest.rotateEach(p.PI / 3.0);
-          // console.log(groupTest.rotateEach(p.radians(p.frameCount)));
+        if (p.key === 'r') {
+          groupTest.rotateEach(p.radians(p.frameCount));
+        } else {
+          groupTest.rotateEach(0);
         }
 
         if (p.key === 't') {
@@ -271,7 +306,7 @@ export default class Sketch extends Component {
         p.translate(p.width, 0);
         p.scale(-1.0, 1.0);
         // drawing out appendages
-        p.line(targetLeftX, targetLeftY, targetRightX, targetRightY);
+        p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
         p.ellipse(nose.x, nose.y, 10);
         p.ellipse(leftEye.x, leftEye.y, 20);
         p.ellipse(rightEye.x, rightEye.y, 20);
@@ -280,32 +315,68 @@ export default class Sketch extends Component {
         p.ellipse(leftEye.x, leftEye.y, 5);
         p.ellipse(rightEye.x, rightEye.y, 5);
         p.pop();
-        p.ellipse(targetRightX, targetRightY, 20);
-        p.ellipse(targetLeftX, targetLeftY, 20);
+
+        if (scoreRight > scoreThreshold ) {
+          targetRight.x = p.lerp(targetRight.x, right.x, lerpRate);
+          targetRight.y = p.lerp(targetRight.y, right.y, lerpRate);
+          p.fill(0, 255, 255);
+          p.ellipse(targetRight.x, targetRight.y, 20);
+        } else {
+          targetRight.x += jitter()
+          targetRight.y += jitter()
+          p.fill(0, 0, 100);
+          p.ellipse(targetRight.x, targetRight.y, 20);
+        }
+
+        if (scoreLeft > scoreThreshold) { 
+          targetLeft.x = p.lerp(targetLeft.x, left.x, lerpRate);
+          targetLeft.y = p.lerp(targetLeft.y, left.y, lerpRate);
+          p.fill(0, 255, 255);
+          p.ellipse(targetLeft.x, targetLeft.y, 20);
+        } else {
+          targetLeft.x += jitter()
+          targetLeft.y += jitter()
+          p.fill(0, 0, 100);
+          p.ellipse(targetLeft.x, targetLeft.y, 20);
+        }
         p.pop();
 
         for (let i = 0; i < segments.length; i++) {
-          segments[i].checkCollision(left);
-          if (segments[i].hit == false) {
-            segments[i].checkCollision(right);
-          }
-          segments[i].display();
+          let seg = segments[i];
+          seg.checkCollision(targetLeft, targetRight, nose);
+          seg.counter = (seg.hitState.l + seg.hitState.r + seg.hitState.n);
+          
+          console.log(`Segment ${i} has ${seg.counter} hits.`);
+
+          seg.display();
         }
 
-        if (segments[2].hit == true) {
-          groupTest.addShapes();
-        }
+        distInPixels = Math.floor(getDistance(targetLeft, targetRight));
+        distance.x = Math.floor(targetLeft.x - targetRight.x);
+        distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
+        mappedDistanceWrists = p.map(distInPixels, 0, p.width, 0.0, 1.0, true);
 
-        if (segments[0].hit == true) {
-          groupTest.removeShapes();
-        }
+        console.log(`Distance between wrists at x-axis: ${distance.x}`)
+        console.log(`Distance between wrists at y-axis: ${distance.y}`)
+        console.log(`Mapped (0-1) distance between wrists: ${mappedDistanceWrists}`)
 
-        const segChange = this.state.segForSynth.map((segment, i) => {
+        distForSynth.current = distInPixels;
+
+        // if (segments[2].hit == true) {
+        //   groupTest.addShapes();
+        // }
+
+        // if (segments[0].hit == true) {
+        //   groupTest.removeShapes();
+        // }
+
+        const segChange = segForSynth.map((segment, i) => {
           if (segment !== segments[i].hit) {
             return segments[i].hit;
           } else return segment;
         });
-        this.setState({ segForSynth: segChange });
+        // this.setState({ segForSynth: segChange });
+        setSegForSynth(segChange);
 
         p.stroke(50);
         p.line(p.width / 3, 0, p.width / 3, p.height);
@@ -314,8 +385,6 @@ export default class Sketch extends Component {
         // end draw
       }
     };
-
-    // do the classes below go in Sketch or outside?
     class Rects {
       constructor(sideLength, sideWidth) {
         this.len = sideLength;
@@ -374,14 +443,15 @@ export default class Sketch extends Component {
           p.rotate(i * this.rotateAllAmount);
           p.push();
           p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+          // p.rotate(0);
           p.rotate(this.rotateEachAmount);
           // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
 
-          // console.log(this.rotateEachAmount);
+          //console.log(this.rotateEachAmount);
 
           p.rect(
-            targetLeftX,
-            targetLeftY,
+            targetLeft.x,
+            targetLeft.y,
             mappedDistanceShapeScale,
             mappedDistanceShapeScale
           );
@@ -389,20 +459,6 @@ export default class Sketch extends Component {
           p.pop();
         }
       } // end display()
-
-      // display(){
-      //   for (let i = 0; i < this.allRects.length; i++){ // i<this.numb
-      //     p.push();
-      //     p.rotate(i*this.rotateAllAmount);
-      //     p.push();
-      //       p.translate(i*this.spreadAmountX,i*this.spreadAmountY);
-      //       p.rotate(this.rotateEachAmount);
-      //       this.allRects[i].display();
-      //       //p.rect(0, 0, this.wid -  (i * this.sizeChange), this.len - (i * this.sizeChange));
-      //     p.pop();
-      //     p.pop();
-      //     }
-      // } // end display()
 
       initialize(amount) {
         for (let i = 0; i < amount; i++) {
@@ -460,44 +516,23 @@ export default class Sketch extends Component {
         p.stroke(hue, 255, 255, alpha);
       }
     } // end class RectsGroup()
-
-    // class Tris {
-    //   constructor(radiusLength) {
-    //     this.radius = radiusLength;
-    //   }
-
-    //   display() {
-    //     // fix center point
-    //     p.triangle(
-    //       0,
-    //       this.radius * 2,
-    //       -this.radius * p.sqrt(3),
-    //       -this.radius,
-    //       this.radius * p.sqrt(3),
-    //       -this.radius
-    //     );
-    //   } // end display()
-
-    //   inscribeEllipse() {
-    //     p.ellipse(0, 0, this.radius * 2, this.radius * 2);
-    //   }
-    // } // end class Tris
   };
 
-  componentDidMount() {
-    this.myP5 = new p5(this.Sketch, this.myRef.current);
-  }
+  useEffect(() => {
+    myP5.current = new p5(sketchStuff, myRef.current);
+  }, []);
 
-  render() {
-    return (
+  return (
+    <>
       <section>
-        {this.state.loading && (
-          <h1 className={styles.loading}>loading models...</h1>
-        )}
+        {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
-          <div ref={this.myRef}></div>
+          <div ref={myRef}></div>
         </div>
+        <Synth distForSynth={distForSynth} segForSynth={segForSynth} />
       </section>
-    );
-  }
-}
+    </>
+  );
+};
+
+export default Sketch;

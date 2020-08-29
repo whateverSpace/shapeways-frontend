@@ -5,7 +5,14 @@ import * as Tone from 'tone';
 import styles from './Synth.css';
 export default function Synth({ distForSynth, segForSynth }) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [segChange, setSegChange] = useState([false, false, false, false, false, false]);
+  const [segChange, setSegChange] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
   const synth = useRef(null);
   const synth2 = useRef(null);
   const melodyRNN = useRef(null);
@@ -36,6 +43,7 @@ export default function Synth({ distForSynth, segForSynth }) {
     melodyVAE.current = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords');
     let melodyVAELoaded = melodyVAE.current.initialize();
     // TRY DIFFERENT CHECKPOINTS
+    makeNotesFromSegmentData(segForSynth);
 
 
     rnnStart(melodyRnnLoaded, segChange);
@@ -61,7 +69,7 @@ export default function Synth({ distForSynth, segForSynth }) {
     return noteList;
   };
 
-  const rnnStart = async(melodyRnnLoaded) => {
+  const rnnStart = async (melodyRnnLoaded) => {
     if (melodyRnnLoaded) await melodyRnnLoaded;
     if (melodyPart.current) {
       melodyPart.current.clear();
@@ -70,28 +78,39 @@ export default function Synth({ distForSynth, segForSynth }) {
 
     let seed = {
       notes: noteList,
-      totalQuantizedSteps: 16,
+      totalQuantizedSteps: 4,
       quantizationInfo: { stepsPerQuarter: 4 }
     };
     let steps = 32;
     let temperature = 1.0; // RANDOMNESS OF NOTES
     // let chordProgression = ['C', 'Am', 'G'];
-    let result = await melodyRNN.current.continueSequence(seed, steps, temperature);
+    let result = await melodyRNN.current.continueSequence(
+      seed,
+      steps,
+      temperature
+    );
     // let result = await melodyRNN.current.continueSequence(seed, steps, temperature, chordProgress); // WORKS FOR chord_pitches_improv CHECKPOINT
 
-    const melodyTest = result.notes.map(note => {
-      return [Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(), { note: Tone.Frequency(note.pitch, 'midi').toNote(), duration: Tone.Time(((note.quantizedEndStep - note.quantizedStartStep) / 4)).toNotation() }];
+    const melodyTest = result.notes.map((note) => {
+      return [
+        Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(),
+        {
+          note: Tone.Frequency(note.pitch, 'midi').toNote(),
+          duration: Tone.Time(
+            (note.quantizedEndStep - note.quantizedStartStep) / 4
+          ).toNotation(),
+        },
+      ];
     });
 
     console.log(melodyTest);
 
     if (melodyPart.current) {
       melodyPart.current.clear();
-      melodyTest.forEach(event => {
+      melodyTest.forEach((event) => {
         melodyPart.current.add(event[0], event[1]);
       });
-    }
-    else {
+    } else {
       melodyPart.current = new Tone.Part((time, value) => {
         synth.current.triggerAttackRelease(value.note, value.duration, time);
       }, melodyTest).start();
@@ -110,28 +129,35 @@ export default function Synth({ distForSynth, segForSynth }) {
 
     let input = {
       notes: noteList,
-      totalQuantizedSteps: 16,
+      totalQuantizedSteps: 32,
       quantizationInfo: { stepsPerQuarter: 4 }
+
     };
 
-    let z = await melodyVAE.current.encode([input], { chordProgression: ['D'] });
+    let z = await melodyVAE.current.encode([input], {
+      chordProgression: ['D'],
+    });
 
-    let one = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['D'] });
-    let two = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['A'] });
-    let three = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['Bm'] });
-    let four = await melodyVAE.current.decode(z, 1.0, { chordProgression: ['G'] });
+    let one = await melodyVAE.current.decode(z, 1.0, {
+      chordProgression: ['D'],
+    });
+    let two = await melodyVAE.current.decode(z, 1.0, {
+      chordProgression: ['A'],
+    });
+    let three = await melodyVAE.current.decode(z, 1.0, {
+      chordProgression: ['Bm'],
+    });
+    let four = await melodyVAE.current.decode(z, 1.0, {
+      chordProgression: ['G'],
+    });
 
     melodyCore.current = new mm.sequences.concatenate(
-      one
-        .concat(two)
-        .concat(three)
-        .concat(four)
+      one.concat(two).concat(three).concat(four)
     );
 
-    let leadPattern = [
-    ];
+    let leadPattern = [];
     newPart.current = new Tone.Part((time, note) => {
-      console.log(time);
+      // console.log(time);
       synth2.current.triggerAttackRelease(note, '2n', time);
     }, leadPattern).start();
     newPart.current.loop = true;
@@ -148,7 +174,6 @@ export default function Synth({ distForSynth, segForSynth }) {
     newPart.current._events.forEach(event => {
       console.log(event.value);
     });
-    // console.log(newPart);
   };
 
   const startMusic = async () => {
@@ -163,7 +188,6 @@ export default function Synth({ distForSynth, segForSynth }) {
     Tone.Transport.stop();
     setIsPlaying(false);
   };
-
 
   return (
     <>
@@ -185,5 +209,5 @@ export default function Synth({ distForSynth, segForSynth }) {
 
 Synth.propTypes = {
   distForSynth: PropTypes.object,
-  segForSynth: PropTypes.array
+  segForSynth: PropTypes.array,
 };
