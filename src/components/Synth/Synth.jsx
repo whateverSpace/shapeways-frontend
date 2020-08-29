@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
-import buildNoteSequence from '../../utils/buildNoteSequence';
+import makeNotesFromSegmentData from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segForSynth }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [segChange, setSegChange] = useState([
@@ -29,12 +29,12 @@ export default function Synth({ distForSynth, segForSynth }) {
 
   useEffect(() => {
     synth.current = new Tone.PolySynth().toDestination();
-    synth2.current = new Tone.MonoSynth({
+    synth2.current = new Tone.PolySynth({
       oscillator: {
-        type: 'square'
+        type: 'sawtooth'
       },
       envelope: {
-        attack: 0.3
+        attack: 0.1
       }
     }).toDestination();
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
@@ -45,8 +45,6 @@ export default function Synth({ distForSynth, segForSynth }) {
     let melodyVAELoaded = melodyVAE.current.initialize();
     // TRY DIFFERENT CHECKPOINTS
     makeNotesFromSegmentData(segForSynth);
-
-
     rnnStart(melodyRnnLoaded, segChange);
     generateMelodies(melodyVAELoaded, segChange);
   }, []);
@@ -56,33 +54,18 @@ export default function Synth({ distForSynth, segForSynth }) {
     if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
 
-  const makeNotesFromSegmentData = (segForSynth, step) => {
-    let noteList = [];
-    let counter = 0;
-    segForSynth.forEach((segment, i) => {
-      let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
-      if (segment) {
-        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * step), quantizedEndStep: ((counter * step) + Math.ceil(step / 2)) });
-        counter++;
-      }
-    });
-    console.log(noteList);
-    return noteList;
-  };
+
 
   const rnnStart = async (melodyRnnLoaded) => {
     if (melodyRnnLoaded) await melodyRnnLoaded;
     if (melodyPart.current) {
       melodyPart.current.clear();
     }
-    let noteList = makeNotesFromSegmentData(segChange, 4);
+    let noteList = makeNotesFromSegmentData(segChange);
 
-    let seed = {
-      notes: noteList,
-      totalQuantizedSteps: 4,
-      quantizationInfo: { stepsPerQuarter: 4 }
-    };
-    let steps = 32;
+
+    let seed = noteList;
+    let steps = 16;
     let temperature = 1.0; // RANDOMNESS OF NOTES
     // let chordProgression = ['C', 'Am', 'G'];
     let result = await melodyRNN.current.continueSequence(
@@ -126,14 +109,9 @@ export default function Synth({ distForSynth, segForSynth }) {
 
   const generateMelodies = async(melodyVAELoaded, segChange) => {
     if (melodyVAELoaded) await melodyVAELoaded;
-    let noteList = makeNotesFromSegmentData(segChange, 2);
+    let noteList = makeNotesFromSegmentData(segChange);
 
-    let input = {
-      notes: noteList,
-      totalQuantizedSteps: 32,
-      quantizationInfo: { stepsPerQuarter: 4 }
-
-    };
+    let input = noteList;
 
     let z = await melodyVAE.current.encode([input], {
       chordProgression: ['D'],

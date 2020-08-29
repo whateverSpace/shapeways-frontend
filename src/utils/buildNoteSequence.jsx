@@ -1,21 +1,27 @@
-export const buildNoteSequence = (seed) => {
+const makeNotesFromSegmentData = (segForSynth) => {
+  let delayProb = 0.4;
   let step = 0;
-  let delayProb = 0.3;
-  let notes = seed.map(n => {
-    let dur = 1 + (Math.random() < delayProb ? 1 : 0);
-    let note = {
-      pitch: n.note,
-      quantizedStartStep: step,
-      quantizedEndStep: step + dur
-    };
-    step += dur;
-    return note;
+  let dur = 1 + (Math.random() < delayProb ? 1 : 0);
+  let notes = segForSynth.map((segment, i) => {
+    let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
+    while(segment) {
+      let note = {
+        pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(),
+        quantizedStartStep: step,
+        quantizedEndStep: step + dur
+      };
+      step += dur;
+      segment--;
+      return note;
+    }
   });
   return {
-    totalQuantizedSteps: _.last(notes).quantizedEndStep,
+    totalQuantizedSteps: 3,
     quantizationInfo: {
       stepsPerQuarter: 1
     },
     notes
   };
 };
+
+export default makeNotesFromSegmentData;

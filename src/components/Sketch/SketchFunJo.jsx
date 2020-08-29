@@ -20,14 +20,22 @@ const Sketch = () => {
     false,
     false,
   ]);
+  const [segHitstate, setSegHitstate] = useState([
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ]);
 
   const sketchStuff = (p) => {
     let video;
     let poseNet;
     let poses = [];
 
-    let targetRight = {x: 0, y: 0} 
-    let targetLeft = {x: 0, y: 0};
+    let targetRight = { x: 0, y: 0 };
+    let targetLeft = { x: 0, y: 0 };
     let scoreRight;
     let scoreLeft;
     let scoreThreshold = 0.2;
@@ -55,7 +63,7 @@ const Sketch = () => {
     let mappedNoseColor;
     let mappedThing;
     let distInPixels;
-    let distance = {x: 0, y: 0};
+    let distance = { x: 0, y: 0 };
     let mappedDistanceWrists;
 
     // Begin Segment class
@@ -67,7 +75,7 @@ const Sketch = () => {
         this.w = p.width / 3;
         this.h = p.height / 2;
         this.hit = false;
-        this.hitState = {l: 0, r: 0, n: 0};
+        this.hitState = { l: 0, r: 0, n: 0 };
         this.counter = 0;
         this.alpha = 0;
       }
@@ -184,8 +192,8 @@ const Sketch = () => {
         mappedDistanceShapeScale
       );
       groupTest.initialize(numShapesStart);
-    }; 
-    
+    };
+
     // end p.setup()
 
     function getDistance(pos1, pos2) {
@@ -316,26 +324,26 @@ const Sketch = () => {
         p.ellipse(rightEye.x, rightEye.y, 5);
         p.pop();
 
-        if (scoreRight > scoreThreshold ) {
+        if (scoreRight > scoreThreshold) {
           targetRight.x = p.lerp(targetRight.x, right.x, lerpRate);
           targetRight.y = p.lerp(targetRight.y, right.y, lerpRate);
           p.fill(0, 255, 255);
           p.ellipse(targetRight.x, targetRight.y, 20);
         } else {
-          targetRight.x += jitter()
-          targetRight.y += jitter()
+          targetRight.x += jitter();
+          targetRight.y += jitter();
           p.fill(0, 0, 100);
           p.ellipse(targetRight.x, targetRight.y, 20);
         }
 
-        if (scoreLeft > scoreThreshold) { 
+        if (scoreLeft > scoreThreshold) {
           targetLeft.x = p.lerp(targetLeft.x, left.x, lerpRate);
           targetLeft.y = p.lerp(targetLeft.y, left.y, lerpRate);
           p.fill(0, 255, 255);
           p.ellipse(targetLeft.x, targetLeft.y, 20);
         } else {
-          targetLeft.x += jitter()
-          targetLeft.y += jitter()
+          targetLeft.x += jitter();
+          targetLeft.y += jitter();
           p.fill(0, 0, 100);
           p.ellipse(targetLeft.x, targetLeft.y, 20);
         }
@@ -345,9 +353,7 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = (seg.hitState.l + seg.hitState.r + seg.hitState.n);
-          
           console.log(`Segment ${i} has ${seg.counter} hits.`);
-
           seg.display();
         }
 
@@ -356,9 +362,9 @@ const Sketch = () => {
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         mappedDistanceWrists = p.map(distInPixels, 0, p.width, 0.0, 1.0, true);
 
-        console.log(`Distance between wrists at x-axis: ${distance.x}`)
-        console.log(`Distance between wrists at y-axis: ${distance.y}`)
-        console.log(`Mapped (0-1) distance between wrists: ${mappedDistanceWrists}`)
+        console.log(`Distance between wrists at x-axis: ${distance.x}`);
+        console.log(`Distance between wrists at y-axis: ${distance.y}`);
+        console.log(`Mapped (0-1) distance between wrists: ${mappedDistanceWrists}`);
 
         distForSynth.current = distInPixels;
 
@@ -377,6 +383,15 @@ const Sketch = () => {
         });
         // this.setState({ segForSynth: segChange });
         setSegForSynth(segChange);
+
+
+        const segHitstateChange = segHitstate.map((segment, i) => {
+          if (segment !== segments[i].hit) {
+            return segments[i].hit;
+          } else return segment;
+        });
+        // this.setState({ segForSynth: segChange });
+        setSegHitstate(segHitstateChange);
 
         p.stroke(50);
         p.line(p.width / 3, 0, p.width / 3, p.height);
@@ -529,7 +544,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segForSynth={segForSynth} />
+        <Synth distForSynth={distForSynth} segForSynth={segForSynth} segHits={segHitstate}/>
       </section>
     </>
   );
