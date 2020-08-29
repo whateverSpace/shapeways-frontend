@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
+import buildNoteSequence from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segForSynth }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [segChange, setSegChange] = useState([
@@ -61,7 +62,7 @@ export default function Synth({ distForSynth, segForSynth }) {
     segForSynth.forEach((segment, i) => {
       let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
       if (segment) {
-        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * step), quantizedEndStep: ((counter * step) + Math.ceil(step/2)) });
+        noteList.push({ pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(), quantizedStartStep: (counter * step), quantizedEndStep: ((counter * step) + Math.ceil(step / 2)) });
         counter++;
       }
     });
