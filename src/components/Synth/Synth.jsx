@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
-import makeNotesFromSegmentData from '../../utils/buildNoteSequence';
+import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segForSynth, segHitState }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [segChange, setSegChange] = useState([
@@ -33,14 +33,21 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
 
   // if (distForSynth.current) Tone.Transport.bpm.value = distForSynth.current;
-  if (distForSynth.current) Tone.Transport.bpm.value = 120;
+  if(distForSynth.current) Tone.Transport.bpm.value = 120;
   segHitState.forEach((segment, i) => {
-    if (segment !== segHitsChange[i]) setSegHitsChange(segHitState);
+    if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
   // console.log(segHitState);
 
   useEffect(() => {
-    synth.current = new Tone.PolySynth().toDestination();
+    synth.current = new Tone.PolySynth({
+      oscillator: {
+        type: 'square'
+      },
+      envelope: {
+        attack: 0.1
+      }
+    }).toDestination();
     synth2.current = new Tone.PolySynth({
       oscillator: {
         type: 'sawtooth'
@@ -63,12 +70,12 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
   useEffect(() => {
 
-    if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
+    if(melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
 
   const rnnStart = async (melodyRnnLoaded) => {
-    if (melodyRnnLoaded) await melodyRnnLoaded;
-    if (melodyPart.current) {
+    if(melodyRnnLoaded) await melodyRnnLoaded;
+    if(melodyPart.current) {
       melodyPart.current.clear();
     }
     let noteList = makeNotesFromSegmentData(segHitsChange);
@@ -98,7 +105,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
     console.log(melodyTest);
 
-    if (melodyPart.current) {
+    if(melodyPart.current) {
       melodyPart.current.clear();
       melodyTest.forEach((event) => {
         melodyPart.current.add(event[0], event[1]);
@@ -117,7 +124,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   };
 
   const generateMelodies = async(melodyVAELoaded, segHitsChange) => {
-    if (melodyVAELoaded) await melodyVAELoaded;
+    if(melodyVAELoaded) await melodyVAELoaded;
     let noteList = makeNotesFromSegmentData(segHitsChange);
 
     let input = noteList;
@@ -165,14 +172,14 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   };
 
   const startMusic = async () => {
-    if (isPlaying) return;
+    if(isPlaying) return;
     await Tone.start();
     Tone.Transport.start();
     setIsPlaying(true);
   };
 
   const stopMusic = () => {
-    if (!isPlaying) return;
+    if(!isPlaying) return;
     Tone.Transport.stop();
     setIsPlaying(false);
   };

@@ -81,7 +81,7 @@ const Sketch = () => {
       }
 
       display() {
-        if (this.hitState.l > 0 || this.hitState.r > 0 || this.hitState.n > 0) {
+        if(this.hitState.l > 0 || this.hitState.r > 0 || this.hitState.n > 0) {
           this.hit = true;
           this.alpha = p.lerp(this.alpha, 255, 0.3);
           p.push();
@@ -131,15 +131,15 @@ const Sketch = () => {
       let testX = targetX;
       let testY = targetY;
 
-      if (targetX < segX) {
+      if(targetX < segX) {
         testX = segX;
-      } else if (targetX > segX + segW) {
+      } else if(targetX > segX + segW) {
         testX = segX + segW;
       }
 
-      if (targetY < segY) {
+      if(targetY < segY) {
         testY = segY;
-      } else if (targetY > segY + segH) {
+      } else if(targetY > segY + segH) {
         testY = segY + segH;
       }
 
@@ -147,7 +147,7 @@ const Sketch = () => {
       let distY = targetY - testY;
       let distance = Math.sqrt(distX * distX + distY * distY);
 
-      if (distance <= radius) {
+      if(distance <= radius) {
         return 1;
       }
       return 0;
@@ -214,7 +214,7 @@ const Sketch = () => {
 
       // p.fill(255);
       // p.ellipse(0, 0, 200, 200);
-      if (poses.length > 0) {
+      if(poses.length > 0) {
         setLoading(false);
 
         pose = poses[0].pose;
@@ -255,55 +255,55 @@ const Sketch = () => {
         p.pop();
 
         // key pressed land
-        if (p.key === 'a') {
+        if(p.key === 'a') {
           p.background(0);
         }
-        if (p.key === 's') {
+        if(p.key === 's') {
           p.background(255);
         }
 
-        if (p.mouseIsPressed && p.mouseButton === p.LEFT) {
+        if(p.mouseIsPressed && p.mouseButton === p.LEFT) {
           groupTest.spread(0, 0, p.mouseX, p.mouseY);
         }
 
         // on or off, can smooth out transition between on/off later
-        if (p.key === 'q') {
+        if(p.key === 'q') {
           groupTest.sizeGradient();
         }
 
-        if (p.key === 'w') {
+        if(p.key === 'w') {
           groupTest.addShapes();
         }
 
-        if (p.key === 'e') {
+        if(p.key === 'e') {
           groupTest.removeShapes();
         }
 
-        if (p.key === 'r') {
+        if(p.key === 'r') {
           groupTest.rotateEach(p.radians(p.frameCount));
         } else {
           groupTest.rotateEach(0);
         }
 
-        if (p.key === 't') {
+        if(p.key === 't') {
           groupTest.rotateAll(p.radians(p.frameCount * 0.01));
         } else {
           groupTest.rotateAll(0);
         }
 
-        if (p.key === 'y') {
+        if(p.key === 'y') {
           groupTest.growAll(1);
         }
 
-        if (p.key === 'u') {
+        if(p.key === 'u') {
           groupTest.shrinkAll(1);
         }
 
-        if (p.key === 'i') {
+        if(p.key === 'i') {
           groupTest.fillColor(120, 0.5);
         }
 
-        if (p.key === 'o') {
+        if(p.key === 'o') {
           groupTest.strokeColor(220, 1);
         }
 
@@ -324,7 +324,7 @@ const Sketch = () => {
         p.ellipse(rightEye.x, rightEye.y, 5);
         p.pop();
 
-        if (scoreRight > scoreThreshold) {
+        if(scoreRight > scoreThreshold) {
           targetRight.x = p.lerp(targetRight.x, right.x, lerpRate);
           targetRight.y = p.lerp(targetRight.y, right.y, lerpRate);
           p.fill(0, 255, 255);
@@ -336,7 +336,7 @@ const Sketch = () => {
           p.ellipse(targetRight.x, targetRight.y, 20);
         }
 
-        if (scoreLeft > scoreThreshold) {
+        if(scoreLeft > scoreThreshold) {
           targetLeft.x = p.lerp(targetLeft.x, left.x, lerpRate);
           targetLeft.y = p.lerp(targetLeft.y, left.y, lerpRate);
           p.fill(0, 255, 255);
@@ -353,7 +353,7 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = (seg.hitState.l + seg.hitState.r + seg.hitState.n);
-          console.log(`Segment ${i} has ${seg.counter} hits.`);
+          // console.log(`Segment ${i} has ${seg.counter} hits.`);
           seg.display();
         }
 
@@ -362,9 +362,9 @@ const Sketch = () => {
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         mappedDistanceWrists = p.map(distInPixels, 0, p.width, 0.0, 1.0, true);
 
-        console.log(`Distance between wrists at x-axis: ${distance.x}`);
-        console.log(`Distance between wrists at y-axis: ${distance.y}`);
-        console.log(`Mapped (0-1) distance between wrists: ${mappedDistanceWrists}`);
+        // console.log(`Distance between wrists at x-axis: ${distance.x}`);
+        // console.log(`Distance between wrists at y-axis: ${distance.y}`);
+        // console.log(`Mapped (0-1) distance between wrists: ${mappedDistanceWrists}`);
 
         distForSynth.current = distInPixels;
 
@@ -377,7 +377,7 @@ const Sketch = () => {
         // }
 
         const segChange = segForSynth.map((segment, i) => {
-          if (segment !== segments[i].hit) {
+          if(segment !== segments[i].hit) {
             return segments[i].hit;
           } else return segment;
         });
@@ -386,7 +386,7 @@ const Sketch = () => {
 
 
         const segHitStateChange = segHitState.map((segment, i) => {
-          if (segment !== segments[i].hit) {
+          if(segment !== segments[i].hit) {
             return segments[i].hit;
           } else return segment;
         });
