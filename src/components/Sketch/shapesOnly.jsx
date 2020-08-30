@@ -31,6 +31,7 @@ export default class Sketch extends Component {
         let counter = 0;
         let counterMax = 100;
 
+
         p.setup = () => {
 
             p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
@@ -59,12 +60,14 @@ export default class Sketch extends Component {
             p.background(255);
 
 
-            groupTest.spread(0, 0, p.mouseX, p.mouseY)
+            groupTest.spread(p.mouseX-100, p.mouseY-100, p.mouseX, p.mouseY)
+            //groupTest.spread(0,0,p.mouseX-100, p.mouseY-100, p.mouseX, p.mouseY)
             // if (p.mouseButton === p.LEFT) {
             //     // groupTest.spread(0, 0, p.mouseX, p.mouseY);
             //     groupTest.spread(0, -100, p.width, 60);
             //     // groupTest.spread(targetLeftX, targetLeftY, targetRightX, targetRightY);
             // }
+
 
             // on or off, can smooth out transition between on/off later
             if (p.keyIsPressed === true && p.key === 'q') {
@@ -210,29 +213,29 @@ export default class Sketch extends Component {
 
                     // p.rotate(i * this.rotateAllAmount);
 
-                    if (this.everyOther === false) {
+                   // if (this.everyOther === false) {
                         p.push();
                         p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
                         p.rotate(this.rotateEachAmount);
                         // this.allRects[i].display();
                         p.rect(0, 0, this.wid - (i * this.sizeChange), this.len - (i * this.sizeChange));
                         p.pop();
-                    }
-                    if (this.everyOther === true) {
-                        p.push();
-                        if (i % 2 === 1) {
-                            p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
-                            p.rotate(this.rotateEachAmount);
-                            // this.allRects[i].display();
-                            p.rect(0, 0, this.wid - (i * this.sizeChange), this.len - (i * this.sizeChange));
-                        } else {
-                            p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
-                            p.rotate(this.rotateEachAmount);
-                            // this.allRects[i].display();
-                            p.rect(0, 0, this.wid + (i * this.sizeChange), this.len + (i * this.sizeChange));
-                        }
-                        p.pop();
-                    }
+                   // }
+                    // if (this.everyOther === true) {
+                    //     p.push();
+                    //     if (i % 2 === 1) {
+                    //         p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+                    //         p.rotate(this.rotateEachAmount);
+                    //         // this.allRects[i].display();
+                    //         p.rect(0, 0, this.wid - (i * this.sizeChange), this.len - (i * this.sizeChange));
+                    //     } else {
+                    //         p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+                    //         p.rotate(this.rotateEachAmount);
+                    //         // this.allRects[i].display();
+                    //         p.rect(0, 0, this.wid + (i * this.sizeChange), this.len + (i * this.sizeChange));
+                    //     }
+                     //   p.pop();
+                    //}
 
                 }
             } // end display()
