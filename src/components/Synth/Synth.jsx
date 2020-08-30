@@ -40,22 +40,8 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   // console.log(segHitState);
 
   useEffect(() => {
-    synth.current = new Tone.PolySynth({
-      oscillator: {
-        type: 'square'
-      },
-      envelope: {
-        attack: 0.1
-      }
-    }).toDestination();
-    synth2.current = new Tone.PolySynth({
-      oscillator: {
-        type: 'sawtooth'
-      },
-      envelope: {
-        attack: 0.1
-      }
-    }).toDestination();
+    synth.current = new Tone.PolySynth(Tone.Synth).toDestination();
+    synth2.current = new Tone.PolySynth(Tone.AMSynth).toDestination();
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
     let melodyRnnLoaded = melodyRNN.current.initialize();
 
@@ -63,7 +49,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
     melodyVAE.current = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords');
     let melodyVAELoaded = melodyVAE.current.initialize();
     // TRY DIFFERENT CHECKPOINTS
-    makeNotesFromSegmentData(segHitsChange);
+
     rnnStart(melodyRnnLoaded, segHitsChange);
     generateMelodies(melodyVAELoaded, segHitsChange);
   }, []);

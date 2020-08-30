@@ -4,7 +4,8 @@ export const makeNotesFromSegmentData = (hits) => {
   let step = 0;
   let notes = [];
   hits.forEach((segment, i) => {
-    let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
+    let segmentNoteMap = ['C4', 'F4', 'G#4', 'C5', 'F5', 'G#5'];
+    // let segmentNoteMap = ['G4', 'G#4', 'F#4', 'C4', 'D#4', 'F4'];
     if(segment > 0) {
       let dur = segment + (Math.random() < delayProb ? 1 : 0);
       notes.push({
