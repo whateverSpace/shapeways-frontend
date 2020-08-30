@@ -24,9 +24,9 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   const melodyCore = useRef(null);
   const newPart = useRef(null);
 
-  if (distForSynth.current) Tone.Transport.bpm.value = 120;
+  if(distForSynth.current) Tone.Transport.bpm.value = 120;
   segHitState.forEach((segment, i) => {
-    if (segment !== segHitsChange[i]) setSegHitsChange(segHitState);
+    if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
 
   useEffect(() => {
@@ -52,8 +52,8 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   // }, [segHitsChange]);
 
   const rnnStart = async (melodyRnnLoaded, segHitsChange) => {
-    if (melodyRnnLoaded) await melodyRnnLoaded;
-    if (melodyPart.current) {
+    if(melodyRnnLoaded) await melodyRnnLoaded;
+    if(melodyPart.current) {
       melodyPart.current.clear();
     }
     let noteList = makeNotesFromSegmentData(segHitsChange);
@@ -83,7 +83,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
     console.log(melodyTest);
 
-    if (melodyPart.current) {
+    if(melodyPart.current) {
       melodyPart.current.clear();
       melodyTest.forEach((event) => {
         melodyPart.current.add(event[0], event[1]);
@@ -106,8 +106,8 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   };
 
   const generateMelodies = async (melodyVAELoaded, segHitsChange) => {
-    if (melodyVAELoaded) await melodyVAELoaded;
-    if (newPart.current) {
+    if(melodyVAELoaded) await melodyVAELoaded;
+    if(newPart.current) {
       newPart.current.clear();
     }
     let noteList = makeNotesFromSegmentData(segHitsChange);
@@ -148,7 +148,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
     console.log(newPattern);
 
-    if (newPart.current) {
+    if(newPart.current) {
       newPart.current.clear();
       newPattern.forEach((event) => {
         newPart.current.add(event[0], event[1]);
@@ -170,14 +170,14 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   };
 
   const startMusic = async () => {
-    if (isPlaying) return;
+    if(isPlaying) return;
     await Tone.start();
     Tone.Transport.start();
     setIsPlaying(true);
   };
 
   const stopMusic = () => {
-    if (!isPlaying) return;
+    if(!isPlaying) return;
     Tone.Transport.stop();
     setIsPlaying(false);
   };
