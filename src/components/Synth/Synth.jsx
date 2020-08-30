@@ -4,7 +4,7 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
 import makeNotesFromSegmentData from '../../utils/buildNoteSequence';
-export default function Synth({ distForSynth, segForSynth }) {
+export default function Synth({ distForSynth, segForSynth, segHitState }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [segChange, setSegChange] = useState([
     false,
@@ -14,6 +14,15 @@ export default function Synth({ distForSynth, segForSynth }) {
     false,
     false,
   ]);
+
+  const [segHitsChange, setSegHitsChange] = useState([
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ]);
   const synth = useRef(null);
   const synth2 = useRef(null);
   const melodyRNN = useRef(null);
@@ -22,10 +31,13 @@ export default function Synth({ distForSynth, segForSynth }) {
   const melodyCore = useRef(null);
   const newPart = useRef(null);
 
-  if (distForSynth.current) Tone.Transport.bpm.value = distForSynth.current;
-  segForSynth.forEach((segment, i) => {
-    if (segment !== segChange[i]) setSegChange(segForSynth);
+
+  // if (distForSynth.current) Tone.Transport.bpm.value = distForSynth.current;
+  if (distForSynth.current) Tone.Transport.bpm.value = 120;
+  segHitState.forEach((segment, i) => {
+    if (segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
+  // console.log(segHitState);
 
   useEffect(() => {
     synth.current = new Tone.PolySynth().toDestination();
@@ -44,9 +56,9 @@ export default function Synth({ distForSynth, segForSynth }) {
     melodyVAE.current = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords');
     let melodyVAELoaded = melodyVAE.current.initialize();
     // TRY DIFFERENT CHECKPOINTS
-    makeNotesFromSegmentData(segForSynth);
-    rnnStart(melodyRnnLoaded, segChange);
-    generateMelodies(melodyVAELoaded, segChange);
+    makeNotesFromSegmentData(segHitsChange);
+    rnnStart(melodyRnnLoaded, segHitsChange);
+    generateMelodies(melodyVAELoaded, segHitsChange);
   }, []);
 
   useEffect(() => {
@@ -54,19 +66,16 @@ export default function Synth({ distForSynth, segForSynth }) {
     if (melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
   }, [segChange]);
 
-
-
   const rnnStart = async (melodyRnnLoaded) => {
     if (melodyRnnLoaded) await melodyRnnLoaded;
     if (melodyPart.current) {
       melodyPart.current.clear();
     }
-    let noteList = makeNotesFromSegmentData(segChange);
-
+    let noteList = makeNotesFromSegmentData(segHitsChange);
 
     let seed = noteList;
     let steps = 16;
-    let temperature = 1.0; // RANDOMNESS OF NOTES
+    let temperature = 1.1; // RANDOMNESS OF NOTES
     // let chordProgression = ['C', 'Am', 'G'];
     let result = await melodyRNN.current.continueSequence(
       seed,
@@ -107,9 +116,9 @@ export default function Synth({ distForSynth, segForSynth }) {
     console.log(melodyPart.current);
   };
 
-  const generateMelodies = async(melodyVAELoaded, segChange) => {
+  const generateMelodies = async(melodyVAELoaded, segHitsChange) => {
     if (melodyVAELoaded) await melodyVAELoaded;
-    let noteList = makeNotesFromSegmentData(segChange);
+    let noteList = makeNotesFromSegmentData(segHitsChange);
 
     let input = noteList;
 
@@ -189,4 +198,5 @@ export default function Synth({ distForSynth, segForSynth }) {
 Synth.propTypes = {
   distForSynth: PropTypes.object,
   segForSynth: PropTypes.array,
+  segHitState: PropTypes.array
 };

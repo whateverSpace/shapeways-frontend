@@ -1,18 +1,18 @@
-const makeNotesFromSegmentData = (segForSynth) => {
-  let delayProb = 0.4;
+import * as Tone from 'tone';
+export const makeNotesFromSegmentData = (hits) => {
+  let delayProb = 0;
   let step = 0;
-  let dur = 1 + (Math.random() < delayProb ? 1 : 0);
-  let notes = segForSynth.map((segment, i) => {
+  let notes = [];
+  hits.forEach((segment, i) => {
     let segmentNoteMap = ['A4', 'D4', 'F#4', 'A3', 'D3', 'F#3'];
-    while(segment) {
-      let note = {
+    if(segment > 0) {
+      let dur = segment + (Math.random() < delayProb ? 1 : 0);
+      notes.push({
         pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(),
         quantizedStartStep: step,
         quantizedEndStep: step + dur
-      };
+      });
       step += dur;
-      segment--;
-      return note;
     }
   });
   return {
@@ -23,5 +23,3 @@ const makeNotesFromSegmentData = (segForSynth) => {
     notes
   };
 };
-
-export default makeNotesFromSegmentData;
