@@ -6,14 +6,14 @@ import styles from './Synth.css';
 import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segForSynth, segHitState }) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [segChange, setSegChange] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  // const [segChange, setSegChange] = useState([
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  //   false,
+  // ]);
 
   const [segHitsChange, setSegHitsChange] = useState([
     0,
@@ -32,12 +32,10 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
   const newPart = useRef(null);
 
 
-  // if (distForSynth.current) Tone.Transport.bpm.value = distForSynth.current;
   if(distForSynth.current) Tone.Transport.bpm.value = 120;
   segHitState.forEach((segment, i) => {
     if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
-  // console.log(segHitState);
 
   useEffect(() => {
     synth.current = new Tone.PolySynth(Tone.Synth).toDestination();
@@ -45,10 +43,8 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
     melodyRNN.current = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
     let melodyRnnLoaded = melodyRNN.current.initialize();
 
-
     melodyVAE.current = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords');
     let melodyVAELoaded = melodyVAE.current.initialize();
-    // TRY DIFFERENT CHECKPOINTS
 
     rnnStart(melodyRnnLoaded, segHitsChange);
     generateMelodies(melodyVAELoaded, segHitsChange);
@@ -56,10 +52,11 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
   useEffect(() => {
 
-    if(melodyRNN.current.initialized) rnnStart(); // NEW MELODY BASED ON SEGMENTS
-  }, [segChange]);
+    if(melodyRNN.current.initialized) rnnStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if(melodyVAE.current.initialized) generateMelodies(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+  }, [segHitsChange]);
 
-  const rnnStart = async (melodyRnnLoaded) => {
+  const rnnStart = async (melodyRnnLoaded, segHitsChange) => {
     if(melodyRnnLoaded) await melodyRnnLoaded;
     if(melodyPart.current) {
       melodyPart.current.clear();
@@ -89,8 +86,6 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
       ];
     });
 
-    console.log(melodyTest);
-
     if(melodyPart.current) {
       melodyPart.current.clear();
       melodyTest.forEach((event) => {
@@ -105,14 +100,20 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
       melodyPart.current.loopStart = 0;
       melodyPart.current.loopEnd = '2m';
     }
-    console.log('melodyPart:');
-    console.log(melodyPart.current);
+
+    // melodyPart.current._events.forEach(event => {
+    //   console.log(event.value);
+    // });
+    // console.log('melodyPart:');
+    // console.log(melodyPart.current);
   };
 
   const generateMelodies = async(melodyVAELoaded, segHitsChange) => {
     if(melodyVAELoaded) await melodyVAELoaded;
+    if(newPart.current) {
+      newPart.current.clear();
+    }
     let noteList = makeNotesFromSegmentData(segHitsChange);
-
     let input = noteList;
 
     let z = await melodyVAE.current.encode([input], {
@@ -137,13 +138,19 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
     );
 
     let leadPattern = [];
-    newPart.current = new Tone.Part((time, note) => {
-      // console.log(time);
-      synth2.current.triggerAttackRelease(note, '2n', time);
-    }, leadPattern).start();
-    newPart.current.loop = true;
-    newPart.current.loopStart = 0;
-    newPart.current.loopEnd = '2m';
+    if(newPart.current) {
+      newPart.current.clear();
+      leadPattern.forEach((event) => {
+        newPart.current.add(event[0], event[1]);
+      });
+    } else {
+      newPart.current = new Tone.Part((time, note) => {
+        synth2.current.triggerAttackRelease(note, '2n', time);
+      }, leadPattern).start();
+      newPart.current.loop = true;
+      newPart.current.loopStart = 0;
+      newPart.current.loopEnd = '2m';
+    }
 
     newPart.current.clear();
     for (let note of melodyCore.current.notes) {
@@ -152,9 +159,12 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
         Tone.Frequency(note.pitch, 'midi').toNote()
       );
     }
-    newPart.current._events.forEach(event => {
-      console.log(event.value);
-    });
+
+    // newPart.current._events.forEach(event => {
+    //   console.log(event.value);
+    // });
+    // console.log('newPart:');
+    // console.log(newPart.current);
   };
 
   const startMusic = async () => {
@@ -175,7 +185,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
       <div className={styles.controls}>
         <button onClick={() => startMusic()}>Start</button>
         <button onClick={() => stopMusic()}>Stop</button>
-        <button onClick={() => rnnStart()}>Change Melody</button>
+        {/* <button onClick={() => rnnStart()}>Change Melody</button> */}
       </div>
 
       <div className={styles.controls}>
