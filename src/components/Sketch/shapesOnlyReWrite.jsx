@@ -31,15 +31,24 @@ export default class Sketch extends Component {
             // (0-360, 0-255, 0-255, 0-1)
             p.colorMode(p.HSB);
 
-            p.rectMode(p.CENTER); // try not use this??
+            // places the origin at the center of each rectangle instead of top left corner
+            p.rectMode(p.CENTER);
 
-            shapeGroup = new ShapeGroup(5, 200, 5, 200, 20, 150);
+            // initializes the group of shapes
+            // (number of shapes, min number, max number, side length, min length,max length)
+            shapeGroup = new ShapeGroup(5, 50, 5, 20, 20, 150);
 
         } // end p.setup()
 
         p.draw = () => {
 
-            //p.background(255);
+            // can redraw background as black or white
+            if (p.keyIsPressed === true && p.key === 'a') {
+                p.background(0);
+            }
+            if (p.keyIsPressed === true && p.key === 's') {
+                p.background(255);
+            }
 
             // the following is where all of the different methods for the gropu of shapes
             // are called. there are descriptions of each method.
@@ -60,65 +69,89 @@ export default class Sketch extends Component {
             // .fillColorSingle lets you:
             //   choose a color for the fill of all the shapes
             //   choose if the color will cycle through the spectrum or not
-            //   choose the rate of the color cycle (in color units per frame)
-            // (hue value(0-360), cyle / or don't, amount of color per frame
-            shapeGroup.fillColorSingle(100, false, .1);
+            //   choose the rate of the cycle (i.e. 5ish=fast, 100ish=slow)
+            // (hue value(0-360), cyle / or don't, rate)
+            //if (p.keyIsPressed === true && p.key === 'q') {
+                shapeGroup.fillColorSingle(100, true, 50);
+            //}
 
             // .strokeColorSingle lets you:
             //   choose a color for the stroke of all the shapes
             //   choose if the color will cycle through the spectrum or not
-            //   choose the rate of the color cycle (in color units per frame)
-            // (hue value (0-360), cyle / or don't, amount of color per frame
-            shapeGroup.strokeColorSingle(300, true, .5);
+            //   choose the rate of the cycle (i.e. 5ish=fast, 100ish=slow)
+            // (hue value (0-360), cyle / or don't, rate)
+            //if (p.keyIsPressed === true && p.key === 'w') {
+                shapeGroup.strokeColorSingle(30, false, 5);
+            //}
 
             // .rotateEach will make each shape rotate around it's own center
-            // p.millis() uses the computers clock for timing.. 
-            // definitely good to divide it by something, 30 is kinda slow, 3 would be super fast
-            //shapeGroup.rotateEach(p.millis() / 30);
+            // p.millis()) uses the computers clock for timing
+            // /5 = faster, /100 =  slower
+            if (p.keyIsPressed === true && p.key === 'e') {
+                shapeGroup.rotateEach(p.millis() / 30);
+            }
 
-            // FIX THIS ONE
-            //shapeGroup.rotateGroup(p.millis() / 30);
+            // .rotateGroup() will makethe group of shapes rotate as one unit
+            // p.millis()) uses the computers clock for timing
+            // /5 = faster, /100 =  slower
+            if (p.keyIsPressed === true && p.key === 'r') {
+                shapeGroup.rotateGroup(p.millis() / 50);
+            }
 
-            //  .addShapes() will add a shape to the total at this rate per frame
-            //shapeGroup.addShapes(.01);
+            //  .addShapes() will add a shape to the total every x milliseconds?
+            if (p.keyIsPressed === true && p.key === 't') {
+                shapeGroup.addShapes(2000);
+            }
 
-            // .removeShapes() will remove a shape from teh total at this rate per frame
-            //shapeGroup.removeShapes(0.05);
+            // .removeShapes() will remove a shape from the total every x milliseconds?
+            if (p.keyIsPressed === true && p.key === 'y') {
+                shapeGroup.removeShapes(1000);
+            }
 
             // .growY will make the rects grow in the y-direction
-            // parameter is the rate of change per frame
-            //shapeGroup.growY(1);
+            // rate 5ish = fast, 100ish = slow
+            if (p.keyIsPressed === true && p.key === 'u') {
+                shapeGroup.growY(75);
+            }
 
             // .growX will make the rects grow in the x-direction
-            // parameter is the rate of change per frame
-            //shapeGroup.growX(1);
+            // rate 5ish = fast, 100ish = slow
+            if (p.keyIsPressed === true && p.key === 'i') {
+                shapeGroup.growX(75);
+            }
 
             // .shrinkX will make the rects shrink in the x-direction
-            // parameter is the rate of change per frame
-            //shapeGroup.shrinkX(1);
+            // rate 5ish = fast, 100ish = slow
+            if (p.keyIsPressed === true && p.key === 'o') {
+                shapeGroup.shrinkX(75);
+            }
 
             // .shrinkY will makethe rects shrink in the y-direction
-            // parameter is the rate of change per frame
-            shapeGroup.shrinkY(1);
+            // rate 5ish = fast, 100ish = slow
+            if (p.keyIsPressed === true && p.key === 'p') {
+                shapeGroup.shrinkY(75);
+            }
 
 
             // .sizeGradient determines if the shapes will be all the same size
             // or an array from large to small
-            //shapeGroup.sizeGradient(true);
-
+            if (p.keyIsPressed === true && p.key === 'l') {
+                shapeGroup.sizeGradient(true);
+            } else {
+                shapeGroup.sizeGradient(false);
+            }
 
             //  .onBeatGrow will make the shapes grow and shrink from one size to another
-            // regularly over time
-            shapeGroup.onBeatGrow(20, 100, 2);
+            // onBeatGrow(pixel difference in size, length of interval in ms, portion of intervale with larger shapes)
+            if (p.keyIsPressed === true && p.key === 'k') {
+                shapeGroup.onBeatGrow(100, 2000, 10);
+            }
 
             // .display() draws all of the shapes and their various modifications
             shapeGroup.display();
 
             // this ends the p.push() and p.pop() pair that surround all of the shapes
             p.pop();
-
-
-            // console.log(p.frameCount);
 
         } // end p.draw()
 
@@ -193,9 +226,16 @@ export default class Sketch extends Component {
                             this.len + this.onBeatGrowModifier - (i * this.sizeGradientAmount));
                     }
 
-                    if ((this.rotateEachTruth === true && this.rotateGroupTruth === true) ||
-                        (this.rotateEachTruth === false && this.rotateGroupTruth === false)) { //(this.rotateEachTruth === true && this.rotateGroupTruth === false)
+                    if (this.rotateEachTruth === false && this.rotateGroupTruth === false) { //(this.rotateEachTruth === true && this.rotateGroupTruth === false)
                         p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+                        p.rect(0, 0,
+                            this.wid + this.onBeatGrowModifier - (i * this.sizeGradientAmount),
+                            this.len + this.onBeatGrowModifier - (i * this.sizeGradientAmount));
+                    }
+                    if (this.rotateEachTruth === true && this.rotateGroupTruth === true){
+                        p.rotate(this.rotateGroupRate);
+                        p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+                        p.rotate(this.rotateEachRate);
                         p.rect(0, 0,
                             this.wid + this.onBeatGrowModifier - (i * this.sizeGradientAmount),
                             this.len + this.onBeatGrowModifier - (i * this.sizeGradientAmount));
@@ -212,67 +252,76 @@ export default class Sketch extends Component {
             } // end spread()
 
             // each shape will rotate on it's own z-axis
-            rotateEach(degressPerFrame) {
+            rotateEach(rate) {
                 this.rotateEachTruth = true;
-                this.rotateEachRate = p.radians(degressPerFrame);
+                this.rotateEachRate = p.radians((rate));
             }
 
             // the shapes will rotate as a group on the z-axis
-            rotateGroup(degreesPerFrame) {
+            rotateGroup(rate) {
                 this.rotateGroupTruth = true;
-                this.rotateGroupRate = p.radians(degreesPerFrame);
+                this.rotateGroupRate = p.radians((rate));
             }
 
-            // adds a shape to the group every so often
-            addShapes(ratePerFrame) {
+            // adds a shape to the group however often
+            addShapes(rate) {
                 if (this.numberOfShapes < this.numberMax) {
-                    this.numberOfShapes += ratePerFrame;
+                    this.numberOfShapes += (p.deltaTime / rate);
                 }
             }
 
             // removes a shape from the group every so often
             removeShapes(rate) {
                 if (this.numberOfShapes > this.numberMin) {
-                    this.numberOfShapes -= rate;
+                    this.numberOfShapes -= (p.deltaTime / rate);
                 }
             }
 
             // grows the shape on the x-axis
             growX(rate) {
                 if (this.wid < this.sizeMax) {
-                    this.wid += rate;
+                    this.wid += (p.deltaTime / rate);
                 }
             }
 
             // grows the shape on the y-axis
             growY(rate) {
                 if (this.len < this.sizeMax) {
-                    this.len += rate;
+                    this.len += (p.deltaTime / rate);
                 }
             }
 
             // shrinks the shape on the x-axis
             shrinkX(rate) {
                 if (this.wid > this.sizeMin) {
-                    this.wid -= rate;
+                    this.wid -= (p.deltaTime / rate);
                 }
             }
 
             // shrinksthe shape on the y-axis
             shrinkY(rate) {
                 if (this.len > this.sizeMin) {
-                    this.len -= rate;
+                    this.len -= (p.deltaTime / rate);
                 }
             }
 
             //  makes the shapes different sizes
             sizeGradient(truth) {
                 this.sizeGradientTruth = truth;
-                this.sizeGradientAmount = this.wid / this.numberOfShapes;
+                if (this.sizeGradientTruth === true){
+                    this.sizeGradientAmount = this.wid / this.numberOfShapes;
+
+                }
+                if (this.sizeGradientTruth === false){
+                    this.sizeGradientAmount = 0;
+                } 
+                console.log(this.sizeGradientAmount);
+
             }
 
-            // makes the fill color of the shapes what you desire
-            // also can cylce through the spectrum at a desired rate of units per frame
+            // changes fill color of shapes
+            // also can cycle through the spectrum 
+            // rate = 10(faster cycle), 1000(slow cylce)
             fillColorSingle(hue, cycle, rate) {
                 this.fillColorSingleTruth = true;
                 if (cycle === false) {
@@ -281,15 +330,16 @@ export default class Sketch extends Component {
                 // find a way to set hue color as initial color, otherwise always starts red
                 if (cycle === true) {
                     //this.fillColorHue += rate+hue;
-                    this.fillColorHue += rate;
+                    this.fillColorHue += (p.deltaTime / rate);
                     if (this.fillColorHue > 360) {
                         this.fillColorHue = 0;
                     }
                 }
             }
 
-            // makesthe stroke color of the shapes what you desire
-            // also can cycle through the spectrum at a desired rate of unites per fram
+            // changes stroke color of the shapes
+            // also can cycle through the spectrum 
+            // rate = 10(faster cycle), 1000(slow cylce)
             strokeColorSingle(hue, cycle, rate) {
                 this.strokeColorSingleTruth = true;
                 if (cycle === false) {
@@ -298,23 +348,21 @@ export default class Sketch extends Component {
                 // find a way to set hue color as initial color, otherwise always starts red
                 if (cycle === true) {
                     //this.fillColorHue += rate+hue;
-                    this.strokeColorHue += rate;
+                    this.strokeColorHue += (p.deltaTime / rate);
                     if (this.strokeColorHue > 360) {
                         this.strokeColorHue = 0;
                     }
                 }
             }
 
-            // modifies the size of the shapes depending on !!!!!!!!!!!!!!!!
-            onBeatGrow(modifierAmount, timing, ratio) {
+            // modifies the size of the shapes depending on 
+            onBeatGrow(modifierAmount, lengthOfInterval, lengthOfBeat) {
                 this.onBeatGrowTruth = true;
-                if (p.frameCount % timing < timing / ratio) {
+                if (p.millis() % lengthOfInterval < lengthOfInterval / lengthOfBeat) {
                     this.onBeatGrowModifier = modifierAmount;
                 } else {
                     this.onBeatGrowModifier = 0;
                 }
-                //console.log(this.onBeatGrowModifier);
-                //console.log(modifierAmount);
             }
 
             strokeColorSpectrum() {
