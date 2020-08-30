@@ -12,7 +12,7 @@ describe('tests for makeNotesFromSegmentData function', () => {
     const hits = [0, 1, 0, 0, 0, 0];
     expect(makeNotesFromSegmentData(hits)).toEqual({
       'notes': [{
-        'pitch': 62,
+        'pitch': 65,
         'quantizedEndStep': 1,
         'quantizedStartStep': 0,
       }],
@@ -23,7 +23,7 @@ describe('tests for makeNotesFromSegmentData function', () => {
     const hits = [0, 2, 0, 0, 0, 0];
     expect(makeNotesFromSegmentData(hits)).toEqual({
       'notes': [{
-        'pitch': 62,
+        'pitch': 65,
         'quantizedEndStep': 2,
         'quantizedStartStep': 0,
       }],
