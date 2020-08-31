@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
-import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
+import { makeNotesFromSegmentData, makeVAENotesFromSegmentData } from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segHitState, distance }) {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -12,22 +12,106 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   const synth = useRef(null);
   const synth2 = useRef(null);
   const eCello = useRef(null);
+  const bass = useRef(null);
+  const windy = useRef(null);
   const melodyRNN = useRef(null);
   const melodyVAE = useRef(null);
-  const melodyPart = useRef(null);
+  const melodyRNNPart = useRef(null);
   const melodyCore = useRef(null);
-  const newPart = useRef(null);
+  const newVAEPart = useRef(null);
 
-  if(distForSynth.current) Tone.Transport.bpm.value = 80;
+  if(distForSynth.current) Tone.Transport.bpm.value = 100;
   segHitState.forEach((segment, i) => {
     if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
 
   useEffect(() => {
-    const vol = new Tone.Volume(-20).toDestination();
-    const vol2 = new Tone.Volume(-10).toDestination();
-    synth.current = new Tone.Synth({
+    synth.current = new Tone.AMSynth({
+      'harmonicity': 2,
+      'oscillator': {
+        'type': 'amsine2',
+        'modulationType' : 'sine',
+        'harmonicity': 1.01
+      },
+      'envelope': {
+        'attack': 0.006,
+        'decay': 4,
+        'sustain': 0.04,
+        'release': 1.2
+      },
+      'modulation' : {
+        'volume' : 13,
+        'type': 'amsine2',
+        'modulationType' : 'sine',
+        'harmonicity': 12
+      },
+      'modulationEnvelope' : {
+        'attack': 0.006,
+        'decay': 0.2,
+        'sustain': 0.2,
+        'release': 0.4
+      }
+    });
 
+    synth2.current = new Tone.AMSynth({
+      'harmonicity': 3.999,
+      'oscillator': {
+        'type': 'square'
+      },
+      'envelope': {
+        'attack': 0.03,
+        'decay': 0.3,
+        'sustain': 0.7,
+        'release': 0.8
+      },
+      'modulation' : {
+        'volume' : 5,
+        'type': 'square6'
+      },
+      'modulationEnvelope' : {
+        'attack': 2,
+        'decay': 3,
+        'sustain': 0.8,
+        'release': 0.1
+      }
+    });
+
+    eCello.current = new Tone.FMSynth({
+      'harmonicity': 3.01,
+      'modulationIndex': 14,
+      'oscillator': {
+        'type': 'triangle'
+      },
+      'envelope': {
+        'attack': 0.2,
+        'decay': 0.3,
+        'sustain': 0.1,
+        'release': 1.2
+      },
+      'modulation' : {
+        'type': 'square'
+      },
+      'modulationEnvelope' : {
+        'attack': 0.01,
+        'decay': 0.5,
+        'sustain': 0.2,
+        'release': 0.1
+      }
+    }).toDestination();
+
+    bass.current = new Tone.Synth({
+      'oscillator': {
+        'type': 'sine'
+      },
+      'envelope': {
+        'attack': 0.001,
+        'decay': 0.1,
+        'sustain': 0.1,
+        'release': 1.2
+      }
+    });
+
+    windy.current = new Tone.Synth({
       'oscillator': {
         'type': 'square'
       },
@@ -52,99 +136,60 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       }
 
     });
-    synth2.current = new Tone.AMSynth({
-      'harmonicity': 3.999,
-      'oscillator': {
-        'type': 'square'
-      },
-      'envelope': {
-        'attack': 0.03,
-        'decay': 0.3,
-        'sustain': 0.7,
-        'release': 0.8
-      },
-      'modulation' : {
-        'volume' : 12,
-        'type': 'square6'
-      },
-      'modulationEnvelope' : {
-        'attack': 2,
-        'decay': 3,
-        'sustain': 0.8,
-        'release': 0.1
-      }
-    });
-    eCello.current = new Tone.FMSynth({
-      'harmonicity': 3.01,
-      'modulationIndex': 14,
-      'oscillator': {
-        'type': 'triangle'
-      },
-      'envelope': {
-        'attack': 0.2,
-        'decay': 0.3,
-        'sustain': 0.1,
-        'release': 1.2
-      },
-      'modulation' : {
-        'type': 'square'
-      },
-      'modulationEnvelope' : {
-        'attack': 0.01,
-        'decay': 0.5,
-        'sustain': 0.2,
-        'release': 0.1
-      }
-    }).toDestination();
 
 
-    const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5).connect(vol);
-    synth.current.connect(feedbackDelay);
-    const filter = new Tone.Filter(600, 'highpass').connect(vol2);
-    synth2.current.connect(feedbackDelay);
 
-    synth2.current.connect(filter);
 
-    // synth.connect(filter);
-    // synth.connect(feedbackDelay);
+    const vol = new Tone.Volume(-100).toDestination();
+    const vol2 = new Tone.Volume(0).toDestination();
+    const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5);
+    const filter = new Tone.Filter(600, 'highpass');
+    const pingPong = new Tone.PingPongDelay('8n', 0.3);
+
+
+    synth.current.connect(pingPong);
+    pingPong.connect(vol);
+
+
+    synth2.current.connect(vol2);
+    filter.connect(vol2);
+
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
-    let melodyRnnLoaded = melodyRNN.current.initialize();
+    let melodyRNNLoaded = melodyRNN.current.initialize();
 
     melodyVAE.current = new mm.MusicVAE(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_chords'
     );
     let melodyVAELoaded = melodyVAE.current.initialize();
 
-    rnnStart(melodyRnnLoaded, segHitsChange);
-    generateMelodies(melodyVAELoaded, segHitsChange);
+    rnnStart(melodyRNNLoaded, segHitsChange);
+    vaeStart(melodyVAELoaded, segHitsChange);
   }, []);
 
   useEffect(() => {
     if(melodyRNN.current.initialized) rnnStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
-    if(melodyVAE.current.initialized) generateMelodies(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if(melodyVAE.current.initialized) vaeStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
   }, [segHitsChange]);
 
-  const rnnStart = async (melodyRnnLoaded, segHitsChange) => {
-    if(melodyRnnLoaded) await melodyRnnLoaded;
-    if(melodyPart.current) {
-      melodyPart.current.clear();
+  const rnnStart = async (melodyRNNLoaded, segHitsChange) => {
+    if(melodyRNNLoaded) await melodyRNNLoaded;
+    if(melodyRNNPart.current) {
+      melodyRNNPart.current.clear();
     }
     let noteList = makeNotesFromSegmentData(segHitsChange);
 
     let seed = noteList;
-    let steps = 16;
-    let temperature = 1.1; // RANDOMNESS OF NOTES
+    let steps = 32;
+    let temperature = 1.0; // RANDOMNESS OF NOTES
     // let chordProgression = ['C', 'Am', 'G'];
     let result = await melodyRNN.current.continueSequence(
       seed,
       steps,
       temperature
     );
-    // let result = await melodyRNN.current.continueSequence(seed, steps, temperature, chordProgress); // WORKS FOR chord_pitches_improv CHECKPOINT
-
-    const melodyTest = result.notes.map((note) => {
+    const melodyRNNTest = result.notes.map((note) => {
       return [
         Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(),
         {
@@ -156,40 +201,40 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       ];
     });
 
-    if(melodyPart.current) {
-      melodyPart.current.clear();
-      melodyTest.forEach((event) => {
-        melodyPart.current.add(event[0], event[1]);
+    if(melodyRNNPart.current) {
+      melodyRNNPart.current.clear();
+      melodyRNNTest.forEach((event) => {
+        melodyRNNPart.current.add(event[0], event[1]);
       });
     } else {
-      melodyPart.current = new Tone.Part((time, value) => {
+      melodyRNNPart.current = new Tone.Part((time, value) => {
         synth.current.triggerAttackRelease(value.note, value.duration, time);
-      }, melodyTest).start();
-      melodyPart.current.mute = false;
-      melodyPart.current.loop = true;
-      melodyPart.current.loopStart = 0;
-      melodyPart.current.loopEnd = '2m';
+      }, melodyRNNTest).start();
+      melodyRNNPart.current.mute = false;
+      melodyRNNPart.current.loop = true;
+      melodyRNNPart.current.loopStart = 0;
+      melodyRNNPart.current.loopEnd = '1m';
     }
 
-    melodyPart.current._events.forEach((event) => {
+    melodyRNNPart.current._events.forEach((event) => {
       console.log(event.value);
     });
   };
 
-  const generateMelodies = async (melodyVAELoaded, segHitsChange) => {
+  const vaeStart = async (melodyVAELoaded, segHitsChange) => {
     if(melodyVAELoaded) await melodyVAELoaded;
-    if(newPart.current) {
-      newPart.current.clear();
+    if(newVAEPart.current) {
+      newVAEPart.current.clear();
     }
-    let noteList = makeNotesFromSegmentData(segHitsChange);
+    let noteList = makeVAENotesFromSegmentData(segHitsChange);
     let input = noteList;
 
     let z = await melodyVAE.current.encode([input], {
-      chordProgression: ['D'],
+      chordProgression: ['Cm'],
     });
 
     let one = await melodyVAE.current.decode(z, 1.0, {
-      chordProgression: ['D'],
+      chordProgression: ['Cm'],
     });
     let two = await melodyVAE.current.decode(z, 1.0, {
       chordProgression: ['A'],
@@ -207,31 +252,31 @@ export default function Synth({ distForSynth, segHitState, distance }) {
 
     const newPattern = melodyCore.current.notes.map((note) => {
       return [
-        Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(),
+        Tone.Time(note.quantizedStartStep / 8).toBarsBeatsSixteenths(),
         {
           note: Tone.Frequency(note.pitch, 'midi').toNote(),
           duration: Tone.Time(
-            (note.quantizedEndStep - note.quantizedStartStep) / 4
+            (note.quantizedEndStep - note.quantizedStartStep) / 8
           ).toNotation(),
         },
       ];
     });
 
-    if(newPart.current) {
-      newPart.current.clear();
+    if(newVAEPart.current) {
+      newVAEPart.current.clear();
       newPattern.forEach((event) => {
-        newPart.current.add(event[0], event[1]);
+        newVAEPart.current.add(event[0], event[1]);
       });
     } else {
-      newPart.current = new Tone.Part((time, value) => {
+      newVAEPart.current = new Tone.Part((time, value) => {
         synth2.current.triggerAttackRelease(value.note, value.duration, time);
       }, newPattern).start();
-      newPart.current.loop = true;
-      newPart.current.loopStart = 0;
-      newPart.current.loopEnd = '1m';
+      newVAEPart.current.loop = true;
+      newVAEPart.current.loopStart = 0;
+      newVAEPart.current.loopEnd = '4m';
     }
 
-    newPart.current._events.forEach((event) => {
+    newVAEPart.current._events.forEach((event) => {
       console.log(event.value);
     });
   };
@@ -264,5 +309,6 @@ export default function Synth({ distForSynth, segHitState, distance }) {
 
 Synth.propTypes = {
   distForSynth: PropTypes.object,
-  segHitState: PropTypes.array,
+  segHitState: PropTypes.array.isRequired,
+  distance: PropTypes.object
 };
