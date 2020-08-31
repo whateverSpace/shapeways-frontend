@@ -156,10 +156,8 @@ export default function Synth({ distForSynth, segHitState }) {
 
   useEventListener('keydown', (e) => {
     if (e.keyCode === 32 && isPlaying) {
-      console.log('hii');
       stopMusic();
     } else if (e.keyCode === 32 && !isPlaying) {
-      console.log('bye');
       startMusic();
     }
   });
@@ -177,22 +175,7 @@ export default function Synth({ distForSynth, segHitState }) {
     setIsPlaying(false);
   };
 
-  return (
-    <>
-      {/* <div className={styles.controls}>
-        <button onClick={() => startMusic()}>Start</button>
-        <button onClick={() => stopMusic()}>Stop</button>
-        <button
-          onClick={() => {
-            rnnStart(null, segHitsChange);
-            generateMelodies(null, segHitsChange);
-          }}
-        >
-          Change Melody
-        </button>
-      </div> */}
-    </>
-  );
+  return <></>;
 }
 
 Synth.propTypes = {
