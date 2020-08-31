@@ -4,10 +4,11 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
 import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
-export default function Synth({ distForSynth, segHitState }) {
+export default function Synth({ distForSynth, segHitState, distance }) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
+  const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
   const synth = useRef(null);
   const synth2 = useRef(null);
   const melodyRNN = useRef(null);
@@ -171,9 +172,10 @@ export default function Synth({ distForSynth, segHitState }) {
       <div className={styles.controls}>
         <button onClick={() => startMusic()}>Start</button>
         <button onClick={() => stopMusic()}>Stop</button>
-
       </div>
-
+      <div className={styles.controls}>
+        x:{distance.x} y:{distance.y} wrists:{distance.wrists}
+      </div>
     </>
   );
 }
