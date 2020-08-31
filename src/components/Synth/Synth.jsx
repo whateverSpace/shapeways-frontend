@@ -16,14 +16,14 @@ export default function Synth({ distForSynth, segHitState }) {
   const melodyCore = useRef(null);
   const newPart = useRef(null);
 
-  if(distForSynth.current) Tone.Transport.bpm.value = 120;
+  if(distForSynth.current) Tone.Transport.bpm.value = 80;
   segHitState.forEach((segment, i) => {
     if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
 
   useEffect(() => {
-    synth.current = new Tone.PolySynth(Tone.Synth).toDestination();
-    synth2.current = new Tone.PolySynth(Tone.FMSynth).toDestination();
+    synth.current = new Tone.PolySynth(Tone.PluckSynth).toDestination();
+    synth2.current = new Tone.PolySynth(Tone.Synth).toDestination();
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
@@ -171,14 +171,7 @@ export default function Synth({ distForSynth, segHitState }) {
       <div className={styles.controls}>
         <button onClick={() => startMusic()}>Start</button>
         <button onClick={() => stopMusic()}>Stop</button>
-        <button
-          onClick={() => {
-            rnnStart(null, segHitsChange);
-            generateMelodies(null, segHitsChange);
-          }}
-        >
-          Change Melody
-        </button>
+
       </div>
 
     </>
@@ -187,6 +180,5 @@ export default function Synth({ distForSynth, segHitState }) {
 
 Synth.propTypes = {
   distForSynth: PropTypes.object,
-  segForSynth: PropTypes.array,
   segHitState: PropTypes.array,
 };

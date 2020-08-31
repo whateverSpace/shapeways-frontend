@@ -12,14 +12,7 @@ const Sketch = () => {
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [segForSynth, setSegForSynth] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+
   const [segHitState, setSegHitState] = useState([
     0,
     0,
@@ -29,6 +22,8 @@ const Sketch = () => {
     0,
   ]);
 
+  const [distance, setDistance] = useState(
+    { x: 0, y:0, wrists:0 });
   const sketchStuff = (p) => {
     let video;
     let poseNet;
@@ -360,6 +355,8 @@ const Sketch = () => {
         distInPixels = Math.floor(getDistance(targetLeft, targetRight));
         distance.x = Math.floor(targetLeft.x - targetRight.x);
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
+        setDistance(distance);
+        distance.wrists = mappedDistanceWrists;
         mappedDistanceWrists = p.map(distInPixels, 0, p.width, 0.0, 1.0, true);
 
         // console.log(`Distance between wrists at x-axis: ${distance.x}`);
@@ -376,13 +373,13 @@ const Sketch = () => {
         //   groupTest.removeShapes();
         // }
 
-        const segChange = segForSynth.map((segment, i) => {
-          if(segment !== segments[i].hit) {
-            return segments[i].hit;
-          } else return segment;
-        });
-        // this.setState({ segForSynth: segChange });
-        setSegForSynth(segChange);
+        // const segChange = segForSynth.map((segment, i) => {
+        //   if(segment !== segments[i].hit) {
+        //     return segments[i].hit;
+        //   } else return segment;
+        // });
+        // // this.setState({ segForSynth: segChange });
+        // setSegForSynth(segChange);
 
 
         const segHitStateChange = segHitState.map((segment, i) => {
@@ -544,7 +541,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segHitState={segHitState}/>
+        <Synth distForSynth={distForSynth} segHitState={segHitState} distance={distance}/>
       </section>
     </>
   );
