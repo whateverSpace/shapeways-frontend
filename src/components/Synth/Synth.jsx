@@ -4,6 +4,7 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
 import { makeNotesFromSegmentData, makeVAENotesFromSegmentData } from '../../utils/buildNoteSequence';
+import { NoiseSynth } from 'tone';
 export default function Synth({ distForSynth, segHitState, distance }) {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -13,7 +14,9 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   const synth2 = useRef(null);
   const eCello = useRef(null);
   const bass = useRef(null);
-  const windy = useRef(null);
+  const clap = useRef(null);
+  const drone1 = useRef(null);
+  const drone2 = useRef(null);
   const melodyRNN = useRef(null);
   const melodyVAE = useRef(null);
   const melodyRNNPart = useRef(null);
@@ -52,7 +55,6 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         'release': 0.4
       }
     });
-    let synth2Voice = new Tone.Synth();
     synth2.current = new Tone.PolySynth({
       'portamento': 0.01,
       'oscillator': {
@@ -114,37 +116,28 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       }
     });
 
-    windy.current = new Tone.Synth({
-      'oscillator': {
-        'type': 'square'
-      },
-      'filter': {
-        'Q': 2,
-        'type': 'lowpass',
-        'rolloff': -12
+    clap.current = new Tone.NoiseSynth({
+
+      'noise': {
+        'type': 'white',
+        'playbackRate' : 5
       },
       'envelope': {
-        'attack': 0.005,
-        'decay': 3,
-        'sustain': 0,
-        'release': 0.45
-      },
-      'filterEnvelope': {
         'attack': 0.001,
-        'decay': 0.32,
-        'sustain': 0.9,
-        'release': 3,
-        'baseFrequency': 700,
-        'octaves': 2.3
+        'decay': 0.3,
+        'sustain': 0,
+        'release': 0.3
       }
-
     });
 
 
 
 
-    const vol = new Tone.Volume(0).toDestination();
-    const vol2 = new Tone.Volume(-30).toDestination();
+
+    const vol = new Tone.Volume(-10).toDestination();
+    const vol2 = new Tone.Volume(-20).toDestination();
+    const vol3 = new Tone.Volume(-30).toDestination();
+    const reverb = new Tone.Reverb(8n);
     const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5);
     const filter = new Tone.Filter(600, 'highpass');
     const pingPong = new Tone.PingPongDelay('8n', 0.3);
@@ -153,9 +146,17 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     synth.current.connect(pingPong);
     pingPong.connect(vol);
 
-
-    synth2.current.connect(vol2);
+    synth2.current.connect(reverb);
+    reverb.connect(vol2);
     filter.connect(vol2);
+
+    const crossFade = new Tone.CrossFade().connect(vol3);
+    crossFade.fade.value = 0.5;
+    drone1.current = new Tone.Synth({});
+    drone2.current = new Tone.Synth({});
+    drone1.current = new Tone.Oscillator(55, 'triangle').connect(crossFade.a).start();
+    drone2.current = new Tone.Oscillator(55, 'sine').connect(crossFade.b).start();
+    // use the fade to control the mix between the two
 
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
