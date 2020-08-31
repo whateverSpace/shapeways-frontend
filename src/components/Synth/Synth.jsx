@@ -53,28 +53,33 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       }
     });
 
-    synth2.current = new Tone.AMSynth({
-      'harmonicity': 3.999,
+    synth2.current = new Tone.PolySynth(Tone.Synth({
+      'volume' : 10,
       'oscillator': {
-        'type': 'square'
+        'type': 'sawtooth'
+      },
+      'filter': {
+        'Q': 2,
+        'type': 'bandpass',
+        'rolloff': -24
       },
       'envelope': {
-        'attack': 0.03,
-        'decay': 0.3,
-        'sustain': 0.7,
-        'release': 0.8
+        'attack': 0.01,
+        'decay': 0.1,
+        'sustain': 0.2,
+        'release': 0.6
       },
-      'modulation' : {
-        'volume' : 5,
-        'type': 'square6'
-      },
-      'modulationEnvelope' : {
-        'attack': 2,
-        'decay': 3,
-        'sustain': 0.8,
-        'release': 0.1
+      'filterEnvelope': {
+        'attack': 0.02,
+        'decay': 0.4,
+        'sustain': 1,
+        'release': 0.7,
+        'releaseCurve' : 'linear',
+        'baseFrequency': 20,
+        'octaves': 5
       }
-    });
+    })
+    );
 
     eCello.current = new Tone.FMSynth({
       'harmonicity': 3.01,
@@ -140,8 +145,8 @@ export default function Synth({ distForSynth, segHitState, distance }) {
 
 
 
-    const vol = new Tone.Volume(-100).toDestination();
-    const vol2 = new Tone.Volume(0).toDestination();
+    const vol = new Tone.Volume(0).toDestination();
+    const vol2 = new Tone.Volume(-30).toDestination();
     const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5);
     const filter = new Tone.Filter(600, 'highpass');
     const pingPong = new Tone.PingPongDelay('8n', 0.3);
@@ -164,16 +169,16 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     );
     let melodyVAELoaded = melodyVAE.current.initialize();
 
-    rnnStart(melodyRNNLoaded, segHitsChange);
+    rnnMelodyStart(melodyRNNLoaded, segHitsChange);
     vaeStart(melodyVAELoaded, segHitsChange);
   }, []);
 
   useEffect(() => {
-    if(melodyRNN.current.initialized) rnnStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if(melodyRNN.current.initialized) rnnMelodyStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
     if(melodyVAE.current.initialized) vaeStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
   }, [segHitsChange]);
 
-  const rnnStart = async (melodyRNNLoaded, segHitsChange) => {
+  const rnnMelodyStart = async (melodyRNNLoaded, segHitsChange) => {
     if(melodyRNNLoaded) await melodyRNNLoaded;
     if(melodyRNNPart.current) {
       melodyRNNPart.current.clear();
@@ -213,7 +218,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       melodyRNNPart.current.mute = false;
       melodyRNNPart.current.loop = true;
       melodyRNNPart.current.loopStart = 0;
-      melodyRNNPart.current.loopEnd = '1m';
+      melodyRNNPart.current.loopEnd = '2m';
     }
 
     melodyRNNPart.current._events.forEach((event) => {
