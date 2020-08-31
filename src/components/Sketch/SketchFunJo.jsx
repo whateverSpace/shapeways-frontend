@@ -386,8 +386,8 @@ const Sketch = () => {
 
 
         const segHitStateChange = segHitState.map((segment, i) => {
-          if(segment !== segments[i].hit) {
-            return segments[i].hit;
+          if(segment !== segments[i].counter) {
+            return segments[i].counter;
           } else return segment;
         });
         // this.setState({ segForSynth: segChange });
@@ -544,7 +544,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segForSynth={segForSynth} segHitState={segHitState}/>
+        <Synth distForSynth={distForSynth} segHitState={segHitState}/>
       </section>
     </>
   );

@@ -4,16 +4,8 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
 import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
-export default function Synth({ distForSynth, segForSynth, segHitState }) {
+export default function Synth({ distForSynth, segHitState }) {
   const [isPlaying, setIsPlaying] = useState(false);
-  // const [segChange, setSegChange] = useState([
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  // ]);
 
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
   const synth = useRef(null);
@@ -31,7 +23,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
   useEffect(() => {
     synth.current = new Tone.PolySynth(Tone.Synth).toDestination();
-    synth2.current = new Tone.PolySynth(Tone.AMSynth).toDestination();
+    synth2.current = new Tone.PolySynth(Tone.FMSynth).toDestination();
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
@@ -189,12 +181,6 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
         </button>
       </div>
 
-      <div className={styles.controls}>
-        <div>distance:{`${distForSynth.current}`}</div>
-      </div>
-      <div className={styles.controls}>
-        <div>segments:{`${segForSynth}`}</div>
-      </div>
     </>
   );
 }
