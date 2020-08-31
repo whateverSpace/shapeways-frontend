@@ -23,8 +23,45 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   });
 
   useEffect(() => {
-    synth.current = new Tone.PolySynth(Tone.PluckSynth).toDestination();
-    synth2.current = new Tone.PolySynth(Tone.Synth).toDestination();
+    synth.current = new Tone.FMSynth({
+      'harmonicity':8,
+      'modulationIndex': 2,
+      'oscillator' : {
+        'type': 'sine'
+      },
+      'envelope': {
+        'attack': 0.001,
+        'decay': 2,
+        'sustain': 0.1,
+        'release': 2
+      },
+      'modulation' : {
+        'type' : 'square'
+      },
+      'modulationEnvelope' : {
+        'attack': 0.002,
+        'decay': 0.2,
+        'sustain': 0,
+        'release': 0.2
+      }
+    }).toDestination();
+    synth2.current = new Tone.Synth({
+      'portamento' : 0.0,
+      'oscillator': {
+        'type': 'square4'
+      },
+      'envelope': {
+        'attack': 2,
+        'decay': 1,
+        'sustain': 0.2,
+        'release': 2
+      }
+    }).toDestination();
+
+    const filter = new Tone.Filter(400, 'lowpass').toDestination();
+    const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5).toDestination();
+    // synth.connect(filter);
+    // synth.connect(feedbackDelay);
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
@@ -146,7 +183,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       }, newPattern).start();
       newPart.current.loop = true;
       newPart.current.loopStart = 0;
-      newPart.current.loopEnd = '2m';
+      newPart.current.loopEnd = '1m';
     }
 
     newPart.current._events.forEach((event) => {
