@@ -23,7 +23,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   });
 
   useEffect(() => {
-    const vol = new Tone.Volume(-12).toDestination();
+    const vol = new Tone.Volume(-15).toDestination();
     synth.current = new Tone.FMSynth({
       'harmonicity':8,
       'modulationIndex': 2,
@@ -46,16 +46,26 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         'release': 0.2
       }
     }).connect(vol);
-    synth2.current = new Tone.Synth({
-      'portamento' : 0.0,
+    synth2.current = new Tone.AMSynth({
+      'harmonicity': 3.999,
       'oscillator': {
-        'type': 'square4'
+        'type': 'square'
       },
       'envelope': {
+        'attack': 0.03,
+        'decay': 0.3,
+        'sustain': 0.7,
+        'release': 0.8
+      },
+      'modulation' : {
+        'volume' : 12,
+        'type': 'square6'
+      },
+      'modulationEnvelope' : {
         'attack': 2,
-        'decay': 1,
-        'sustain': 0.2,
-        'release': 2
+        'decay': 3,
+        'sustain': 0.8,
+        'release': 0.1
       }
     }).connect(vol);
 
