@@ -65,6 +65,9 @@ const Sketch = () => {
         this.hitState = { l: 0, r: 0, n: 0 };
         this.counter = 0;
         this.alpha = 0;
+
+        this.mappedNoseColor = 0;
+        this.mappedThing = 0;
       }
 
       display() {
@@ -74,7 +77,12 @@ const Sketch = () => {
           p.push();
           p.translate((p.width / 6) * 5, p.height / 4);
           p.scale(-1.0, 1.0);
-          p.fill(270, 30, 255, 0.1);
+          // change mapped values to be ratio of canvas size
+          mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+          mappedThing = p.int(mappedNoseColor);
+          p.fill(mappedThing, mappedThing, mappedThing, 0.1);
+          // p.fill(270, 30, 255, 0.1);
+
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
           p.pop();
         } else {
@@ -82,6 +90,10 @@ const Sketch = () => {
           this.alpha = p.lerp(this.alpha, 0, 0.1);
         }
       }
+
+      // mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+      // mappedThing = p.int(mappedNoseColor);
+      // p.background(mappedThing, mappedThing, mappedThing);
 
       checkCollision(targetL, targetR, targetN) {
         this.hitState.l = collision(
@@ -309,6 +321,13 @@ const Sketch = () => {
           shapeGroup.rotateGroup(1);
           // console.log('cool');
         }
+        if (
+          targetRight.x > 5 * (p.width / 12) &&
+          targetRight.x < 7 * (p.width / 12)
+        ) {
+          shapeGroup.rotateGroup(-1);
+          // console.log('cool');
+        }
 
         //  .addShapes() will add a shape to the total every x milliseconds?
         //if (p.keyIsPressed === true && p.key === 't') {
@@ -364,7 +383,13 @@ const Sketch = () => {
 
         // .sizeGradient determines if the shapes will be all the same size
         // or an array from large to small
-        if (p.keyIsPressed === true && p.key === 'l') {
+        ///  if (p.keyIsPressed === true && p.key === 'l') {
+        //   shapeGroup.sizeGradient(true);
+        // } else {
+        //   shapeGroup.sizeGradient(false);
+        // }
+
+        if (p.abs(targetLeft.y - targetRight.y) > p.height / 2) {
           shapeGroup.sizeGradient(true);
         } else {
           shapeGroup.sizeGradient(false);
@@ -414,9 +439,13 @@ const Sketch = () => {
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
           // console.log(`Segment ${i} has ${seg.counter} hits.`);
+          mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+          mappedThing = p.int(mappedNoseColor);
+          p.fill(mappedThing, mappedThing, mappedThing);
           seg.display();
         }
 
+        // p.background(mappedThing, mappedThing, mappedThing);
         distInPixels = Math.floor(getDistance(targetLeft, targetRight));
         distance.x = Math.floor(targetLeft.x - targetRight.x);
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
