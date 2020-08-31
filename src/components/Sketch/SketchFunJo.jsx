@@ -235,6 +235,7 @@ const Sketch = () => {
         p.push();
         p.translate(p.width, 0);
         p.scale(-1.0, 1.0);
+        p.push();
         // drawing out appendages
         p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
         p.ellipse(nose.x, nose.y, 10);
@@ -248,20 +249,30 @@ const Sketch = () => {
 
         //shape stuff
         p.push();
+        // p.translate(p.width, 0);
+        // p.scale(-1.0, 1.0);
 
         // this p.translate determines the position of the first shape
         // probably use the x and y coordinates for one of the wrists here?
-        p.translate(p.mouseX, p.mouseY); // start point for the shapes
+        // p.translate(p.mouseX, p.mouseY); // start point for the shapes
+        p.translate(targetLeft.x, targetLeft.y);
+        // p.scale(-1.0, 1.0);
 
-        // .spread() chooses the end point for the group of shapess
+        // .spread() chooses the end point for the group of shapes
         // probably us the x and y coordinates for the other wrist here?
-        shapeGroup.spread(p.mouseX - p.width / 2, p.mouseY - p.height / 2); // end point for the shapes
+        // shapeGroup.spread(p.mouseX - p.width / 2, p.mouseY - p.height / 2); // end point for the shapes
+        shapeGroup.spread(
+          targetLeft.x,
+          targetLeft.y,
+          targetRight.x,
+          targetRight.y
+        );
 
         // .fillColorSingle lets you:
         //   choose a color for the fill of all the shapes
         //   choose if the color will cycle through the spectrum or not
         //   choose the rate of the cycle (i.e. 5ish=fast, 100ish=slow)
-        // (hue value(0-360), cyle / or don't, rate)
+        // (hue value(0-360), cycle / or don't, rate)
         //if (p.keyIsPressed === true && p.key === 'q') {
         shapeGroup.fillColorSingle(100, true, 50);
         //}
@@ -270,7 +281,7 @@ const Sketch = () => {
         //   choose a color for the stroke of all the shapes
         //   choose if the color will cycle through the spectrum or not
         //   choose the rate of the cycle (i.e. 5ish=fast, 100ish=slow)
-        // (hue value (0-360), cyle / or don't, rate)
+        // (hue value (0-360), cycle / or don't, rate)
         //if (p.keyIsPressed === true && p.key === 'w') {
         shapeGroup.strokeColorSingle(30, false, 5);
         //}
@@ -341,6 +352,7 @@ const Sketch = () => {
         shapeGroup.display();
 
         // this ends the p.push() and p.pop() pair that surround all of the shapes
+        p.pop();
         p.pop();
 
         //segment stuff
@@ -530,10 +542,16 @@ const Sketch = () => {
       } // end display()
 
       // takes end point of shape group and spreads the shapes out accordingly
-      spread(endPointX, endPointY) {
-        this.spreadAmountX = endPointX / this.numberOfShapes;
-        this.spreadAmountY = endPointY / this.numberOfShapes;
-      } // end spread()
+      // spread(endPointX, endPointY) {
+      //   this.spreadAmountX = endPointX / this.numberOfShapes;
+      //   this.spreadAmountY = endPointY / this.numberOfShapes;
+      // } // end spread()
+
+      spread(startX, startY, endX, endY) {
+        this.spreadTruth = true;
+        this.spreadAmountX = (endX - startX) / (this.numberOfShapes - 1);
+        this.spreadAmountY = (endY - startY) / (this.numberOfShapes - 1);
+      }
 
       // each shape will rotate on it's own z-axis
       rotateEach(rate) {
