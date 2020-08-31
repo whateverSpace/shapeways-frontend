@@ -154,7 +154,7 @@ const Sketch = () => {
 
       // initializes the group of shapes
       // (number of shapes, min number, max number, side length, min length,max length)
-      shapeGroup = new ShapeGroup(5, 50, 5, 20, 20, 150);
+      shapeGroup = new ShapeGroup(5, 50, 5, 30, 30, 200);
 
       segments[0] = new Segment(0, 0);
 
@@ -239,6 +239,7 @@ const Sketch = () => {
         // drawing out appendages
         p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
         p.ellipse(nose.x, nose.y, 10);
+        p.fill(0, 0, 255, 0.3);
         p.ellipse(leftEye.x, leftEye.y, 20);
         p.ellipse(rightEye.x, rightEye.y, 20);
         p.push();
@@ -290,49 +291,75 @@ const Sketch = () => {
         // .rotateEach will make each shape rotate around it's own center
         // p.millis()) uses the computers clock for timing
         // /5 = faster, /100 =  slower
-        if (p.keyIsPressed === true && p.key === 'e') {
-          shapeGroup.rotateEach(p.millis() / 30);
-        }
+        // if (p.keyIsPressed === true && p.key === 'e') {
+        //  shapeGroup.rotateEach(p.millis() / 30);
+        // }
+        //shapeGroup.rotateEach(p.millis() / 30);
 
         // .rotateGroup() will makethe group of shapes rotate as one unit
         // p.millis()) uses the computers clock for timing
         // /5 = faster, /100 =  slower
-        if (p.keyIsPressed === true && p.key === 'r') {
-          shapeGroup.rotateGroup(p.millis() / 50);
+        //if (p.keyIsPressed === true && p.key === 'r') {
+        //  shapeGroup.rotateGroup(p.millis() / 50);
+        //}
+        if (
+          targetLeft.x > 5 * (p.width / 12) &&
+          targetLeft.x < 7 * (p.width / 12)
+        ) {
+          shapeGroup.rotateGroup(1);
+          // console.log('cool');
         }
 
         //  .addShapes() will add a shape to the total every x milliseconds?
-        if (p.keyIsPressed === true && p.key === 't') {
-          shapeGroup.addShapes(2000);
+        //if (p.keyIsPressed === true && p.key === 't') {
+        //  shapeGroup.addShapes(2000);
+        //}
+        if (p.abs(targetLeft.x - targetRight.x) > p.width / 3) {
+          shapeGroup.addShapes(500);
         }
 
         // .removeShapes() will remove a shape from the total every x milliseconds?
-        if (p.keyIsPressed === true && p.key === 'y') {
-          shapeGroup.removeShapes(1000);
+        //if (p.keyIsPressed === true && p.key === 'y') {
+        //  shapeGroup.removeShapes(1000);
+        //}
+        if (p.abs(targetLeft.x - targetRight.x) < p.width / 3) {
+          shapeGroup.removeShapes(250);
         }
 
         // .growY will make the rects grow in the y-direction
         // rate 5ish = fast, 100ish = slow
-        if (p.keyIsPressed === true && p.key === 'u') {
-          shapeGroup.growY(75);
-        }
-
-        // .growX will make the rects grow in the x-direction
-        // rate 5ish = fast, 100ish = slow
-        if (p.keyIsPressed === true && p.key === 'i') {
-          shapeGroup.growX(75);
-        }
-
-        // .shrinkX will make the rects shrink in the x-direction
-        // rate 5ish = fast, 100ish = slow
-        if (p.keyIsPressed === true && p.key === 'o') {
-          shapeGroup.shrinkX(75);
+        // if (p.keyIsPressed === true && p.key === 'u') {
+        //   shapeGroup.growY(75, 200);
+        // }
+        if (targetLeft.y < p.height / 2) {
+          shapeGroup.growY(35, 200);
         }
 
         // .shrinkY will makethe rects shrink in the y-direction
         // rate 5ish = fast, 100ish = slow
-        if (p.keyIsPressed === true && p.key === 'p') {
-          shapeGroup.shrinkY(75);
+        //if (p.keyIsPressed === true && p.key === 'p') {
+        //  shapeGroup.shrinkY(75, 30);
+        //}
+        if (targetLeft.y > p.height / 2) {
+          shapeGroup.shrinkY(35, 30);
+        }
+
+        // .growX will make the rects grow in the x-direction
+        // rate 5ish = fast, 100ish = slow
+        //if (p.keyIsPressed === true && p.key === 'i') {
+        //  shapeGroup.growX(75), 200;
+        // }
+        if (targetRight.y < p.height / 2) {
+          shapeGroup.growX(35, 200);
+        }
+
+        // .shrinkX will make the rects shrink in the x-direction
+        // rate 5ish = fast, 100ish = slow
+        //if (p.keyIsPressed === true && p.key === 'o') {
+        //  shapeGroup.shrinkX(75, 30);
+        //}
+        if (targetRight.y > p.height / 2) {
+          shapeGroup.shrinkX(35, 30);
         }
 
         // .sizeGradient determines if the shapes will be all the same size
@@ -476,6 +503,15 @@ const Sketch = () => {
         this.onBeatGrowTruth = false;
         this.onBeatGrowModifier = 0;
         this.sizeGradientAmount = 0;
+
+        // counter fro rotateGroup
+        this.rotateGroupCounter = 0;
+
+        // variables for left and right wrist locations
+        this.leftX = 0;
+        this.leftY = 0;
+        this.rightX = 0;
+        this.rightY = 0;
       } // end constructor
 
       // dipslays the group of shapes and their various modifications
@@ -505,13 +541,21 @@ const Sketch = () => {
             this.rotateGroupTruth === true &&
             this.rotateEachTruth === false
           ) {
+            p.push();
+            p.translate(
+              -(this.leftX - this.rightX) / 2,
+              -(this.leftY - this.rightY) / 2
+            );
+            p.push();
             p.rotate(this.rotateGroupRate); // rotates group together nicely-ish
             p.rect(
-              i * this.spreadAmountX,
-              i * this.spreadAmountY,
+              (i - this.numberOfShapes / 2) * this.spreadAmountX,
+              (i - this.numberOfShapes / 2) * this.spreadAmountY,
               this.wid + this.onBeatGrowModifier - i * this.sizeGradientAmount,
               this.len + this.onBeatGrowModifier - i * this.sizeGradientAmount
             );
+            p.pop();
+            p.pop();
           }
 
           if (
@@ -550,6 +594,10 @@ const Sketch = () => {
 
       spread(startX, startY, endX, endY) {
         this.spreadTruth = true;
+        this.leftX = startX;
+        this.leftY = startY;
+        this.rightX = endX;
+        this.rightY = endY;
         this.spreadAmountX = (endX - startX) / (this.numberOfShapes - 1);
         this.spreadAmountY = (endY - startY) / (this.numberOfShapes - 1);
       }
@@ -563,7 +611,11 @@ const Sketch = () => {
       // the shapes will rotate as a group on the z-axis
       rotateGroup(rate) {
         this.rotateGroupTruth = true;
-        this.rotateGroupRate = p.radians(rate);
+        this.rotateGroupCounter += rate;
+        if (this.rotateGroupCounter > 360) {
+          this.rotateGroupCounter = 0;
+        }
+        this.rotateGroupRate = p.radians(this.rotateGroupCounter);
       }
 
       // adds a shape to the group however often
@@ -581,29 +633,29 @@ const Sketch = () => {
       }
 
       // grows the shape on the x-axis
-      growX(rate) {
-        if (this.wid < this.sizeMax) {
+      growX(rate, max) {
+        if (this.wid < max) {
           this.wid += p.deltaTime / rate;
         }
       }
 
       // grows the shape on the y-axis
-      growY(rate) {
-        if (this.len < this.sizeMax) {
+      growY(rate, max) {
+        if (this.len < max) {
           this.len += p.deltaTime / rate;
         }
       }
 
       // shrinks the shape on the x-axis
-      shrinkX(rate) {
-        if (this.wid > this.sizeMin) {
+      shrinkX(rate, min) {
+        if (this.wid > min) {
           this.wid -= p.deltaTime / rate;
         }
       }
 
       // shrinksthe shape on the y-axis
-      shrinkY(rate) {
-        if (this.len > this.sizeMin) {
+      shrinkY(rate, min) {
+        if (this.len > min) {
           this.len -= p.deltaTime / rate;
         }
       }

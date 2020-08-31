@@ -88,9 +88,9 @@ export default function Synth({ distForSynth, segHitState }) {
       melodyPart.current.loopEnd = '2m';
     }
 
-    melodyPart.current._events.forEach((event) => {
-      console.log(event.value);
-    });
+    // melodyPart.current._events.forEach((event) => {
+    //   console.log(event.value);
+    // });
   };
 
   const generateMelodies = async (melodyVAELoaded, segHitsChange) => {
