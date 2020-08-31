@@ -23,6 +23,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   });
 
   useEffect(() => {
+    const vol = new Tone.Volume(-12).toDestination();
     synth.current = new Tone.FMSynth({
       'harmonicity':8,
       'modulationIndex': 2,
@@ -44,7 +45,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         'sustain': 0,
         'release': 0.2
       }
-    }).toDestination();
+    }).connect(vol);
     synth2.current = new Tone.Synth({
       'portamento' : 0.0,
       'oscillator': {
@@ -56,7 +57,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         'sustain': 0.2,
         'release': 2
       }
-    }).toDestination();
+    }).connect(vol);
 
     const filter = new Tone.Filter(400, 'lowpass').toDestination();
     const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5).toDestination();
