@@ -52,34 +52,32 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         'release': 0.4
       }
     });
-
-    synth2.current = new Tone.PolySynth(Tone.Synth({
-      'volume' : 10,
+    let synth2Voice = new Tone.Synth();
+    synth2.current = new Tone.PolySynth({
+      'portamento': 0.01,
       'oscillator': {
         'type': 'sawtooth'
       },
       'filter': {
         'Q': 2,
-        'type': 'bandpass',
+        'type': 'lowpass',
         'rolloff': -24
       },
       'envelope': {
-        'attack': 0.01,
+        'attack': 0.1,
         'decay': 0.1,
-        'sustain': 0.2,
-        'release': 0.6
+        'sustain': 0.6,
+        'release': 0.5
       },
       'filterEnvelope': {
-        'attack': 0.02,
-        'decay': 0.4,
-        'sustain': 1,
-        'release': 0.7,
-        'releaseCurve' : 'linear',
-        'baseFrequency': 20,
-        'octaves': 5
+        'attack': 0.05,
+        'decay': 0.8,
+        'sustain': 0.4,
+        'release': 1.5,
+        'baseFrequency': 2000,
+        'octaves': 1.5
       }
-    })
-    );
+    });
 
     eCello.current = new Tone.FMSynth({
       'harmonicity': 3.01,
@@ -235,20 +233,20 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     let input = noteList;
 
     let z = await melodyVAE.current.encode([input], {
-      chordProgression: ['Cm'],
+      chordProgression: ['C'],
     });
 
     let one = await melodyVAE.current.decode(z, 1.0, {
-      chordProgression: ['Cm'],
+      chordProgression: ['C'],
     });
     let two = await melodyVAE.current.decode(z, 1.0, {
-      chordProgression: ['A'],
+      chordProgression: ['E'],
     });
     let three = await melodyVAE.current.decode(z, 1.0, {
-      chordProgression: ['Bm'],
+      chordProgression: ['G'],
     });
     let four = await melodyVAE.current.decode(z, 1.0, {
-      chordProgression: ['G'],
+      chordProgression: ['C'],
     });
 
     melodyCore.current = new mm.sequences.concatenate(
