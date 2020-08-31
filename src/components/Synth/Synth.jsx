@@ -31,7 +31,7 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
 
   useEffect(() => {
     synth.current = new Tone.PolySynth(Tone.Synth).toDestination();
-    synth2.current = new Tone.PolySynth(Tone.Synth).toDestination();
+    synth2.current = new Tone.PolySynth(Tone.AMSynth).toDestination();
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
@@ -46,10 +46,10 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
     generateMelodies(melodyVAELoaded, segHitsChange);
   }, []);
 
-  // useEffect(() => {
-  //   if(melodyRNN.current.initialized) rnnStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
-  //   if(melodyVAE.current.initialized) generateMelodies(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
-  // }, [segHitsChange]);
+  useEffect(() => {
+    if(melodyRNN.current.initialized) rnnStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if(melodyVAE.current.initialized) generateMelodies(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+  }, [segHitsChange]);
 
   const rnnStart = async (melodyRnnLoaded, segHitsChange) => {
     if(melodyRnnLoaded) await melodyRnnLoaded;
@@ -81,8 +81,6 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
       ];
     });
 
-    console.log(melodyTest);
-
     if(melodyPart.current) {
       melodyPart.current.clear();
       melodyTest.forEach((event) => {
@@ -101,8 +99,6 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
     melodyPart.current._events.forEach((event) => {
       console.log(event.value);
     });
-    // console.log('melodyPart:');
-    // console.log(melodyPart.current);
   };
 
   const generateMelodies = async (melodyVAELoaded, segHitsChange) => {
@@ -146,8 +142,6 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
       ];
     });
 
-    console.log(newPattern);
-
     if(newPart.current) {
       newPart.current.clear();
       newPattern.forEach((event) => {
@@ -165,8 +159,6 @@ export default function Synth({ distForSynth, segForSynth, segHitState }) {
     newPart.current._events.forEach((event) => {
       console.log(event.value);
     });
-    // console.log('newPart:');
-    // console.log(newPart.current);
   };
 
   const startMusic = async () => {
