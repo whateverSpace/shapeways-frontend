@@ -16,9 +16,9 @@ export default function Synth({ distForSynth, segHitState }) {
   const melodyCore = useRef(null);
   const newPart = useRef(null);
 
-  if(distForSynth.current) Tone.Transport.bpm.value = 120;
+  if (distForSynth.current) Tone.Transport.bpm.value = 120;
   segHitState.forEach((segment, i) => {
-    if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
+    if (segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
 
   useEffect(() => {
@@ -39,13 +39,13 @@ export default function Synth({ distForSynth, segHitState }) {
   }, []);
 
   useEffect(() => {
-    if(melodyRNN.current.initialized) rnnStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
-    if(melodyVAE.current.initialized) generateMelodies(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if (melodyRNN.current.initialized) rnnStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if (melodyVAE.current.initialized) generateMelodies(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
   }, [segHitsChange]);
 
   const rnnStart = async (melodyRnnLoaded, segHitsChange) => {
-    if(melodyRnnLoaded) await melodyRnnLoaded;
-    if(melodyPart.current) {
+    if (melodyRnnLoaded) await melodyRnnLoaded;
+    if (melodyPart.current) {
       melodyPart.current.clear();
     }
     let noteList = makeNotesFromSegmentData(segHitsChange);
@@ -73,7 +73,7 @@ export default function Synth({ distForSynth, segHitState }) {
       ];
     });
 
-    if(melodyPart.current) {
+    if (melodyPart.current) {
       melodyPart.current.clear();
       melodyTest.forEach((event) => {
         melodyPart.current.add(event[0], event[1]);
@@ -94,8 +94,8 @@ export default function Synth({ distForSynth, segHitState }) {
   };
 
   const generateMelodies = async (melodyVAELoaded, segHitsChange) => {
-    if(melodyVAELoaded) await melodyVAELoaded;
-    if(newPart.current) {
+    if (melodyVAELoaded) await melodyVAELoaded;
+    if (newPart.current) {
       newPart.current.clear();
     }
     let noteList = makeNotesFromSegmentData(segHitsChange);
@@ -134,7 +134,7 @@ export default function Synth({ distForSynth, segHitState }) {
       ];
     });
 
-    if(newPart.current) {
+    if (newPart.current) {
       newPart.current.clear();
       newPattern.forEach((event) => {
         newPart.current.add(event[0], event[1]);
@@ -149,19 +149,19 @@ export default function Synth({ distForSynth, segHitState }) {
     }
 
     newPart.current._events.forEach((event) => {
-      console.log(event.value);
+      // console.log(event.value);
     });
   };
 
   const startMusic = async () => {
-    if(isPlaying) return;
+    if (isPlaying) return;
     await Tone.start();
     Tone.Transport.start();
     setIsPlaying(true);
   };
 
   const stopMusic = () => {
-    if(!isPlaying) return;
+    if (!isPlaying) return;
     Tone.Transport.stop();
     setIsPlaying(false);
   };
@@ -180,7 +180,6 @@ export default function Synth({ distForSynth, segHitState }) {
           Change Melody
         </button>
       </div>
-
     </>
   );
 }

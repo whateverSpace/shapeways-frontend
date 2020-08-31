@@ -38,7 +38,7 @@ const Sketch = () => {
 
     let shapeGroup;
 
-    let mappedDistanceShapeScale;
+    // let mappedDistanceShapeScale;
 
     let pose;
     let right;
@@ -74,7 +74,7 @@ const Sketch = () => {
           p.push();
           p.translate((p.width / 6) * 5, p.height / 4);
           p.scale(-1.0, 1.0);
-          p.fill(270, 255, 255, 0.3);
+          p.fill(270, 30, 255, 0.1);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
           p.pop();
         } else {
@@ -204,9 +204,9 @@ const Sketch = () => {
         scoreRight = poses[0].pose.keypoints[10].score;
         scoreLeft = poses[0].pose.keypoints[9].score;
 
-        mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-        mappedThing = p.int(mappedNoseColor);
-        p.background(mappedThing, mappedThing, mappedThing);
+        // mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+        // mappedThing = p.int(mappedNoseColor);
+        // p.background(mappedThing, mappedThing, mappedThing);
 
         //uncomment to see webcam image
         // p.push();
@@ -273,7 +273,8 @@ const Sketch = () => {
         //   choose if the color will cycle through the spectrum or not
         //   choose the rate of the cycle (i.e. 5ish=fast, 100ish=slow)
         // (hue value(0-360), cycle / or don't, rate)
-        //if (p.keyIsPressed === true && p.key === 'q') {
+        //if (p.keyIsPressed === true && p.key === 'q')
+        // if it's set fast, you may have performance problems
         shapeGroup.fillColorSingle(100, true, 50);
         //}
 
@@ -480,7 +481,7 @@ const Sketch = () => {
       // dipslays the group of shapes and their various modifications
       display() {
         for (let i = 0; i < this.numberOfShapes; i++) {
-          p.fill(this.fillColorHue, 255, 255, 0.3);
+          p.fill(this.fillColorHue, 255, 255, 0.6);
           p.stroke(this.strokeColorHue, 255, 255, 0.6);
 
           p.push();
@@ -616,7 +617,7 @@ const Sketch = () => {
         if (this.sizeGradientTruth === false) {
           this.sizeGradientAmount = 0;
         }
-        console.log(this.sizeGradientAmount);
+        // console.log(this.sizeGradientAmount);
       }
 
       // changes fill color of shapes
