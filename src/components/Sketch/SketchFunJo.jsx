@@ -411,13 +411,8 @@ const Sketch = () => {
         setSegForSynth(segChange);
 
         const segHitStateChange = segHitState.map((segment, i) => {
-<<<<<<< HEAD
-          if (segment !== segments[i].hit) {
-            return segments[i].hit;
-=======
-          if(segment !== segments[i].counter) {
+          if (segment !== segments[i].counter) {
             return segments[i].counter;
->>>>>>> b3addb5e0a1611188c509fc210e5f461c53ad1d6
           } else return segment;
         });
         // this.setState({ segForSynth: segChange });
@@ -683,15 +678,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-<<<<<<< HEAD
-        <Synth
-          distForSynth={distForSynth}
-          segForSynth={segForSynth}
-          segHitState={segHitState}
-        />
-=======
-        <Synth distForSynth={distForSynth} segHitState={segHitState}/>
->>>>>>> b3addb5e0a1611188c509fc210e5f461c53ad1d6
+        <Synth distForSynth={distForSynth} segHitState={segHitState} />
       </section>
     </>
   );
