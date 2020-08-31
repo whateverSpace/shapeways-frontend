@@ -8,6 +8,22 @@ body {
   overflow: hidden;
 }
 
+.WelcomeScreen{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background: RGBA(0, 0, 0, 0.75);
+  z-index: 9999999;
+  display: visible;
+}
+
+.hidden{
+  display: none;
+}
+
+
 body {
   display: flex;
   flex-direction: row;

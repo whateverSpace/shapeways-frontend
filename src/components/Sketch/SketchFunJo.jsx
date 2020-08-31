@@ -12,18 +12,16 @@ const Sketch = () => {
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
-
+  const [playing, setIsPlaying] = useState(false);
   const [segHitState, setSegHitState] = useState([
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    0, 0, 0, 0, 0, 0,
   ]);
-
   const [distance, setDistance] = useState(
     { x: 0, y:0, wrists:0 });
+  const onClick = () => {
+    setIsPlaying(!playing);
+  };
+
   const sketchStuff = (p) => {
     let video;
     let poseNet;
@@ -533,15 +531,17 @@ const Sketch = () => {
   useEffect(() => {
     myP5.current = new p5(sketchStuff, myRef.current);
   }, []);
-
+  // <div className={`${styles.WelcomeScreen} ${playing && styles.hidden} `}onClick={onClick} >
+  // </div>
   return (
     <>
+
       <section>
         {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segHitState={segHitState} distance={distance}/>
+        <Synth distForSynth={distForSynth} segHitState={segHitState} distance={distance} playing={playing} />
       </section>
     </>
   );

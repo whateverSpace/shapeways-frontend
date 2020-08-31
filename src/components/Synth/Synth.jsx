@@ -5,8 +5,8 @@ import * as Tone from 'tone';
 import styles from './Synth.css';
 import { makeNotesFromSegmentData, makeVAENotesFromSegmentData } from '../../utils/buildNoteSequence';
 import { NoiseSynth } from 'tone';
-export default function Synth({ distForSynth, segHitState, distance }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+export default function Synth({ distForSynth, segHitState, distance, playing }) {
+
 
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
   const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
@@ -137,7 +137,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     const vol = new Tone.Volume(-10).toDestination();
     const vol2 = new Tone.Volume(-20).toDestination();
     const vol3 = new Tone.Volume(-30).toDestination();
-    const reverb = new Tone.Reverb(8n);
+    const reverb = new Tone.Reverb('8n');
     const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5);
     const filter = new Tone.Filter(600, 'highpass');
     const pingPong = new Tone.PingPongDelay('8n', 0.3);
@@ -314,5 +314,6 @@ export default function Synth({ distForSynth, segHitState, distance }) {
 Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  distance: PropTypes.object
+  distance: PropTypes.object,
+  playing: PropTypes.bool.isRequired
 };
