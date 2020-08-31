@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
+import useEventListener from '@use-it/event-listener';
 import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segHitState }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -153,6 +154,16 @@ export default function Synth({ distForSynth, segHitState }) {
     });
   };
 
+  useEventListener('keydown', (e) => {
+    if (e.keyCode === 32 && isPlaying) {
+      console.log('hii');
+      stopMusic();
+    } else if (e.keyCode === 32 && !isPlaying) {
+      console.log('bye');
+      startMusic();
+    }
+  });
+
   const startMusic = async () => {
     if (isPlaying) return;
     await Tone.start();
@@ -168,7 +179,7 @@ export default function Synth({ distForSynth, segHitState }) {
 
   return (
     <>
-      <div className={styles.controls}>
+      {/* <div className={styles.controls}>
         <button onClick={() => startMusic()}>Start</button>
         <button onClick={() => stopMusic()}>Stop</button>
         <button
@@ -179,7 +190,7 @@ export default function Synth({ distForSynth, segHitState }) {
         >
           Change Melody
         </button>
-      </div>
+      </div> */}
     </>
   );
 }
