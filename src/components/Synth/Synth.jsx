@@ -11,6 +11,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
   const synth = useRef(null);
   const synth2 = useRef(null);
+  const eCello = useRef(null);
   const melodyRNN = useRef(null);
   const melodyVAE = useRef(null);
   const melodyPart = useRef(null);
@@ -23,29 +24,34 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   });
 
   useEffect(() => {
-    const vol = new Tone.Volume(-15).toDestination();
-    synth.current = new Tone.FMSynth({
-      'harmonicity':8,
-      'modulationIndex': 2,
-      'oscillator' : {
-        'type': 'sine'
+    const vol = new Tone.Volume(-20).toDestination();
+    const vol2 = new Tone.Volume(-10).toDestination();
+    synth.current = new Tone.Synth({
+
+      'oscillator': {
+        'type': 'square'
+      },
+      'filter': {
+        'Q': 2,
+        'type': 'lowpass',
+        'rolloff': -12
       },
       'envelope': {
-        'attack': 0.001,
-        'decay': 2,
-        'sustain': 0.1,
-        'release': 2
-      },
-      'modulation' : {
-        'type' : 'square'
-      },
-      'modulationEnvelope' : {
-        'attack': 0.002,
-        'decay': 0.2,
+        'attack': 0.005,
+        'decay': 3,
         'sustain': 0,
-        'release': 0.2
+        'release': 0.45
+      },
+      'filterEnvelope': {
+        'attack': 0.001,
+        'decay': 0.32,
+        'sustain': 0.9,
+        'release': 3,
+        'baseFrequency': 700,
+        'octaves': 2.3
       }
-    }).connect(vol);
+
+    });
     synth2.current = new Tone.AMSynth({
       'harmonicity': 3.999,
       'oscillator': {
@@ -67,10 +73,38 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         'sustain': 0.8,
         'release': 0.1
       }
-    }).connect(vol);
+    });
+    eCello.current = new Tone.FMSynth({
+      'harmonicity': 3.01,
+      'modulationIndex': 14,
+      'oscillator': {
+        'type': 'triangle'
+      },
+      'envelope': {
+        'attack': 0.2,
+        'decay': 0.3,
+        'sustain': 0.1,
+        'release': 1.2
+      },
+      'modulation' : {
+        'type': 'square'
+      },
+      'modulationEnvelope' : {
+        'attack': 0.01,
+        'decay': 0.5,
+        'sustain': 0.2,
+        'release': 0.1
+      }
+    }).toDestination();
 
-    const filter = new Tone.Filter(400, 'lowpass').toDestination();
-    const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5).toDestination();
+
+    const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5).connect(vol);
+    synth.current.connect(feedbackDelay);
+    const filter = new Tone.Filter(600, 'highpass').connect(vol2);
+    synth2.current.connect(feedbackDelay);
+
+    synth2.current.connect(filter);
+
     // synth.connect(filter);
     // synth.connect(feedbackDelay);
     melodyRNN.current = new mm.MusicRNN(
