@@ -235,7 +235,6 @@ const Sketch = () => {
         // probably use the x and y coordinates for one of the wrists here?
         // p.translate(p.mouseX, p.mouseY); // start point for the shapes
         p.translate(targetLeft.x, targetLeft.y);
-        // p.scale(-1.0, 1.0);
 
         // .spread() chooses the end point for the group of shapes
         // probably us the x and y coordinates for the other wrist here?
@@ -285,76 +284,48 @@ const Sketch = () => {
           targetLeft.x < 7 * (p.width / 12)
         ) {
           shapeGroup.rotateGroup(1);
-          // console.log('cool');
         }
         if (
           targetRight.x > 5 * (p.width / 12) &&
           targetRight.x < 7 * (p.width / 12)
         ) {
           shapeGroup.rotateGroup(-1);
-          // console.log('cool');
         }
 
-        //  .addShapes() will add a shape to the total every x milliseconds?
-        //if (p.keyIsPressed === true && p.key === 't') {
-        //  shapeGroup.addShapes(2000);
-        //}
+        //  .addShapes() will add a shape to the total every x milliseconds
         if (p.abs(targetLeft.x - targetRight.x) > p.width / 3) {
           shapeGroup.addShapes(500);
         }
-
-        // .removeShapes() will remove a shape from the total every x milliseconds?
-        //if (p.keyIsPressed === true && p.key === 'y') {
-        //  shapeGroup.removeShapes(1000);
-        //}
         if (p.abs(targetLeft.x - targetRight.x) < p.width / 3) {
           shapeGroup.removeShapes(250);
         }
 
         // .growY will make the rects grow in the y-direction
         // rate 5ish = fast, 100ish = slow
-        // if (p.keyIsPressed === true && p.key === 'u') {
-        //   shapeGroup.growY(75, 200);
-        // }
         if (targetLeft.y < p.height / 2) {
           shapeGroup.growY(35, 200);
         }
 
         // .shrinkY will make the rects shrink in the y-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'p') {
-        //  shapeGroup.shrinkY(75, 30);
-        //}
         if (targetLeft.y > p.height / 2) {
           shapeGroup.shrinkY(35, 30);
         }
 
         // .growX will make the rects grow in the x-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'i') {
-        //  shapeGroup.growX(75), 200;
-        // }
         if (targetRight.y < p.height / 2) {
           shapeGroup.growX(35, 200);
         }
 
         // .shrinkX will make the rects shrink in the x-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'o') {
-        //  shapeGroup.shrinkX(75, 30);
-        //}
         if (targetRight.y > p.height / 2) {
           shapeGroup.shrinkX(35, 30);
         }
 
         // .sizeGradient determines if the shapes will be all the same size
         // or an array from large to small
-        ///  if (p.keyIsPressed === true && p.key === 'l') {
-        //   shapeGroup.sizeGradient(true);
-        // } else {
-        //   shapeGroup.sizeGradient(false);
-        // }
-
         if (p.abs(targetLeft.y - targetRight.y) > p.height / 2) {
           shapeGroup.sizeGradient(true);
         } else {
@@ -404,7 +375,6 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
-          // console.log(`Segment ${i} has ${seg.counter} hits.`);
           mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
           mappedThing = p.int(mappedNoseColor);
           p.fill(mappedThing, mappedThing, mappedThing);
@@ -564,7 +534,6 @@ const Sketch = () => {
       //   this.spreadAmountX = endPointX / this.numberOfShapes;
       //   this.spreadAmountY = endPointY / this.numberOfShapes;
       // } // end spread()
-
       spread(startX, startY, endX, endY) {
         this.spreadTruth = true;
         this.leftX = startX;
