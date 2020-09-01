@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
-import styles from './Synth.css';
+// import styles from './Synth.css';
 import useEventListener from '@use-it/event-listener';
 import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segHitState }) {

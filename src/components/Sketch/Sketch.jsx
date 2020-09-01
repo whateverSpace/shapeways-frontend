@@ -4,6 +4,7 @@ import ml5 from 'ml5';
 // import RectsGroup from '../Shapes/Shapes';
 // import Rects from '../Shapes/Shapes';
 // import Segment from '../Shapes/Shapes';
+// import useEventListener from '@use-it/event-listener';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
 
@@ -21,6 +22,15 @@ const Sketch = () => {
     false,
   ]);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
+  // const [webcamView, setWebcamView] = useState(true);
+
+  // useEventListener('keydown', (e) => {
+  //   if (e.keyCode === 87) {
+  //     console.log('hello');
+  //     webcamView === false;
+  //     console.log(webcamView);
+  //   }
+  // });
 
   const sketchStuff = (p) => {
     let video;
@@ -51,6 +61,8 @@ const Sketch = () => {
     let mappedThing;
     let distInPixels;
     let distance = { x: 0, y: 0 };
+
+    // let webcamView = true;
     // let mappedDistanceWrists;
 
     // Begin Segment class
@@ -78,11 +90,12 @@ const Sketch = () => {
           p.translate((p.width / 6) * 5, p.height / 4);
           p.scale(-1.0, 1.0);
           // change mapped values to be ratio of canvas size
-          mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+          mappedNoseColor = p.map(nose.x, 35, 650, 175, 360, true);
           mappedThing = p.int(mappedNoseColor);
-          p.fill(mappedThing, mappedThing, mappedThing, 0.1);
+          p.fill(mappedThing, 69, 92, 0.1);
           // p.fill(270, 30, 255, 0.1);
-
+          p.strokeWeight(0.1);
+          p.stroke(0, 0, 255, 0.3);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
           p.pop();
         } else {
@@ -203,6 +216,12 @@ const Sketch = () => {
       return val;
     }
 
+    // if (p.keyIsPressed === true && p.key === 'w') {
+    //   console.log('hello');
+    //   setWebcamView(true);
+    //   console.log(webcamView);
+    // }
+
     p.draw = () => {
       if (poses.length > 0) {
         setLoading(false);
@@ -220,12 +239,33 @@ const Sketch = () => {
         // mappedThing = p.int(mappedNoseColor);
         // p.background(mappedThing, mappedThing, mappedThing);
 
-        //uncomment to see webcam image
-        // p.push();
-        // p.translate(p.width, 0);
-        // p.scale(-1.0, 1.0);
-        // p.image(video, 0, 0, p.width, p.height);
-        // p.pop();
+        // if (p.keyIsPressed === true && p.key === 'w') {
+        //   console.log('did it work');
+        //   webcamView === !webcamView;
+        //   console.log(webcamView);
+        // }
+
+        // const webcamThing = () => {
+        //   p.push();
+        //   p.translate(p.width, 0);
+        //   p.scale(-1.0, 1.0);
+        //   p.image(video, 0, 0, p.width, p.height);
+        //   p.pop();
+        // };
+
+        // if (webcamView === true) {
+        //   console.log('whatever');
+        //   webcamThing();
+        //   //uncomment to see webcam image
+        //   // p.push();
+        //   // p.translate(p.width, 0);
+        //   // p.scale(-1.0, 1.0);
+        //   // p.image(video, 0, 0, p.width, p.height);
+        //   // p.pop();
+        // } else if (webcamView === false) {
+        //   console.log('goodbye');
+        // }
+        // webcamThing();
 
         // mappedDistanceShapeScale = p.map(
         //   distInPixels,
@@ -249,7 +289,7 @@ const Sketch = () => {
         p.scale(-1.0, 1.0);
         p.push();
         // drawing out appendages
-        p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
+        // p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
         p.ellipse(nose.x, nose.y, 10);
         p.fill(0, 0, 255, 0.3);
         p.ellipse(leftEye.x, leftEye.y, 20);
@@ -412,25 +452,25 @@ const Sketch = () => {
         if (scoreRight > scoreThreshold) {
           targetRight.x = p.lerp(targetRight.x, right.x, lerpRate);
           targetRight.y = p.lerp(targetRight.y, right.y, lerpRate);
-          p.fill(0, 255, 255);
-          p.ellipse(targetRight.x, targetRight.y, 20);
+          p.fill(0, 255, 255, 0.1);
+          p.ellipse(targetRight.x, targetRight.y, 10);
         } else {
           targetRight.x += jitter();
           targetRight.y += jitter();
-          p.fill(0, 0, 100);
-          p.ellipse(targetRight.x, targetRight.y, 20);
+          p.fill(0, 0, 100, 0.1);
+          p.ellipse(targetRight.x, targetRight.y, 10);
         }
 
         if (scoreLeft > scoreThreshold) {
           targetLeft.x = p.lerp(targetLeft.x, left.x, lerpRate);
           targetLeft.y = p.lerp(targetLeft.y, left.y, lerpRate);
-          p.fill(0, 255, 255);
-          p.ellipse(targetLeft.x, targetLeft.y, 20);
+          p.fill(0, 255, 255, 0.1);
+          p.ellipse(targetLeft.x, targetLeft.y, 10);
         } else {
           targetLeft.x += jitter();
           targetLeft.y += jitter();
-          p.fill(0, 0, 100);
-          p.ellipse(targetLeft.x, targetLeft.y, 20);
+          p.fill(0, 0, 100, 0.1);
+          p.ellipse(targetLeft.x, targetLeft.y, 10);
         }
         p.pop();
 
@@ -476,10 +516,10 @@ const Sketch = () => {
         setSegHitState(segHitStateChange);
 
         //lines for segments
-        p.stroke(50);
-        p.line(p.width / 3, 0, p.width / 3, p.height);
-        p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
-        p.line(0, p.height / 2, p.width, p.height / 2);
+        // p.stroke(500);
+        // p.line(p.width / 3, 0, p.width / 3, p.height);
+        // p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
+        // p.line(0, p.height / 2, p.width, p.height / 2);
         // end draw
       }
     };
@@ -543,7 +583,7 @@ const Sketch = () => {
         this.rightY = 0;
       } // end constructor
 
-      // dipslays the group of shapes and their various modifications
+      // displays the group of shapes and their various modifications
       display() {
         for (let i = 0; i < this.numberOfShapes; i++) {
           p.fill(this.fillColorHue, 255, 255, 0.6);
