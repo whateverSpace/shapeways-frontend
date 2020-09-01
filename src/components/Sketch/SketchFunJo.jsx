@@ -531,11 +531,11 @@ const Sketch = () => {
   useEffect(() => {
     myP5.current = new p5(sketchStuff, myRef.current);
   }, []);
-  // <div className={`${styles.WelcomeScreen} ${playing && styles.hidden} `}onClick={onClick} >
-  // </div>
+
   return (
     <>
-
+      <div className={`${styles.WelcomeScreen} ${playing && styles.hidden} `} onClick={onClick} >
+      </div>
       <section>
         {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>

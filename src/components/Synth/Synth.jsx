@@ -29,6 +29,11 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   });
 
   useEffect(() => {
+    if(playing) startMusic();
+    else stopMusic();
+  }, [playing]);
+
+  useEffect(() => {
     synth.current = new Tone.AMSynth({
       'harmonicity': 2,
       'oscillator': {
@@ -286,16 +291,16 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   };
 
   const startMusic = async () => {
-    if(isPlaying) return;
+    if(playing) return;
     await Tone.start();
     Tone.Transport.start();
-    setIsPlaying(true);
+    setPlaying(true);
   };
 
   const stopMusic = () => {
-    if(!isPlaying) return;
+    if(!playing) return;
     Tone.Transport.stop();
-    setIsPlaying(false);
+    setPlaying(false);
   };
 
   return (
