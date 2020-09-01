@@ -12,11 +12,6 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
   const synth = useRef(null);
   const synth2 = useRef(null);
-  const eCello = useRef(null);
-  const bass = useRef(null);
-  const clap = useRef(null);
-  const drone1 = useRef(null);
-  const drone2 = useRef(null);
   const melodyRNN = useRef(null);
   const melodyVAE = useRef(null);
   const melodyRNNPart = useRef(null);
@@ -36,129 +31,22 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   useEffect(() => {
     synth.current = new Tone.PolySynth(Tone.Synth);
     synth2.current = new Tone.PolySynth(Tone.FMSynth);
-    //
-    // synth.current = new Tone.AMSynth({
-    //   'harmonicity': 2,
-    //   'oscillator': {
-    //     'type': 'amsine2',
-    //     'modulationType' : 'sine',
-    //     'harmonicity': 1.01
-    //   },
-    //   'envelope': {
-    //     'attack': 0.006,
-    //     'decay': 4,
-    //     'sustain': 0.04,
-    //     'release': 1.2
-    //   },
-    //   'modulation' : {
-    //     'volume' : 13,
-    //     'type': 'amsine2',
-    //     'modulationType' : 'sine',
-    //     'harmonicity': 12
-    //   },
-    //   'modulationEnvelope' : {
-    //     'attack': 0.006,
-    //     'decay': 0.2,
-    //     'sustain': 0.2,
-    //     'release': 0.4
-    //   }
-    // });
-    // let synth2Voice = new Tone.Synth();
-    // synth2.current = new Tone.PolySynth({
-    //   'portamento': 0.01,
-    //   'oscillator': {
-    //     'type': 'sawtooth'
-    //   },
-    //   'filter': {
-    //     'Q': 2,
-    //     'type': 'lowpass',
-    //     'rolloff': -24
-    //   },
-    //   'envelope': {
-    //     'attack': 0.1,
-    //     'decay': 0.1,
-    //     'sustain': 0.6,
-    //     'release': 0.5
-    //   },
-    //   'filterEnvelope': {
-    //     'attack': 0.05,
-    //     'decay': 0.8,
-    //     'sustain': 0.4,
-    //     'release': 1.5,
-    //     'baseFrequency': 2000,
-    //     'octaves': 1.5
-    //   }
-    // });
 
-    eCello.current = new Tone.FMSynth({
-      'harmonicity': 3.01,
-      'modulationIndex': 14,
-      'oscillator': {
-        'type': 'triangle'
-      },
-      'envelope': {
-        'attack': 0.2,
-        'decay': 0.3,
-        'sustain': 0.1,
-        'release': 1.2
-      },
-      'modulation' : {
-        'type': 'square'
-      },
-      'modulationEnvelope' : {
-        'attack': 0.01,
-        'decay': 0.5,
-        'sustain': 0.2,
-        'release': 0.1
-      }
-    }).toDestination();
-
-    bass.current = new Tone.Synth({
-      'oscillator': {
-        'type': 'sine'
-      },
-      'envelope': {
-        'attack': 0.001,
-        'decay': 0.1,
-        'sustain': 0.1,
-        'release': 1.2
-      }
-    });
-
-    clap.current = new Tone.NoiseSynth({
-
-      'noise': {
-        'type': 'white',
-        'playbackRate' : 5
-      },
-      'envelope': {
-        'attack': 0.001,
-        'decay': 0.3,
-        'sustain': 0,
-        'release': 0.3
-      }
-    });
-
-
-
-
-
-    const vol = new Tone.Volume(-10).toDestination();
-    const vol2 = new Tone.Volume(-20).toDestination();
-    const vol3 = new Tone.Volume(-30).toDestination();
-    const reverb = new Tone.Reverb('8n');
-    const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5);
     const filter = new Tone.Filter(600, 'highpass');
     const pingPong = new Tone.PingPongDelay('16n', 0.3);
-
-
+    const reverb1 = new Tone.Reverb();
+    const reverb2 = new Tone.Reverb();
+    const vol = new Tone.Volume(0).toDestination();
+    const vol2 = new Tone.Volume(0).toDestination();
 
     synth.current.connect(pingPong);
-    pingPong.connect(vol);
+    pingPong.connect(reverb1);
+    reverb1.connect(vol);
 
-    synth2.current.connect(reverb);
-    reverb.connect(vol2);
-    filter.connect(vol2);
+    synth2.current.connect(filter);
+    filter.connect(reverb2);
+    reverb2.connect(vol2);
+
 
     const crossFade = new Tone.CrossFade().connect(vol3);
     crossFade.fade.value = 0.5;
@@ -196,8 +84,7 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
 
     let seed = noteList;
     let steps = 32;
-    let temperature = 1.0; // RANDOMNESS OF NOTES
-    // let chordProgression = ['C', 'Am', 'G'];
+    let temperature = 1.0;
     let result = await melodyRNN.current.continueSequence(
       seed,
       steps,
