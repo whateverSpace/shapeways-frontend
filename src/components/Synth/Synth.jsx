@@ -4,8 +4,9 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
 import { makeNotesFromSegmentData, makeVAENotesFromSegmentData } from '../../utils/buildNoteSequence';
-export default function Synth({ distForSynth, segHitState, distance }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+import { NoiseSynth } from 'tone';
+export default function Synth({ distForSynth, segHitState, distance, playing }) {
+
 
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
   const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
@@ -21,6 +22,11 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   segHitState.forEach((segment, i) => {
     if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
+
+  useEffect(() => {
+    if(playing) startMusic();
+    else stopMusic();
+  }, [playing]);
 
   useEffect(() => {
     synth.current = new Tone.PolySynth(Tone.Synth);
@@ -40,6 +46,15 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     synth2.current.connect(filter);
     filter.connect(reverb2);
     reverb2.connect(vol2);
+
+
+    const crossFade = new Tone.CrossFade().connect(vol3);
+    crossFade.fade.value = 0.5;
+    drone1.current = new Tone.Synth({});
+    drone2.current = new Tone.Synth({});
+    drone1.current = new Tone.Oscillator(55, 'triangle').connect(crossFade.a).start();
+    drone2.current = new Tone.Oscillator(55, 'sine').connect(crossFade.b).start();
+    // use the fade to control the mix between the two
 
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
@@ -168,16 +183,16 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   };
 
   const startMusic = async () => {
-    if(isPlaying) return;
+    if(playing) return;
     await Tone.start();
     Tone.Transport.start();
-    setIsPlaying(true);
+    setPlaying(true);
   };
 
   const stopMusic = () => {
-    if(!isPlaying) return;
+    if(!playing) return;
     Tone.Transport.stop();
-    setIsPlaying(false);
+    setPlaying(false);
   };
 
   return (
@@ -187,7 +202,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         <button onClick={() => stopMusic()}>Stop</button>
       </div>
       <div className={styles.controls}>
-        x:{distance.x} y:{distance.y} wrists:{distance.wrists}
+        {playing && <span>PRESS SPACEBAR TO PAUSE</span>}
       </div>
     </>
   );
@@ -196,5 +211,6 @@ export default function Synth({ distForSynth, segHitState, distance }) {
 Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  distance: PropTypes.object
+  distance: PropTypes.object,
+  playing: PropTypes.bool.isRequired
 };
