@@ -41,6 +41,10 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     filter.connect(reverb2);
     reverb2.connect(vol2);
 
+
+
+    // use the fade to control the mix between the two
+
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
