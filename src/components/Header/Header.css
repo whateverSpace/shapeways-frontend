@@ -9,8 +9,60 @@ h1 {
   font-size: 3vw;
 }
 
+a {
+  color: navy;
+  text-decoration: none;
+  cursor: default;
+}
+
+ul {
+  padding-inline-start: 0px;
+}
+
 .Header {
   margin-top: -25vh;
   z-index: -1;
   background-color: rgba(221, 255, 247, 0.01);
+}
+
+#MiniLeftNav li {
+  list-style: outside none none;
+
+  padding: 0;
+}
+#MiniLeftNav li a {
+  display: block;
+  padding: 7px;
+  position: relative;
+}
+
+#MiniLeftNav span {
+  font-family: 'Raleway', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  bottom: 0;
+  line-height: 30px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 0;
+
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  transition: 0.5s;
+}
+#MiniLeftNav a:hover span {
+  width: auto;
+  padding: 0 10px;
+  overflow: visible;
+}
+#MiniLeftNav a:hover {
+  text-decoration: none;
+}
+#MiniLeftNav a span {
+  background-color: #fff;
+  color: #3d4f0c;
 }

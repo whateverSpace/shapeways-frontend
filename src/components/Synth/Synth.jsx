@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
-// import styles from './Synth.css';
 import useEventListener from '@use-it/event-listener';
 import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
 export default function Synth({ distForSynth, segHitState }) {
@@ -54,13 +53,11 @@ export default function Synth({ distForSynth, segHitState }) {
     let seed = noteList;
     let steps = 16;
     let temperature = 1.1; // RANDOMNESS OF NOTES
-    // let chordProgression = ['C', 'Am', 'G'];
     let result = await melodyRNN.current.continueSequence(
       seed,
       steps,
       temperature
     );
-    // let result = await melodyRNN.current.continueSequence(seed, steps, temperature, chordProgress); // WORKS FOR chord_pitches_improv CHECKPOINT
 
     const melodyTest = result.notes.map((note) => {
       return [
@@ -88,10 +85,6 @@ export default function Synth({ distForSynth, segHitState }) {
       melodyPart.current.loopStart = 0;
       melodyPart.current.loopEnd = '2m';
     }
-
-    // melodyPart.current._events.forEach((event) => {
-    //   console.log(event.value);
-    // });
   };
 
   const generateMelodies = async (melodyVAELoaded, segHitsChange) => {
@@ -148,10 +141,6 @@ export default function Synth({ distForSynth, segHitState }) {
       newPart.current.loopStart = 0;
       newPart.current.loopEnd = '2m';
     }
-
-    newPart.current._events.forEach((event) => {
-      // console.log(event.value);
-    });
   };
 
   useEventListener('keydown', (e) => {
