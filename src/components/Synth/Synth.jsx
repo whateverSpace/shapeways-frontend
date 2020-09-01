@@ -4,8 +4,9 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
 import { makeNotesFromSegmentData, makeVAENotesFromSegmentData } from '../../utils/buildNoteSequence';
-export default function Synth({ distForSynth, segHitState, distance }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+import { NoiseSynth } from 'tone';
+export default function Synth({ distForSynth, segHitState, distance, playing }) {
+
 
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
   const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
@@ -13,7 +14,9 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   const synth2 = useRef(null);
   const eCello = useRef(null);
   const bass = useRef(null);
-  const windy = useRef(null);
+  const clap = useRef(null);
+  const drone1 = useRef(null);
+  const drone2 = useRef(null);
   const melodyRNN = useRef(null);
   const melodyVAE = useRef(null);
   const melodyRNNPart = useRef(null);
@@ -24,6 +27,11 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   segHitState.forEach((segment, i) => {
     if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
+
+  useEffect(() => {
+    if(playing) startMusic();
+    else stopMusic();
+  }, [playing]);
 
   useEffect(() => {
     synth.current = new Tone.PolySynth(Tone.Synth);
@@ -117,37 +125,28 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       }
     });
 
-    windy.current = new Tone.Synth({
-      'oscillator': {
-        'type': 'square'
-      },
-      'filter': {
-        'Q': 2,
-        'type': 'lowpass',
-        'rolloff': -12
+    clap.current = new Tone.NoiseSynth({
+
+      'noise': {
+        'type': 'white',
+        'playbackRate' : 5
       },
       'envelope': {
-        'attack': 0.005,
-        'decay': 3,
-        'sustain': 0,
-        'release': 0.45
-      },
-      'filterEnvelope': {
         'attack': 0.001,
-        'decay': 0.32,
-        'sustain': 0.9,
-        'release': 3,
-        'baseFrequency': 700,
-        'octaves': 2.3
+        'decay': 0.3,
+        'sustain': 0,
+        'release': 0.3
       }
-
     });
 
 
 
 
-    const vol = new Tone.Volume(0).toDestination();
-    const vol2 = new Tone.Volume(-30).toDestination();
+
+    const vol = new Tone.Volume(-10).toDestination();
+    const vol2 = new Tone.Volume(-20).toDestination();
+    const vol3 = new Tone.Volume(-30).toDestination();
+    const reverb = new Tone.Reverb('8n');
     const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5);
     const filter = new Tone.Filter(600, 'highpass');
     const pingPong = new Tone.PingPongDelay('16n', 0.3);
@@ -157,9 +156,17 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     synth.current.connect(pingPong);
     pingPong.connect(vol);
 
-
-    synth2.current.connect(vol2);
+    synth2.current.connect(reverb);
+    reverb.connect(vol2);
     filter.connect(vol2);
+
+    const crossFade = new Tone.CrossFade().connect(vol3);
+    crossFade.fade.value = 0.5;
+    drone1.current = new Tone.Synth({});
+    drone2.current = new Tone.Synth({});
+    drone1.current = new Tone.Oscillator(55, 'triangle').connect(crossFade.a).start();
+    drone2.current = new Tone.Oscillator(55, 'sine').connect(crossFade.b).start();
+    // use the fade to control the mix between the two
 
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
@@ -289,16 +296,16 @@ export default function Synth({ distForSynth, segHitState, distance }) {
   };
 
   const startMusic = async () => {
-    if(isPlaying) return;
+    if(playing) return;
     await Tone.start();
     Tone.Transport.start();
-    setIsPlaying(true);
+    setPlaying(true);
   };
 
   const stopMusic = () => {
-    if(!isPlaying) return;
+    if(!playing) return;
     Tone.Transport.stop();
-    setIsPlaying(false);
+    setPlaying(false);
   };
 
   return (
@@ -308,7 +315,7 @@ export default function Synth({ distForSynth, segHitState, distance }) {
         <button onClick={() => stopMusic()}>Stop</button>
       </div>
       <div className={styles.controls}>
-        x:{distance.x} y:{distance.y} wrists:{distance.wrists}
+        {playing && <span>PRESS SPACEBAR TO PAUSE</span>}
       </div>
     </>
   );
@@ -317,5 +324,6 @@ export default function Synth({ distForSynth, segHitState, distance }) {
 Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  distance: PropTypes.object
+  distance: PropTypes.object,
+  playing: PropTypes.bool.isRequired
 };
