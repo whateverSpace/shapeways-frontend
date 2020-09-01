@@ -34,57 +34,61 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   }, [playing]);
 
   useEffect(() => {
-    synth.current = new Tone.AMSynth({
-      'harmonicity': 2,
-      'oscillator': {
-        'type': 'amsine2',
-        'modulationType' : 'sine',
-        'harmonicity': 1.01
-      },
-      'envelope': {
-        'attack': 0.006,
-        'decay': 4,
-        'sustain': 0.04,
-        'release': 1.2
-      },
-      'modulation' : {
-        'volume' : 13,
-        'type': 'amsine2',
-        'modulationType' : 'sine',
-        'harmonicity': 12
-      },
-      'modulationEnvelope' : {
-        'attack': 0.006,
-        'decay': 0.2,
-        'sustain': 0.2,
-        'release': 0.4
-      }
-    });
-    synth2.current = new Tone.PolySynth({
-      'portamento': 0.01,
-      'oscillator': {
-        'type': 'sawtooth'
-      },
-      'filter': {
-        'Q': 2,
-        'type': 'lowpass',
-        'rolloff': -24
-      },
-      'envelope': {
-        'attack': 0.1,
-        'decay': 0.1,
-        'sustain': 0.6,
-        'release': 0.5
-      },
-      'filterEnvelope': {
-        'attack': 0.05,
-        'decay': 0.8,
-        'sustain': 0.4,
-        'release': 1.5,
-        'baseFrequency': 2000,
-        'octaves': 1.5
-      }
-    });
+    synth.current = new Tone.PolySynth(Tone.Synth);
+    synth2.current = new Tone.PolySynth(Tone.FMSynth);
+    //
+    // synth.current = new Tone.AMSynth({
+    //   'harmonicity': 2,
+    //   'oscillator': {
+    //     'type': 'amsine2',
+    //     'modulationType' : 'sine',
+    //     'harmonicity': 1.01
+    //   },
+    //   'envelope': {
+    //     'attack': 0.006,
+    //     'decay': 4,
+    //     'sustain': 0.04,
+    //     'release': 1.2
+    //   },
+    //   'modulation' : {
+    //     'volume' : 13,
+    //     'type': 'amsine2',
+    //     'modulationType' : 'sine',
+    //     'harmonicity': 12
+    //   },
+    //   'modulationEnvelope' : {
+    //     'attack': 0.006,
+    //     'decay': 0.2,
+    //     'sustain': 0.2,
+    //     'release': 0.4
+    //   }
+    // });
+    // let synth2Voice = new Tone.Synth();
+    // synth2.current = new Tone.PolySynth({
+    //   'portamento': 0.01,
+    //   'oscillator': {
+    //     'type': 'sawtooth'
+    //   },
+    //   'filter': {
+    //     'Q': 2,
+    //     'type': 'lowpass',
+    //     'rolloff': -24
+    //   },
+    //   'envelope': {
+    //     'attack': 0.1,
+    //     'decay': 0.1,
+    //     'sustain': 0.6,
+    //     'release': 0.5
+    //   },
+    //   'filterEnvelope': {
+    //     'attack': 0.05,
+    //     'decay': 0.8,
+    //     'sustain': 0.4,
+    //     'release': 1.5,
+    //     'baseFrequency': 2000,
+    //     'octaves': 1.5
+    //   }
+    // });
 
     eCello.current = new Tone.FMSynth({
       'harmonicity': 3.01,
@@ -145,7 +149,8 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
     const reverb = new Tone.Reverb('8n');
     const feedbackDelay = new Tone.FeedbackDelay(0.125, 0.5);
     const filter = new Tone.Filter(600, 'highpass');
-    const pingPong = new Tone.PingPongDelay('8n', 0.3);
+    const pingPong = new Tone.PingPongDelay('16n', 0.3);
+
 
 
     synth.current.connect(pingPong);
