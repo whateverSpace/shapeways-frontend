@@ -3,13 +3,23 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
-import { makeNotesFromSegmentData, makeVAENotesFromSegmentData } from '../../utils/buildNoteSequence';
+import {
+  makeNotesFromSegmentData,
+  makeVAENotesFromSegmentData,
+} from '../../utils/buildNoteSequence';
 import { NoiseSynth } from 'tone';
-export default function Synth({ distForSynth, segHitState, distance, playing }) {
-
-
+export default function Synth({
+  distForSynth,
+  segHitState,
+  distance,
+  playing,
+}) {
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
-  const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
+  const [distanceChange, setDistanceChange] = useState({
+    x: 0,
+    y: 0,
+    wrists: 0,
+  });
   const synth = useRef(null);
   const synth2 = useRef(null);
   const melodyRNN = useRef(null);
@@ -18,9 +28,9 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   const melodyCore = useRef(null);
   const newVAEPart = useRef(null);
 
-  if(distForSynth.current) Tone.Transport.bpm.value = 100;
+  if (distForSynth.current) Tone.Transport.bpm.value = 100;
   segHitState.forEach((segment, i) => {
-    if(segment !== segHitsChange[i]) setSegHitsChange(segHitState);
+    if (segment !== segHitsChange[i]) setSegHitsChange(segHitState);
   });
 
   useEffect(() => {
@@ -58,18 +68,18 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
 
   useEffect(() => {
     console.log(playing);
-    if(playing) startMusic();
+    if (playing) startMusic();
     else stopMusic();
   }, [playing]);
 
   useEffect(() => {
-    if(melodyRNN.current.initialized) rnnMelodyStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
-    if(melodyVAE.current.initialized) vaeStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if (melodyRNN.current.initialized) rnnMelodyStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
+    if (melodyVAE.current.initialized) vaeStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
   }, [segHitsChange]);
 
   const rnnMelodyStart = async (melodyRNNLoaded, segHitsChange) => {
-    if(melodyRNNLoaded) await melodyRNNLoaded;
-    if(melodyRNNPart.current) {
+    if (melodyRNNLoaded) await melodyRNNLoaded;
+    if (melodyRNNPart.current) {
       melodyRNNPart.current.clear();
     }
     let noteList = makeNotesFromSegmentData(segHitsChange);
@@ -94,7 +104,7 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
       ];
     });
 
-    if(melodyRNNPart.current) {
+    if (melodyRNNPart.current) {
       melodyRNNPart.current.clear();
       melodyRNNTest.forEach((event) => {
         melodyRNNPart.current.add(event[0], event[1]);
@@ -115,8 +125,8 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   };
 
   const vaeStart = async (melodyVAELoaded, segHitsChange) => {
-    if(melodyVAELoaded) await melodyVAELoaded;
-    if(newVAEPart.current) {
+    if (melodyVAELoaded) await melodyVAELoaded;
+    if (newVAEPart.current) {
       newVAEPart.current.clear();
     }
     let noteList = makeVAENotesFromSegmentData(segHitsChange);
@@ -155,7 +165,7 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
       ];
     });
 
-    if(newVAEPart.current) {
+    if (newVAEPart.current) {
       newVAEPart.current.clear();
       newPattern.forEach((event) => {
         newVAEPart.current.add(event[0], event[1]);
@@ -173,6 +183,14 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
     //   console.log(event.value);
     // });
   };
+
+  useEventListener('keydown', (e) => {
+    if (e.keyCode === 32 && isPlaying) {
+      stopMusic();
+    } else if (e.keyCode === 32 && !isPlaying) {
+      startMusic();
+    }
+  });
 
   const startMusic = async () => {
     await Tone.start();
@@ -200,5 +218,5 @@ Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
   distance: PropTypes.object,
-  playing: PropTypes.bool.isRequired
+  playing: PropTypes.bool.isRequired,
 };

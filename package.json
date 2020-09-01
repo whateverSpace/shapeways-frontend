@@ -26,6 +26,7 @@
   "license": "ISC",
   "dependencies": {
     "@magenta/music": "^1.19.0",
+    "@use-it/event-listener": "^0.1.5",
     "ml5": "^0.5.0",
     "p5": "^1.1.9",
     "react": "^16.13.1",
