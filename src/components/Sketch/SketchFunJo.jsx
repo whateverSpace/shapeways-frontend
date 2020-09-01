@@ -535,6 +535,14 @@ const Sketch = () => {
   return (
     <>
       <div className={`${styles.WelcomeScreen} ${playing && styles.hidden} `} onClick={onClick} >
+        <div className={styles.center}>
+          <div>
+            <h1>WELCOME! CLICK TO SHAPESOUND</h1>
+            <h2>Please allow camera access when prompted.</h2>
+            <h1>For Best Results:</h1>
+            <h2>Crank It</h2><h2>Turn On Lights</h2><h2>Keep Hands & Face In Frame</h2>
+          </div>
+        </div>
       </div>
       <section>
         {loading && <h1 className={styles.loading}>loading models...</h1>}

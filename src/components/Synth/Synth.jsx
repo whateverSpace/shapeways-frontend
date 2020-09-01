@@ -310,7 +310,7 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
         <button onClick={() => stopMusic()}>Stop</button>
       </div>
       <div className={styles.controls}>
-        x:{distance.x} y:{distance.y} wrists:{distance.wrists}
+        {playing && <span>PRESS SPACEBAR TO PAUSE</span>}
       </div>
     </>
   );
