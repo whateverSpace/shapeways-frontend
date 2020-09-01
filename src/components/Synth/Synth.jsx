@@ -24,11 +24,6 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
   });
 
   useEffect(() => {
-    if(playing) startMusic();
-    else stopMusic();
-  }, [playing]);
-
-  useEffect(() => {
     synth.current = new Tone.PolySynth(Tone.Synth);
     synth2.current = new Tone.PolySynth(Tone.FMSynth);
 
@@ -47,10 +42,6 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
     filter.connect(reverb2);
     reverb2.connect(vol2);
 
-
-
-    // use the fade to control the mix between the two
-
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
@@ -64,6 +55,12 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
     rnnMelodyStart(melodyRNNLoaded, segHitsChange);
     vaeStart(melodyVAELoaded, segHitsChange);
   }, []);
+
+  useEffect(() => {
+    console.log(playing);
+    if(playing) startMusic();
+    else stopMusic();
+  }, [playing]);
 
   useEffect(() => {
     if(melodyRNN.current.initialized) rnnMelodyStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
@@ -112,9 +109,9 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
       melodyRNNPart.current.loopEnd = '2m';
     }
 
-    melodyRNNPart.current._events.forEach((event) => {
-      console.log(event.value);
-    });
+    // melodyRNNPart.current._events.forEach((event) => {
+    //   console.log(event.value);
+    // });
   };
 
   const vaeStart = async (melodyVAELoaded, segHitsChange) => {
@@ -172,29 +169,25 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
       newVAEPart.current.loopEnd = '4m';
     }
 
-    newVAEPart.current._events.forEach((event) => {
-      console.log(event.value);
-    });
+    // newVAEPart.current._events.forEach((event) => {
+    //   console.log(event.value);
+    // });
   };
 
   const startMusic = async () => {
-    if(playing) return;
     await Tone.start();
     Tone.Transport.start();
-    setPlaying(true);
   };
 
   const stopMusic = () => {
-    if(!playing) return;
     Tone.Transport.stop();
-    setPlaying(false);
   };
 
   return (
     <>
       <div className={styles.controls}>
-        <button onClick={() => startMusic()}>Start</button>
-        <button onClick={() => stopMusic()}>Stop</button>
+        {/* <button onClick={() => startMusic()}>Start</button>
+        <button onClick={() => stopMusic()}>Stop</button> */}
       </div>
       <div className={styles.controls}>
         {playing && <span>PRESS SPACEBAR TO PAUSE</span>}
