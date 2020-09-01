@@ -4,8 +4,9 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
 import { makeNotesFromSegmentData, makeVAENotesFromSegmentData } from '../../utils/buildNoteSequence';
-export default function Synth({ distForSynth, segHitState, distance }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+import { NoiseSynth } from 'tone';
+export default function Synth({ distForSynth, segHitState, distance, playing }) {
+
 
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
   const [distanceChange, setDistanceChange] = useState({ x: 0, y:0, wrists:0 });
@@ -41,10 +42,6 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     filter.connect(reverb2);
     reverb2.connect(vol2);
 
-
-
-    // use the fade to control the mix between the two
-
     melodyRNN.current = new mm.MusicRNN(
       'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn'
     );
@@ -58,6 +55,12 @@ export default function Synth({ distForSynth, segHitState, distance }) {
     rnnMelodyStart(melodyRNNLoaded, segHitsChange);
     vaeStart(melodyVAELoaded, segHitsChange);
   }, []);
+
+  useEffect(() => {
+    console.log(playing);
+    if(playing) startMusic();
+    else stopMusic();
+  }, [playing]);
 
   useEffect(() => {
     if(melodyRNN.current.initialized) rnnMelodyStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
@@ -106,9 +109,9 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       melodyRNNPart.current.loopEnd = '2m';
     }
 
-    melodyRNNPart.current._events.forEach((event) => {
-      console.log(event.value);
-    });
+    // melodyRNNPart.current._events.forEach((event) => {
+    //   console.log(event.value);
+    // });
   };
 
   const vaeStart = async (melodyVAELoaded, segHitsChange) => {
@@ -166,32 +169,28 @@ export default function Synth({ distForSynth, segHitState, distance }) {
       newVAEPart.current.loopEnd = '4m';
     }
 
-    newVAEPart.current._events.forEach((event) => {
-      console.log(event.value);
-    });
+    // newVAEPart.current._events.forEach((event) => {
+    //   console.log(event.value);
+    // });
   };
 
   const startMusic = async () => {
-    if(isPlaying) return;
     await Tone.start();
     Tone.Transport.start();
-    setIsPlaying(true);
   };
 
   const stopMusic = () => {
-    if(!isPlaying) return;
     Tone.Transport.stop();
-    setIsPlaying(false);
   };
 
   return (
     <>
       <div className={styles.controls}>
-        <button onClick={() => startMusic()}>Start</button>
-        <button onClick={() => stopMusic()}>Stop</button>
+        {/* <button onClick={() => startMusic()}>Start</button>
+        <button onClick={() => stopMusic()}>Stop</button> */}
       </div>
       <div className={styles.controls}>
-        x:{distance.x} y:{distance.y} wrists:{distance.wrists}
+        {playing && <span>PRESS SPACEBAR TO PAUSE</span>}
       </div>
     </>
   );
@@ -200,5 +199,6 @@ export default function Synth({ distForSynth, segHitState, distance }) {
 Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  distance: PropTypes.object
+  distance: PropTypes.object,
+  playing: PropTypes.bool.isRequired
 };
