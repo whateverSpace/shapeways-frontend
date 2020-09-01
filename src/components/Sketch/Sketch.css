@@ -8,6 +8,32 @@ body {
   overflow: hidden;
 }
 
+.center {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+}
+
+.WelcomeScreen{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  background: RGBA(255,255,255, 1);
+  z-index: 9999999;
+  display: visible;
+  h2{
+    color:black;
+  }
+}
+
+.hidden{
+  display: none;
+}
+
+
 body {
   display: flex;
   flex-direction: row;
