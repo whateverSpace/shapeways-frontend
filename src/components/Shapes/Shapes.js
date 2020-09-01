@@ -1,27 +1,39 @@
-import React from 'react';
+// import React from 'react';
 // import Sketch { p } from '../Sketch/Sketch';
-import p5 from 'p5';
+// import p5 as p from 'p5';
 
 export class Rects {
-  constructor(sideLength, sideWidth) {
+  constructor(p, sideLength, sideWidth) {
+    this.p = p;
     this.len = sideLength;
     this.wid = sideWidth;
   }
 
   display() {
-    p.rect(0, 0, 2 * this.wid, 2 * this.len);
+    this.p.rect(0, 0, 2 * this.wid, 2 * this.len);
   }
 
   inscribeEllipse() {
-    p.ellipse(0, 0, 2 * this.wid, 2 * this.len);
+    this.p.ellipse(0, 0, 2 * this.wid, 2 * this.len);
   }
 } // end class Rects
 
-export default class RectsGroup extends React.Component {
-  constructor(sideWidth, sideLength) {
+export default class RectsGroup extends Rects {
+  constructor(
+    p,
+    sideWidth,
+    sideLength,
+    targetLeftX,
+    targetLeftY,
+    mappedDistanceShapeScale
+  ) {
     super();
+    this.p = p;
     this.wid = sideWidth;
     this.len = sideLength;
+    this.targetLeftX = targetLeftX;
+    this.targetLeftY = targetLeftY;
+    this.mappedDistanceShapeScale = mappedDistanceShapeScale;
 
     //this.numb = numRects; // may end up deleting
     // needs to integrate size gradient
@@ -54,26 +66,26 @@ export default class RectsGroup extends React.Component {
   display() {
     for (let i = 0; i < this.allRects.length; i++) {
       // i<this.numb
-      p.push();
-      p.translate(p.width, 0);
-      p.scale(-1, 1);
-      // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
-      p.rotate(i * this.rotateAllAmount);
-      p.push();
-      p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
-      p.rotate(this.rotateEachAmount);
-      // p.rotate(-p.radians(mappedDistanceShapeRotateLeft));
+      this.p.push();
+      this.p.translate(this.p.width, 0);
+      this.p.scale(-1, 1);
+      // this.p.rotate(-this.p.radians(mappedDistanceShapeRotateLeft));
+      this.p.rotate(i * this.rotateAllAmount);
+      this.p.push();
+      this.p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
+      this.p.rotate(this.rotateEachAmount);
+      // this.p.rotate(-this.p.radians(mappedDistanceShapeRotateLeft));
 
       // console.log(this.rotateEachAmount);
 
-      p.rect(
-        targetLeftX,
-        targetLeftY,
-        mappedDistanceShapeScale,
-        mappedDistanceShapeScale
+      this.p.rect(
+        this.targetLeftX,
+        this.targetLeftY,
+        this.mappedDistanceShapeScale,
+        this.mappedDistanceShapeScale
       );
-      p.pop();
-      p.pop();
+      this.p.pop();
+      this.p.pop();
     }
   } // end display()
 
@@ -126,10 +138,66 @@ export default class RectsGroup extends React.Component {
   }
 
   fillColor(hue, alpha) {
-    p.fill(hue, 255, 255, alpha);
+    this.p.fill(hue, 255, 255, alpha);
   }
 
   strokeColor(hue, alpha) {
-    p.stroke(hue, 255, 255, alpha);
+    this.p.stroke(hue, 255, 255, alpha);
   }
 } // end class RectsGroup()
+
+export class Segment {
+  constructor(p, x, y) {
+    this.x = x;
+    this.y = y;
+    this.w = p.width / 3;
+    this.h = p.height / 2;
+    this.hit = false;
+    this.alpha = 0;
+    this.p = p;
+  }
+
+  display() {
+    if (this.hit) {
+      this.alpha = this.p.lerp(this.alpha, 255, 0.3);
+      this.p.push();
+      this.p.translate((this.p.width / 6) * 5, this.p.height / 4);
+      this.p.scale(-1.0, 1.0);
+      this.p.fill(270, 255, 255, 0.3);
+      this.p.rect(this.x, this.y, this.p.width / 3, this.p.height / 2);
+      this.p.pop();
+    } else {
+      this.alpha = this.p.lerp(this.alpha, 0, 0.1);
+    }
+  }
+
+  checkCollision(target) {
+    this.hit = collision(target.x, target.y, 5, this.x, this.y, this.w, this.h);
+  }
+}
+
+function collision(targetX, targetY, radius, segX, segY, segW, segH) {
+  let testX = targetX;
+  let testY = targetY;
+
+  if (targetX < segX) {
+    testX = segX;
+  } else if (targetX > segX + segW) {
+    testX = segX + segW;
+  }
+
+  if (targetY < segY) {
+    testY = segY;
+  } else if (targetY > segY + segH) {
+    testY = segY + segH;
+  }
+
+  let distX = targetX - testX;
+  let distY = targetY - testY;
+  let distance = Math.sqrt(distX * distX + distY * distY);
+
+  if (distance <= radius) {
+    return true;
+  }
+  return false;
+}
