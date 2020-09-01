@@ -186,9 +186,9 @@ export default function Synth({
   };
 
   useEventListener('keydown', (e) => {
-    if (e.keyCode === 32 && isPlaying) {
+    if (e.keyCode === 32 && playing) {
       stopMusic();
-    } else if (e.keyCode === 32 && !isPlaying) {
+    } else if (e.keyCode === 32 && !playing) {
       startMusic();
     }
   });
@@ -219,5 +219,5 @@ Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
   distance: PropTypes.object,
-  playing: PropTypes.bool.isRequired,
+  playing: PropTypes.bool,
 };
