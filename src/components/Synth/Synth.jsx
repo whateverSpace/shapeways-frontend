@@ -48,12 +48,7 @@ export default function Synth({ distForSynth, segHitState, distance, playing }) 
     reverb2.connect(vol2);
 
 
-    const crossFade = new Tone.CrossFade().connect(vol3);
-    crossFade.fade.value = 0.5;
-    drone1.current = new Tone.Synth({});
-    drone2.current = new Tone.Synth({});
-    drone1.current = new Tone.Oscillator(55, 'triangle').connect(crossFade.a).start();
-    drone2.current = new Tone.Oscillator(55, 'sine').connect(crossFade.b).start();
+
     // use the fade to control the mix between the two
 
     melodyRNN.current = new mm.MusicRNN(
