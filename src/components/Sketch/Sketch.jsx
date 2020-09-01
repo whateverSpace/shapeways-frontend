@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
-// import RectsGroup from '../Shapes/Shapes';
-// import Rects from '../Shapes/Shapes';
-// import Segment from '../Shapes/Shapes';
-// import useEventListener from '@use-it/event-listener';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
 
@@ -22,15 +18,6 @@ const Sketch = () => {
     false,
   ]);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
-  // const [webcamView, setWebcamView] = useState(true);
-
-  // useEventListener('keydown', (e) => {
-  //   if (e.keyCode === 87) {
-  //     console.log('hello');
-  //     webcamView === false;
-  //     console.log(webcamView);
-  //   }
-  // });
 
   const sketchStuff = (p) => {
     let video;
@@ -48,8 +35,6 @@ const Sketch = () => {
 
     let shapeGroup;
 
-    // let mappedDistanceShapeScale;
-
     let pose;
     let right;
     let left;
@@ -61,9 +46,6 @@ const Sketch = () => {
     let mappedThing;
     let distInPixels;
     let distance = { x: 0, y: 0 };
-
-    // let webcamView = true;
-    // let mappedDistanceWrists;
 
     // Begin Segment class
 
@@ -93,7 +75,6 @@ const Sketch = () => {
           mappedNoseColor = p.map(nose.x, 35, 650, 175, 360, true);
           mappedThing = p.int(mappedNoseColor);
           p.fill(mappedThing, 69, 92, 0.1);
-          // p.fill(270, 30, 255, 0.1);
           p.strokeWeight(0.1);
           p.stroke(0, 0, 255, 0.3);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
@@ -103,10 +84,6 @@ const Sketch = () => {
           this.alpha = p.lerp(this.alpha, 0, 0.1);
         }
       }
-
-      // mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-      // mappedThing = p.int(mappedNoseColor);
-      // p.background(mappedThing, mappedThing, mappedThing);
 
       checkCollision(targetL, targetR, targetN) {
         this.hitState.l = collision(
@@ -216,12 +193,6 @@ const Sketch = () => {
       return val;
     }
 
-    // if (p.keyIsPressed === true && p.key === 'w') {
-    //   console.log('hello');
-    //   setWebcamView(true);
-    //   console.log(webcamView);
-    // }
-
     p.draw = () => {
       if (poses.length > 0) {
         setLoading(false);
@@ -235,47 +206,6 @@ const Sketch = () => {
         scoreRight = poses[0].pose.keypoints[10].score;
         scoreLeft = poses[0].pose.keypoints[9].score;
 
-        // mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
-        // mappedThing = p.int(mappedNoseColor);
-        // p.background(mappedThing, mappedThing, mappedThing);
-
-        // if (p.keyIsPressed === true && p.key === 'w') {
-        //   console.log('did it work');
-        //   webcamView === !webcamView;
-        //   console.log(webcamView);
-        // }
-
-        // const webcamThing = () => {
-        //   p.push();
-        //   p.translate(p.width, 0);
-        //   p.scale(-1.0, 1.0);
-        //   p.image(video, 0, 0, p.width, p.height);
-        //   p.pop();
-        // };
-
-        // if (webcamView === true) {
-        //   console.log('whatever');
-        //   webcamThing();
-        //   //uncomment to see webcam image
-        //   // p.push();
-        //   // p.translate(p.width, 0);
-        //   // p.scale(-1.0, 1.0);
-        //   // p.image(video, 0, 0, p.width, p.height);
-        //   // p.pop();
-        // } else if (webcamView === false) {
-        //   console.log('goodbye');
-        // }
-        // webcamThing();
-
-        // mappedDistanceShapeScale = p.map(
-        //   distInPixels,
-        //   30.0,
-        //   530.0,
-        //   10.0,
-        //   100.0,
-        //   true
-        // );
-
         // can redraw background as black or white
         if (p.keyIsPressed === true && p.key === 'a') {
           p.background(0);
@@ -288,8 +218,6 @@ const Sketch = () => {
         p.translate(p.width, 0);
         p.scale(-1.0, 1.0);
         p.push();
-        // drawing out appendages
-        // p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
         p.ellipse(nose.x, nose.y, 10);
         p.fill(0, 0, 255, 0.3);
         p.ellipse(leftEye.x, leftEye.y, 20);
@@ -302,8 +230,6 @@ const Sketch = () => {
 
         //shape stuff
         p.push();
-        // p.translate(p.width, 0);
-        // p.scale(-1.0, 1.0);
 
         // this p.translate determines the position of the first shape
         // probably use the x and y coordinates for one of the wrists here?
@@ -394,7 +320,7 @@ const Sketch = () => {
           shapeGroup.growY(35, 200);
         }
 
-        // .shrinkY will makethe rects shrink in the y-direction
+        // .shrinkY will make the rects shrink in the y-direction
         // rate 5ish = fast, 100ish = slow
         //if (p.keyIsPressed === true && p.key === 'p') {
         //  shapeGroup.shrinkY(75, 30);
@@ -484,27 +410,16 @@ const Sketch = () => {
           p.fill(mappedThing, mappedThing, mappedThing);
           seg.display();
         }
-
-        // p.background(mappedThing, mappedThing, mappedThing);
         distInPixels = Math.floor(getDistance(targetLeft, targetRight));
         distance.x = Math.floor(targetLeft.x - targetRight.x);
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         distForSynth.current = distInPixels;
-
-        // if (segments[2].hit == true) {
-        //   groupTest.addShapes();
-        // }
-
-        // if (segments[0].hit == true) {
-        //   groupTest.removeShapes();
-        // }
 
         const segChange = segForSynth.map((segment, i) => {
           if (segment !== segments[i].hit) {
             return segments[i].hit;
           } else return segment;
         });
-        // this.setState({ segForSynth: segChange });
         setSegForSynth(segChange);
 
         const segHitStateChange = segHitState.map((segment, i) => {
@@ -512,15 +427,7 @@ const Sketch = () => {
             return segments[i].counter;
           } else return segment;
         });
-        // this.setState({ segForSynth: segChange });
         setSegHitState(segHitStateChange);
-
-        //lines for segments
-        // p.stroke(500);
-        // p.line(p.width / 3, 0, p.width / 3, p.height);
-        // p.line((p.width / 3) * 2, 0, (p.width / 3) * 2, p.height);
-        // p.line(0, p.height / 2, p.width, p.height / 2);
-        // end draw
       }
     };
     // here is the entire class for ShapeGroup
@@ -566,7 +473,6 @@ const Sketch = () => {
         this.strokeColorSingleTruth = false;
         this.strokeColorSpectrumTruth = false;
         this.fillAlphaAmount = 1;
-        //this.fillSaturationAmount = 255;
 
         // for onBeatGrow
         this.onBeatGrowTruth = false;
@@ -597,7 +503,6 @@ const Sketch = () => {
           ) {
             p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
             p.rotate(this.rotateEachRate);
-            //p.rect(i*5,i*5,this.len, this.wid);
             p.rect(
               0,
               0,
@@ -631,7 +536,6 @@ const Sketch = () => {
             this.rotateEachTruth === false &&
             this.rotateGroupTruth === false
           ) {
-            //(this.rotateEachTruth === true && this.rotateGroupTruth === false)
             p.translate(i * this.spreadAmountX, i * this.spreadAmountY);
             p.rect(
               0,
@@ -722,7 +626,7 @@ const Sketch = () => {
         }
       }
 
-      // shrinksthe shape on the y-axis
+      // shrinks the shape on the y-axis
       shrinkY(rate, min) {
         if (this.len > min) {
           this.len -= p.deltaTime / rate;
@@ -738,7 +642,6 @@ const Sketch = () => {
         if (this.sizeGradientTruth === false) {
           this.sizeGradientAmount = 0;
         }
-        // console.log(this.sizeGradientAmount);
       }
 
       // changes fill color of shapes
