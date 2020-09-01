@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import styles from './Synth.css';
+import useEventListener from '@use-it/event-listener';
 import {
   makeNotesFromSegmentData,
   makeVAENotesFromSegmentData,
