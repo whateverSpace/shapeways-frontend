@@ -21,7 +21,7 @@ Those musical performance seeds are then sent in API calls to Magenta.js MusicVA
 
 On the visual side, P5.js is used to dynamically control the rendering and manipulation of glowing 3d boxes that leave ghost trail artifacts behind as they move and change. Various motions with your wrists cause the boxes to rotate, change color, spawn and destroy copies, change dimensions, and more. Your nose's location changes the color of the background that slowly fills parts of the screen.
 
-The end result is a melodic audiovisual experience that responds to your movements and gestures in a very intuitive and fun way.
+The end result is a melodic audiovisual experience that responds to your movements and gestures with melodic and visual strokes inspired by your changes.
 
 ## How we built it
 We built our app using React components to isolate concerns, efficiently handle state management and respond to changes in tracking. We used ml5 PoseNet to track pose information, and MagentaJS for generating music using machine learning.

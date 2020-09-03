@@ -68,7 +68,6 @@ export default function Synth({
   }, []);
 
   useEffect(() => {
-    console.log(playing);
     if (playing) startMusic();
     else stopMusic();
   }, [playing]);
@@ -119,10 +118,6 @@ export default function Synth({
       melodyRNNPart.current.loopStart = 0;
       melodyRNNPart.current.loopEnd = '2m';
     }
-
-    // melodyRNNPart.current._events.forEach((event) => {
-    //   console.log(event.value);
-    // });
   };
 
   const vaeStart = async (melodyVAELoaded, segHitsChange) => {
@@ -204,10 +199,6 @@ export default function Synth({
 
   return (
     <>
-      <div className={styles.controls}>
-        {/* <button onClick={() => startMusic()}>Start</button>
-        <button onClick={() => stopMusic()}>Stop</button> */}
-      </div>
       <div className={styles.controls}>
         {playing && <span>PRESS SPACEBAR TO PAUSE</span>}
       </div>
