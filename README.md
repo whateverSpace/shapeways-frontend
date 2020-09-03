@@ -1,6 +1,6 @@
 # shapeways
 
-Shapeways(https://shapeways.netlify.app/) is a gesture-based music generator and art generator. It's interactive art that explores new ideas and technologies in music and user interface. Part multimedia sandbox, part installation art for the home, and part exploration of new forms of expression and interaction, it resides at the intersection of art and technology.
+[Shapeways](https://shapeways.netlify.app/) is many things. A gesture-based music generator and art generator. Interactive art that explores new ideas and technologies in music and user interface. Unpredictable art made possible by machine learning. Part multimedia sandbox, part installation art for the home, and part exploration of new forms of expression and interaction, Shapeways is an experience at the bleeding edge of art and technology.
 
 ## Controls
 
@@ -17,7 +17,11 @@ You will see green dots onscreen where Shapeways thinks your wrists are, and oth
 ## How it works
 Shapeways uses ml5's PoseNet machine learning model to track your wrists and heads, and maps them to one of the six segments of the screen. Various calculations are made and passed to both the visual and musical components. On the musical side, "performance seeds" are generated. These seeds are made up of notes whose pitch and durations are defined by calculations relating to your wrist and head location relative to those six segments of the screen.
 
-Those musical performance seeds are then sent in API calls to Magenta.js MusicVAE and MusicRNN checkpoints. Those responses are used to create dynamic short melodic loops inspired by those seeds, which are manipulated, looped, and played over two different Tone synths, which are routed through Tone.js filters and finally to the speakers. These short loops are played until the camera detects a head or hand in a different segment of the screen. In that case, a new seed is crafted with the new values, and new melody and counterpart are created. The end result is a sonic experience that melodically responds to your movements and gestures in a very intuitive and fun way.
+Those musical performance seeds are then sent in API calls to Magenta.js MusicVAE and MusicRNN checkpoints. The Magenta API responds with several bars of musical performance data inspired by the seeds. These responses are used to create unpredictable but musically related short melodic loops, which are played over two different Tone synths, routed through Tone.js filters and finally to the audio output. These short loops are played until the camera detects a head or hand in a different segment of the screen. In that case, a new seed is crafted with the new values, and new melody and counterpart are created.
+
+On the visual side, P5.js is used to dynamically control the rendering and manipulation of glowing 3d boxes that leave ghost trail artifacts behind as they move and change. Various motions with your wrists cause the boxes to rotate, change color, spawn and destroy copies, change dimensions, and more. Your nose's location changes the color of the background that slowly fills parts of the screen.
+
+The end result is a melodic audiovisual experience that responds to your movements and gestures in a very intuitive and fun way.
 
 ## How we built it
 We built our app using React components to isolate concerns, efficiently handle state management and respond to changes in tracking. We used ml5 PoseNet to track pose information, and MagentaJS for generating music using machine learning.
