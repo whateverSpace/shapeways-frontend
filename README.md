@@ -1,7 +1,7 @@
 # shapeways
 
 ![6](https://user-images.githubusercontent.com/563233/92160870-8c46d480-ede4-11ea-8a3b-8170296ea32f.png)
-[Shapeways](https://shapeways.netlify.app/) is a multimedia sandbox at the bleeding edge of art and technology. It's a real-time music and art generator that responds to your movements. It's an audiovisual composition shaped by the user, made possible by machine learning. An exploration of new forms of expression and interaction and new approaches to user interface. Shapeways is interactive installation art for the home, engineered with cutting edge technologies, including:
+[Shapeways](https://shapeways.netlify.app/) is a multimedia sandbox at the bleeding edge of art and technology. It's a real-time music and art generator that responds to your movements. It's an audiovisual composition shaped by the user, made possible by machine learning. It's an exploration of new forms of expression and interaction and new approaches to user interface. Shapeways is interactive installation art for the home, engineered with cutting edge technologies, including:
 
 - [React](https://reactjs.org/)
 - [Google Magenta.js](https://github.com/magenta/magenta-js)
