@@ -7,9 +7,29 @@ Shapeways(https://shapeways.netlify.app/) is a gesture-based music generator and
 Once the models have loaded, press space to start the musical accompaniment.
 Press space to toggle between playing and paused music. Everything else can be controlled without touching your computer, using your webcam.
 
-The webcam will track the locations of your wrists and nose. Shapeways divides what the camera sees into six segments in a three by two grid. This grid, and the location of your wrists and nose within it, can be used to influence the neural net generated melodies played by the two instruments, as well as several visual aspects of the experience.
+You will see green dots onscreen where Shapeways thinks your wrists are, and other dots representing your eye and nose location. Shapeways divides what the camera sees into six segments in a three by two grid. This grid, and the location of your wrists and nose within it, can be used to influence the neural net generated melodies played by the two instruments, as well as several visual aspects of the experience.
 
 - Use your wrists in different segments to trigger sounds and move shapes.
 - Bring them together, spread them apart, leave them in the middle, experiment!
 - The background color that slowly fills in segments is changed by the segment your nose is in.
 - For best results, stand 3-6 feet from webcam in a well-lit room.
+
+## How it works
+Shapeways uses ml5's PoseNet machine learning model to track your wrists and heads, and maps them to one of the six segments of the screen. Various calculations are made and passed to both the visual and musical components. On the musical side, "performance seeds" are generated. These seeds are made up of notes whose pitch and durations are defined by calculations relating to your wrist and head location relative to those six segments of the screen.
+
+Those musical performance seeds are then sent in API calls to Magenta.js MusicVAE and MusicRNN checkpoints. Those responses are used to create dynamic short melodic loops inspired by those seeds, which are manipulated, looped, and played over two different Tone synths, which are routed through Tone.js filters and finally to the speakers. These short loops are played until the camera detects a head or hand in a different segment of the screen. In that case, a new seed is crafted with the new values, and new melody and counterpart are created. The end result is a sonic experience that melodically responds to your movements and gestures in a very intuitive and fun way.
+
+## How we built it
+We built our app using React components to isolate concerns, efficiently handle state management and respond to changes in tracking. We used ml5 PoseNet to track pose information, and MagentaJS for generating music using machine learning.
+
+## Challenges we ran into
+Above all else, I would say one of the biggest challenges was figuring out how to do everything we wanted using only the camera tracking data for input. It took a lot of calculation, creative coding and experimentation to dynamically generate music seeds that produced the quality of generated music we were looking for. Once we were happy with the generated music, figuring out how to create the right amount of variety and repetition based on your movements or lack thereof was quite challenging, or at least it took a lot of trial and error.
+
+## Accomplishments that we're proud of
+We had an ambitious and fairly abstract vision for the project. We did a great job of communicating and collaborating to ensure a smooth chain from camera input to audiovisual output. Getting all of the cutting-edge technologies to play nicely together took no small amount of work.
+
+## What we learned
+Various members learned a lot about: machine learning, music theory, React, P5, Magenta, finding creative ways to translate data into synaesthetic.experiences, and figuring out workarounds to create fluid, responsive, dynamically generated art.
+
+## What's next for shapeways
+We have many plans. We already set up functions to change keys and melodies, but didn't implement gestures to trigger those changes. We're also planning to add sensor-influenced and constantly changing low end drone noises to the sonic experience. And we'd like to have the effects chain parameters change as tracking data changes, not just the synths themselves.
