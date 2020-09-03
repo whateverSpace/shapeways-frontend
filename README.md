@@ -1,7 +1,7 @@
 # shapeways
 
 ![6](https://user-images.githubusercontent.com/563233/92160870-8c46d480-ede4-11ea-8a3b-8170296ea32f.png)
-[Shapeways](https://shapeways.netlify.app/) can be described in many ways. A real-time music and art generator that responds to your movements. An audiovisual composition shaped by the user, made possible by machine learning. Interactive installation art for the home. An exploration of new forms of expression and interaction and new approaches to user interface. Shapeways is many things, but perhaps the best summary would be a multimedia sandbox at the bleeding edge of art and technology.
+[Shapeways](https://shapeways.netlify.app/) is a multimedia sandbox at the bleeding edge of art and technology. It's a real-time music and art generator that responds to your movements. It's a audiovisual composition shaped by the user, made possible by machine learning. An exploration of new forms of expression and interaction and new approaches to user interface. Shapeways is interactive installation art for the home, powered by React and machine learning.
 
 ## Controls
 
