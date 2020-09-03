@@ -1,5 +1,6 @@
 # shapeways
 
+![6](https://user-images.githubusercontent.com/563233/92160870-8c46d480-ede4-11ea-8a3b-8170296ea32f.png)
 [Shapeways](https://shapeways.netlify.app/) can be described in many ways. A real-time music and art generator that responds to your movements. An audiovisual composition shaped by the user, made possible by machine learning. Interactive installation art for the home. An exploration of new forms of expression and interaction and new approaches to user interface. Shapeways is many things, but perhaps the best summary would be a multimedia sandbox at the bleeding edge of art and technology.
 
 ## Controls
@@ -27,7 +28,7 @@ Those musical performance seeds are then sent in API calls to Magenta.js MusicVA
 
 ![7](https://user-images.githubusercontent.com/563233/92160872-8cdf6b00-ede4-11ea-8e43-4816590543d4.png)
 On the visual side, P5.js is used to dynamically render and manipulate glowing 3d boxes that leave colorful ghost trails behind as they change. Different movements of your wrists causes the boxes to rotate, change color, spawn and destroy copies, change dimensions, and more. Your nose's location changes the color of the background that slowly fills parts of the screen. The end result is a melodic audiovisual experience that responds to your movements and gestures with melodic and visual strokes inspired by your changes.
-![6](https://user-images.githubusercontent.com/563233/92160870-8c46d480-ede4-11ea-8a3b-8170296ea32f.png)
+
 
 ## How we built it
 We built our app using React components to isolate concerns, efficiently handle state management and respond to changes in tracking. We used ml5 PoseNet to track pose information, and MagentaJS for generating music using machine learning.
