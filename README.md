@@ -14,7 +14,7 @@
 ## Controls
 
 Once the models have loaded, press space to start the musical accompaniment.
-Press space to toggle between playing and paused music. Everything else can be controlled without touching your computer, using your webcam.
+Press space to toggle between playing and paused music. Everything else can be controlled without touching your computer, using your webcam. For best results, stand 3-6 feet from webcam in a well-lit room.
 ![1](https://user-images.githubusercontent.com/563233/92160843-84873000-ede4-11ea-981d-da6d8e8f81f3.png)
 
 
@@ -25,7 +25,7 @@ You will see green dots onscreen where Shapeways thinks your wrists are, and oth
 - Use your wrists in different segments to trigger sounds and move shapes.
 - Bring them together, spread them apart, leave them in the middle, experiment!
 - The background color that slowly fills in segments is changed by the segment your nose is in.
-- For best results, stand 3-6 feet from webcam in a well-lit room.
+- Stand 3-6 feet away from the camera for optimal tracking.
 ![3](https://user-images.githubusercontent.com/563233/92160858-894be400-ede4-11ea-9793-eedd3200f9e5.png)
 
 ## How it works
