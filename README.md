@@ -1,6 +1,6 @@
 # shapeways
 
-[Shapeways](https://shapeways.netlify.app/) is many things. A gesture-based music generator and art generator. Interactive art that explores new ideas and technologies in music and user interface. Unpredictable art made possible by machine learning. Part multimedia sandbox, part installation art for the home, and part exploration of new forms of expression and interaction, Shapeways is an experience at the bleeding edge of art and technology.
+[Shapeways](https://shapeways.netlify.app/) is many things. A gesture-based music generator and art generator. Interactive art that explores new ideas and technologies in music and user interface. Audiovisual compositions made possible by machine learning. Interactive installation art for the home. Exploration of new forms of expression and interaction. Shapeways is many things, but perhaps the best summary would be a multimedia sandbox at the bleeding edge of art and technology.
 
 ## Controls
 
