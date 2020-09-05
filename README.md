@@ -9,6 +9,8 @@
 - [p5.js](https://p5js.org/)
 - [Tone.js](https://tonejs.github.io/)
 
+Requires [Google Chrome](https://www.google.com/chrome/) or a Chrome-compatible browser like Brave, and a webcam. (Please click "Allow Access" if you're prompted to do so when you first load the page.)
+
 [Play Shapeways Now](https://shapeways.netlify.app/)
 
 ## Controls
