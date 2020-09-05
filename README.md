@@ -11,6 +11,8 @@
 
 Requires [Google Chrome](https://www.google.com/chrome/) or a Chrome-compatible browser like Brave, and a webcam. (Please click "Allow Access" if you're prompted to do so when you first load the page.)
 
+[Watch someone interact with Shapeways](https://www.youtube-nocookie.com/embed/5x5oFnMPvAQ)
+
 [Play Shapeways Now](https://shapeways.netlify.app/)
 
 ## Controls
@@ -18,8 +20,6 @@ Requires [Google Chrome](https://www.google.com/chrome/) or a Chrome-compatible 
 Once the models have loaded, press spacebar to start the musical accompaniment. Spacebar will then toggle between pause and play mode.
  Everything else can be controlled without touching your computer, using your webcam. For best results, stand 3-6 feet from webcam in a well-lit room.
 ![1](https://user-images.githubusercontent.com/563233/92160843-84873000-ede4-11ea-981d-da6d8e8f81f3.png)
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/5x5oFnMPvAQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 You will see green dots onscreen where Shapeways thinks your wrists are, and other dots representing your eye and nose location. Shapeways divides what the camera sees into six segments in a three by two grid. This grid, and the location of your wrists and nose within it, can be used to influence the neural-net-generated melodies played by the two instruments, in addition to sculpting the visual experience.
 ![2](https://user-images.githubusercontent.com/563233/92160855-881ab700-ede4-11ea-8ceb-4251c03ae12f.png)
