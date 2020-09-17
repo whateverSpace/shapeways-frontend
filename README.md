@@ -9,11 +9,12 @@
 - [p5.js](https://p5js.org/)
 - [Tone.js](https://tonejs.github.io/)
 
-Requires [Google Chrome](https://www.google.com/chrome/) or a Chrome-compatible browser like Brave, and a webcam. (Please click "Allow Access" if you're prompted to do so when you first load the page.)
+Requires [Google Chrome](https://www.google.com/chrome/) or a Chrome-compatible browser like Brave, and a webcam.
 
 [Play Shapeways Now](https://shapeways.netlify.app/)
 
-## Controls
+## Instructions
+Make sure to allow access to your webcam when prompted.
 
 Once the models have loaded, press spacebar to start the musical accompaniment. Spacebar will then toggle between pause and play mode.
  Everything else can be controlled without touching your computer, using your webcam. For best results, stand 3-6 feet from webcam in a well-lit room.
