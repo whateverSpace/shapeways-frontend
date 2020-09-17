@@ -68,7 +68,9 @@ export default function Synth({
   }, []);
 
   useEffect(() => {
-    if (playing) startMusic();
+    if (playing) {
+      startMusic();
+    }
     else stopMusic();
   }, [playing]);
 
@@ -185,7 +187,7 @@ export default function Synth({
       stopMusic();
     } else if (e.keyCode === 32 && !playing) {
       startMusic();
-    }
+    } n
   });
 
   const startMusic = async () => {
@@ -200,7 +202,7 @@ export default function Synth({
   return (
     <>
       <div className={styles.controls}>
-        {playing && <span>PRESS SPACEBAR TO PAUSE</span>}
+        <div>PRESS SPACEBAR TO {playing && <span>UN</span>}PLAY</div>
       </div>
     </>
   );
