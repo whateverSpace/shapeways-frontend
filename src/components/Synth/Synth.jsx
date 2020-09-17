@@ -187,7 +187,7 @@ export default function Synth({
       stopMusic();
     } else if (e.keyCode === 32 && !playing) {
       startMusic();
-    } n
+    }
   });
 
   const startMusic = async () => {
