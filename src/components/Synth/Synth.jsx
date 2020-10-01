@@ -12,7 +12,6 @@ import { NoiseSynth } from 'tone';
 export default function Synth({
   distForSynth,
   segHitState,
-  distance,
   playing,
 }) {
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
@@ -28,6 +27,7 @@ export default function Synth({
   const melodyRNNPart = useRef(null);
   const melodyCore = useRef(null);
   const newVAEPart = useRef(null);
+
 
   if (distForSynth.current) Tone.Transport.bpm.value = 100;
   segHitState.forEach((segment, i) => {
@@ -70,8 +70,12 @@ export default function Synth({
   useEffect(() => {
     if (playing) {
       startMusic();
+      setMusicStatusMessage('Playing');
     }
-    else stopMusic();
+    else {
+      stopMusic();
+      setMusicStatusMessage('Paused');
+    }
   }, [playing]);
 
   useEffect(() => {
@@ -177,40 +181,42 @@ export default function Synth({
       newVAEPart.current.loopEnd = '4m';
     }
 
-    // newVAEPart.current._events.forEach((event) => {
-    //   console.log(event.value);
-    // });
   };
 
-  useEventListener('keydown', (e) => {
-    if (e.keyCode === 32 && playing) {
-      stopMusic();
-    } else if (e.keyCode === 32 && !playing) {
-      startMusic();
-    }
-  });
 
-  const startMusic = async () => {
-    await Tone.start();
-    Tone.Transport.start();
+    useEventListener('keydown', (e) => {
+      if (e.keyCode === 32 && playing) {
+        stopMusic();
+        setIsPlaying(false);
+      } else if (e.keyCode === 32 && !playing) {
+        startMusic();
+        setIsPlaying(true);
+      }
+      return playing;
+    });
+
+    const startMusic = async () => {
+      await Tone.start();
+      Tone.Transport.start();
+    };
+
+    const stopMusic = () => {
+      Tone.Transport.stop();
+    };
+
+    return (
+      <>
+        {isPlaying
+          ? <button onClick={usePlayPauseClick}>Pause</button>
+          : <button onClick={usePlayPauseClick}>Play</button>
+        }
+      </>
+    );
   };
-
-  const stopMusic = () => {
-    Tone.Transport.stop();
-  };
-
-  return (
-    <>
-      <div className={styles.controls}>
-        <div>PRESS SPACEBAR TO {playing && <span>UN</span>}PLAY</div>
-      </div>
-    </>
-  );
 }
 
 Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  distance: PropTypes.object,
   playing: PropTypes.bool,
 };

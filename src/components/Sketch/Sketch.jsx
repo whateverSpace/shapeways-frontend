@@ -8,7 +8,10 @@ const Sketch = () => {
   const myRef = useRef(null);
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
+  const [status, setStatus] = useState({ loading: true, playing: false });
   const [loading, setLoading] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const [segForSynth, setSegForSynth] = useState([
     false,
     false,
@@ -721,7 +724,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segHitState={segHitState} />
+        <Synth distForSynth={distForSynth} segHitState={segHitState} playing={isPlaying}/>
       </section>
     </>
   );
