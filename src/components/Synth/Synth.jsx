@@ -189,9 +189,9 @@ export default function Synth({
 
   });
   useEventListener('click', (e) => {
-    if (playing) {
+    if (e.type === 'click' && playing) {
       stopMusic();
-    } else if (!playing) {
+    } else if (e.type === 'click' && !playing) {
       startMusic();
     }
 
