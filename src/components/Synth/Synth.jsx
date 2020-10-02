@@ -70,11 +70,9 @@ export default function Synth({
   useEffect(() => {
     if (playing) {
       startMusic();
-      setMusicStatusMessage('Playing');
     }
     else {
       stopMusic();
-      setMusicStatusMessage('Paused');
     }
   }, [playing]);
 
@@ -182,38 +180,44 @@ export default function Synth({
     }
 
   };
+  useEventListener('keydown', (e) => {
+    if (e.keyCode === 32 && playing) {
+      stopMusic();
+    } else if (e.keyCode === 32 && !playing) {
+      startMusic();
+    }
 
+  });
+  useEventListener('click', (e) => {
+    if (playing) {
+      stopMusic();
+    } else if (!playing) {
+      startMusic();
+    }
 
-    useEventListener('keydown', (e) => {
-      if (e.keyCode === 32 && playing) {
-        stopMusic();
-        setIsPlaying(false);
-      } else if (e.keyCode === 32 && !playing) {
-        startMusic();
-        setIsPlaying(true);
-      }
-      return playing;
-    });
+  });
 
-    const startMusic = async () => {
-      await Tone.start();
-      Tone.Transport.start();
-    };
-
-    const stopMusic = () => {
-      Tone.Transport.stop();
-    };
-
-    return (
-      <>
-        {isPlaying
-          ? <button onClick={usePlayPauseClick}>Pause</button>
-          : <button onClick={usePlayPauseClick}>Play</button>
-        }
-      </>
-    );
+  const startMusic = async () => {
+    await Tone.start();
+    Tone.Transport.start();
+    playing = true;
   };
+
+  const stopMusic = () => {
+    Tone.Transport.stop();
+    playing = false;
+  };
+
+  return (
+    <>
+      {isPlaying
+        ? <button onClick={usePlayPauseClick}>Pause</button>
+        : <button onClick={usePlayPauseClick}>Play</button>
+      }
+    </>
+  );
 }
+
 
 Synth.propTypes = {
   distForSynth: PropTypes.object,
