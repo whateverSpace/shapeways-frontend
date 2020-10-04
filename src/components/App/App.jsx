@@ -1,6 +1,7 @@
 import React from 'react';
 import Sketch from '../Sketch/Sketch';
 import Header from '../Header/Header';
+import PlayControl from '../Synth/PlayControl';
 
 export default function App() {
 
@@ -9,6 +10,7 @@ export default function App() {
     <>
       <Header />
       <Sketch />
+      <PlayControl />
     </>
   );
 }

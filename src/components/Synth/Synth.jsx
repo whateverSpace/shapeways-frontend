@@ -8,11 +8,12 @@ import {
   makeNotesFromSegmentData,
   makeVAENotesFromSegmentData,
 } from '../../utils/buildNoteSequence';
-import { NoiseSynth } from 'tone';
+import PlayControl from '../Synth/PlayControl';
+
 export default function Synth({
   distForSynth,
   segHitState,
-  playing,
+  isPlaying,
 }) {
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
   const [distanceChange, setDistanceChange] = useState({
@@ -68,13 +69,13 @@ export default function Synth({
   }, []);
 
   useEffect(() => {
-    if (playing) {
+    if (isPlaying) {
       startMusic();
     }
     else {
       stopMusic();
     }
-  }, [playing]);
+  }, [isPlaying]);
 
   useEffect(() => {
     if (melodyRNN.current.initialized) rnnMelodyStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
@@ -181,17 +182,17 @@ export default function Synth({
 
   };
   useEventListener('keydown', (e) => {
-    if (e.keyCode === 32 && playing) {
+    if (e.keyCode === 32 && isPlaying) {
       stopMusic();
-    } else if (e.keyCode === 32 && !playing) {
+    } else if (e.keyCode === 32 && !isPlaying) {
       startMusic();
     }
 
   });
-  useEventListener('click', (e) => {
-    if (playing) {
+  useEventListener('click', () => {
+    if (isPlaying) {
       stopMusic();
-    } else if (!playing) {
+    } else if (!isPlaying) {
       startMusic();
     }
 
@@ -200,20 +201,19 @@ export default function Synth({
   const startMusic = async () => {
     await Tone.start();
     Tone.Transport.start();
-    playing = true;
+    console.log('music started');
+    return true;
   };
 
   const stopMusic = () => {
     Tone.Transport.stop();
-    playing = false;
+    console.log('music stopped');
+    return false;
   };
 
   return (
     <>
-      {isPlaying
-        ? <button onClick={usePlayPauseClick}>Pause</button>
-        : <button onClick={usePlayPauseClick}>Play</button>
-      }
+      <PlayControl />
     </>
   );
 }
@@ -222,5 +222,5 @@ export default function Synth({
 Synth.propTypes = {
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  playing: PropTypes.bool,
+  isPlaying: PropTypes.bool,
 };
