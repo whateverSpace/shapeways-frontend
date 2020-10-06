@@ -8,19 +8,15 @@ import {
   makeNotesFromSegmentData,
   makeVAENotesFromSegmentData,
 } from '../../utils/buildNoteSequence';
-import PlayControl from '../Synth/PlayControl';
+import PlayControl from '../Synth/PlayControl/PlayControl';
 
 export default function Synth({
   distForSynth,
-  segHitState,
-  isPlaying,
+  segHitState
 }) {
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
-  const [distanceChange, setDistanceChange] = useState({
-    x: 0,
-    y: 0,
-    wrists: 0,
-  });
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const synth = useRef(null);
   const synth2 = useRef(null);
   const melodyRNN = useRef(null);
@@ -211,12 +207,21 @@ export default function Synth({
     return false;
   };
 
+  const handlePlayClick = () => {
+    setIsPlaying(true);
+  };
+
+  const handlePauseClick = () => {
+    setIsPlaying(false);
+  };
+
   return (
     <>
-      <PlayControl />
+      <PlayControl isPlaying={isPlaying} handlePlayClick={handlePlayClick} handlePauseClick={handlePauseClick} />
     </>
   );
 }
+
 
 
 Synth.propTypes = {

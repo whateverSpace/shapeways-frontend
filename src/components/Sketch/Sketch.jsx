@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import p5 from 'p5';
+import { p5 as P5 } from 'p5';
 import ml5 from 'ml5';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
@@ -8,7 +8,6 @@ const Sketch = () => {
   const myRef = useRef(null);
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
-  const [status, setStatus] = useState({ loading: true, playing: false });
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -724,7 +723,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segHitState={segHitState} playing={isPlaying}/>
+        <Synth distForSynth={distForSynth} segHitState={segHitState} isPlaying={isPlaying}/>
       </section>
     </>
   );
