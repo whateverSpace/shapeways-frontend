@@ -2,13 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
-import styles from './Synth.css';
 import useEventListener from '@use-it/event-listener';
 import {
   makeNotesFromSegmentData,
   makeVAENotesFromSegmentData,
 } from '../../utils/buildNoteSequence';
-import PlayControl from '../Synth/PlayControl/PlayControl';
+import { PlayControl } from '../Synth/PlayControl/PlayControl';
 
 export default function Synth({
   distForSynth,
@@ -216,9 +215,9 @@ export default function Synth({
   };
 
   return (
-    <>
+    <div>
       <PlayControl isPlaying={isPlaying} handlePlayClick={handlePlayClick} handlePauseClick={handlePauseClick} />
-    </>
+    </div>
   );
 }
 

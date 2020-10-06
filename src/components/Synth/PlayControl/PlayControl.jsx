@@ -1,12 +1,8 @@
-import { React, useState } from 'react';
+import { React } from 'react';
+import PropTypes from 'prop-types';
 import Play from './Play';
 import Pause from './Pause';
-
-const PlayControl = (props) => {
-
-
-
-
+export const PlayControl = (props) => {
 
   return (
     <>
@@ -16,6 +12,9 @@ const PlayControl = (props) => {
     </>
   );
 };
-
-
 export default PlayControl;
+PlayControl.propTypes = {
+  isPlaying: PropTypes.bool,
+  handlePlayClick: PropTypes.func,
+  handlePauseClick: PropTypes.func
+};
