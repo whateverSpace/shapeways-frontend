@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
@@ -7,14 +8,16 @@ import {
   makeNotesFromSegmentData,
   makeVAENotesFromSegmentData,
 } from '../../utils/buildNoteSequence';
-import { PlayControl } from '../Synth/PlayControl/PlayControl';
+
 
 export default function Synth({
+  isPlaying,
+  handlePlayClick,
+  handlePauseClick,
   distForSynth,
   segHitState
 }) {
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const synth = useRef(null);
   const synth2 = useRef(null);
@@ -206,25 +209,18 @@ export default function Synth({
     return false;
   };
 
-  const handlePlayClick = () => {
-    setIsPlaying(true);
-  };
-
-  const handlePauseClick = () => {
-    setIsPlaying(false);
-  };
-
   return (
-    <div>
-      <PlayControl isPlaying={isPlaying} handlePlayClick={handlePlayClick} handlePauseClick={handlePauseClick} />
-    </div>
+    <>
+    </>
   );
 }
 
 
 
 Synth.propTypes = {
-  distForSynth: PropTypes.object,
-  segHitState: PropTypes.array.isRequired,
   isPlaying: PropTypes.bool,
+  handlePlayClick: PropTypes.func,
+  handlePauseClick: PropTypes.func,
+  distForSynth: PropTypes.object,
+  segHitState: PropTypes.array.isRequired
 };

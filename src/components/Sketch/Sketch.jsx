@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { p5 as P5 } from 'p5';
+import p5 from 'p5';
 import ml5 from 'ml5';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
+import { PlayControl } from '../Synth/PlayControl/PlayControl';
 
 const Sketch = () => {
   const myRef = useRef(null);
@@ -20,7 +21,14 @@ const Sketch = () => {
     false,
   ]);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
-const handlePlayButtonClick=
+  const handlePlayClick = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handlePlayPauseChange = () => {
+    setIsPlaying(!isPlaying);
+  };
+
   const sketchStuff = (p) => {
     let video;
     let poseNet;
@@ -719,6 +727,8 @@ const handlePlayButtonClick=
   return (
     <>
       <section>
+        <PlayControl isPlaying={ isPlaying } onChange={handlePlayPauseChange} handlePlayClick={ handlePlayClick } handlePauseClick={ handlePlayClick } />
+
         {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
           <div ref={myRef}></div>

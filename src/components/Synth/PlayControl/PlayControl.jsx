@@ -14,6 +14,7 @@ export const PlayControl = ({ isPlaying, handlePlayClick, handlePauseClick }) =>
 PlayControl.propTypes = {
   isPlaying: PropTypes.bool,
   handlePlayClick: PropTypes.func,
-  handlePauseClick: PropTypes.func
+  handlePauseClick: PropTypes.func,
+
 };
 export default PlayControl;
