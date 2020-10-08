@@ -20,7 +20,7 @@ const Sketch = () => {
     false,
   ]);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
-
+const handlePlayButtonClick=
   const sketchStuff = (p) => {
     let video;
     let poseNet;
