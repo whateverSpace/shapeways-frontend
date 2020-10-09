@@ -440,6 +440,7 @@ const Sketch = () => {
             return segments[i].counter;
           } else return segment;
         });
+
         setSegHitState(segHitStateChange);
         // end draw
       }
@@ -721,7 +722,7 @@ const Sketch = () => {
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segHitState={segHitState} isPlaying={isPlaying}/>
+        <Synth isPlaying={isPlaying} distForSynth={distForSynth} segHitState={segHitState} />
         <PlayControl isPlaying={ isPlaying } onChange={handlePlayPauseChange} handleClick={ handleClick } />
       </section>
     </>
