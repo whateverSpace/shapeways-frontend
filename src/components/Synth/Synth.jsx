@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
-import useEventListener from '@use-it/event-listener';
+
 import {
   makeNotesFromSegmentData,
   makeVAENotesFromSegmentData,
@@ -12,8 +12,7 @@ import {
 
 export default function Synth({
   isPlaying,
-  handlePlayClick,
-  handlePauseClick,
+  handlePlayPauseChange,
   distForSynth,
   segHitState
 }) {
@@ -179,22 +178,7 @@ export default function Synth({
     }
 
   };
-  useEventListener('keydown', (e) => {
-    if (e.keyCode === 32 && isPlaying) {
-      stopMusic();
-    } else if (e.keyCode === 32 && !isPlaying) {
-      startMusic();
-    }
 
-  });
-  useEventListener('click', () => {
-    if (isPlaying) {
-      stopMusic();
-    } else if (!isPlaying) {
-      startMusic();
-    }
-
-  });
 
   const startMusic = async () => {
     await Tone.start();
@@ -215,12 +199,10 @@ export default function Synth({
   );
 }
 
-
-
 Synth.propTypes = {
   isPlaying: PropTypes.bool,
-  handlePlayClick: PropTypes.func,
-  handlePauseClick: PropTypes.func,
   distForSynth: PropTypes.object,
-  segHitState: PropTypes.array.isRequired
+  segHitState: PropTypes.array.isRequired,
+  handlePlayPauseChange: PropTypes.func,
+  handleClick: PropTypes.func.isRequired
 };

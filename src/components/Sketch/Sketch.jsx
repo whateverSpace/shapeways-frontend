@@ -3,7 +3,8 @@ import p5 from 'p5';
 import ml5 from 'ml5';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
-import { PlayControl } from '../Synth/PlayControl/PlayControl';
+import PlayControl from '../Synth/PlayControl/PlayControl';
+import useEventListener from '@use-it/event-listener';
 
 const Sketch = () => {
   const myRef = useRef(null);
@@ -11,20 +12,17 @@ const Sketch = () => {
   const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-
-  const [segForSynth, setSegForSynth] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
 
   const handleClick = () => {
     setIsPlaying(!isPlaying);
   };
+
+  const handlePlayPauseChange = () => {
+
+  };
+
+
 
   const sketchStuff = (p) => {
     let video;
@@ -437,13 +435,6 @@ const Sketch = () => {
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         distForSynth.current = distInPixels;
 
-        const segChange = segForSynth.map((segment, i) => {
-          if (segment !== segments[i].hit) {
-            return segments[i].hit;
-          } else return segment;
-        });
-        setSegForSynth(segChange);
-
         const segHitStateChange = segHitState.map((segment, i) => {
           if (segment !== segments[i].counter) {
             return segments[i].counter;
@@ -718,6 +709,7 @@ const Sketch = () => {
   }; // end Sketch = (p)
 
   useEffect(() => {
+    // eslint-disable-next-line new-cap
     myP5.current = new p5(sketchStuff, myRef.current);
   }, []);
 

@@ -9,7 +9,6 @@ const Play = ({ onClick }) => {
           <polygon points="0,0 50,30 0,60" />
         </svg>
       </label>
-
     </>
   );
 };
