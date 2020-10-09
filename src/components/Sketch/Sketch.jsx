@@ -21,11 +21,8 @@ const Sketch = () => {
     false,
   ]);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
-  const handlePlayClick = () => {
-    setIsPlaying(!isPlaying);
-  };
 
-  const handlePlayPauseChange = () => {
+  const handleClick = () => {
     setIsPlaying(!isPlaying);
   };
 
@@ -727,13 +724,13 @@ const Sketch = () => {
   return (
     <>
       <section>
-        <PlayControl isPlaying={ isPlaying } onChange={handlePlayPauseChange} handlePlayClick={ handlePlayClick } handlePauseClick={ handlePlayClick } />
 
         {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
         <Synth distForSynth={distForSynth} segHitState={segHitState} isPlaying={isPlaying}/>
+        <PlayControl isPlaying={ isPlaying } onChange={handlePlayPauseChange} handleClick={ handleClick } />
       </section>
     </>
   );
