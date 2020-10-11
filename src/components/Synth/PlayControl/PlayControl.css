@@ -1,0 +1,7 @@
+.PlayControl{
+    width: 60px;
+    height: auto;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}

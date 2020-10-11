@@ -1,31 +1,45 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
+import PlayControl from '../Synth/PlayControl/PlayControl';
+import useEventListener from '@use-it/event-listener';
 
 const Sketch = () => {
   const myRef = useRef(null);
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [segForSynth, setSegForSynth] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
+
+  const handleClick = () => {
+    handlePlayPauseChange();
+  };
+
+  const handlePlayPauseChange = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  useEventListener('keydown', (e) => {
+    if (e.keyCode === 32) {
+      setIsPlaying(!isPlaying);
+    }
+  });
+
+  useEventListener('click', (e) => {
+    setIsPlaying(!isPlaying);
+  });
+
 
   const sketchStuff = (p) => {
     let video;
     let poseNet;
     let poses = [];
 
-    let targetRight = { x: 0, y: 0 };
-    let targetLeft = { x: 0, y: 0 };
+    let targetRight = {x: 0, y: 0};
+    let targetLeft = {x: 0, y: 0};
     let scoreRight;
     let scoreLeft;
     let scoreThreshold = 0.2;
@@ -45,7 +59,7 @@ const Sketch = () => {
     let mappedNoseColor;
     let mappedThing;
     let distInPixels;
-    let distance = { x: 0, y: 0 };
+    let distance = {x: 0, y: 0};
 
     // Begin Segment class
     class Segment {
@@ -55,7 +69,7 @@ const Sketch = () => {
         this.w = p.width / 3;
         this.h = p.height / 2;
         this.hit = false;
-        this.hitState = { l: 0, r: 0, n: 0 };
+        this.hitState = {l: 0, r: 0, n: 0};
         this.counter = 0;
         this.alpha = 0;
 
@@ -182,7 +196,7 @@ const Sketch = () => {
       video.hide();
 
       poseNet = ml5.poseNet(video, modelReady);
-      poseNet.on('pose', function (results) {
+      poseNet.on('pose', function(results) {
         poses = results;
       });
     };
@@ -430,18 +444,12 @@ const Sketch = () => {
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         distForSynth.current = distInPixels;
 
-        const segChange = segForSynth.map((segment, i) => {
-          if (segment !== segments[i].hit) {
-            return segments[i].hit;
-          } else return segment;
-        });
-        setSegForSynth(segChange);
-
         const segHitStateChange = segHitState.map((segment, i) => {
           if (segment !== segments[i].counter) {
             return segments[i].counter;
           } else return segment;
         });
+
         setSegHitState(segHitStateChange);
         // end draw
       }
@@ -711,17 +719,20 @@ const Sketch = () => {
   }; // end Sketch = (p)
 
   useEffect(() => {
+    // eslint-disable-next-line new-cap
     myP5.current = new p5(sketchStuff, myRef.current);
   }, []);
 
   return (
     <>
       <section>
+
         {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segHitState={segHitState} />
+        <Synth isPlaying={isPlaying} distForSynth={distForSynth} segHitState={segHitState} />
+        <PlayControl isPlaying={isPlaying} onChange={handlePlayPauseChange} onClick={handleClick} />
       </section>
     </>
   );

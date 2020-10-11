@@ -1,26 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
+/* eslint-disable new-cap */
+import React, {useState, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
-import styles from './Synth.css';
-import useEventListener from '@use-it/event-listener';
+
 import {
   makeNotesFromSegmentData,
   makeVAENotesFromSegmentData,
 } from '../../utils/buildNoteSequence';
-import { NoiseSynth } from 'tone';
+
+
 export default function Synth({
+  isPlaying,
+  handlePlayPauseChange,
   distForSynth,
-  segHitState,
-  distance,
-  playing,
+  segHitState
 }) {
   const [segHitsChange, setSegHitsChange] = useState([0, 0, 0, 0, 0, 0]);
-  const [distanceChange, setDistanceChange] = useState({
-    x: 0,
-    y: 0,
-    wrists: 0,
-  });
+
   const synth = useRef(null);
   const synth2 = useRef(null);
   const melodyRNN = useRef(null);
@@ -28,6 +25,7 @@ export default function Synth({
   const melodyRNNPart = useRef(null);
   const melodyCore = useRef(null);
   const newVAEPart = useRef(null);
+
 
   if (distForSynth.current) Tone.Transport.bpm.value = 100;
   segHitState.forEach((segment, i) => {
@@ -68,11 +66,13 @@ export default function Synth({
   }, []);
 
   useEffect(() => {
-    if (playing) {
+    if (!isPlaying) {
       startMusic();
     }
-    else stopMusic();
-  }, [playing]);
+    else {
+      stopMusic();
+    }
+  }, [isPlaying]);
 
   useEffect(() => {
     if (melodyRNN.current.initialized) rnnMelodyStart(null, segHitsChange); // NEW MELODY BASED ON SEGMENTS
@@ -177,40 +177,32 @@ export default function Synth({
       newVAEPart.current.loopEnd = '4m';
     }
 
-    // newVAEPart.current._events.forEach((event) => {
-    //   console.log(event.value);
-    // });
   };
 
-  useEventListener('keydown', (e) => {
-    if (e.keyCode === 32 && playing) {
-      stopMusic();
-    } else if (e.keyCode === 32 && !playing) {
-      startMusic();
-    }
-  });
 
   const startMusic = async () => {
     await Tone.start();
     Tone.Transport.start();
+    console.log('music started');
+    return true;
   };
 
   const stopMusic = () => {
     Tone.Transport.stop();
+    console.log('music stopped');
+    return false;
   };
 
   return (
     <>
-      <div className={styles.controls}>
-        <div>PRESS SPACEBAR TO {playing && <span>UN</span>}PLAY</div>
-      </div>
     </>
   );
 }
 
 Synth.propTypes = {
+  isPlaying: PropTypes.bool,
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  distance: PropTypes.object,
-  playing: PropTypes.bool,
+  handlePlayPauseChange: PropTypes.func,
+  handleClick: PropTypes.func.isRequired
 };
