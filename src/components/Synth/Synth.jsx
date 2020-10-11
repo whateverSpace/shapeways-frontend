@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import * as mm from '@magenta/music';
 import * as Tone from 'tone';
@@ -66,7 +66,7 @@ export default function Synth({
   }, []);
 
   useEffect(() => {
-    if (isPlaying) {
+    if (!isPlaying) {
       startMusic();
     }
     else {
