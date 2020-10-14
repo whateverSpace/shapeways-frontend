@@ -7,19 +7,16 @@ export const PlayControl = ({ isPlaying, onClick }) => {
 
   const Pause = ({ onClick }) => {
     return (
-      <label>Pause
+      <>
         <GiSpeakerOff onClick={onClick} />
-      </label>
+      </>
     );
   };
 
   const Play = ({ onClick }) => {
     return (
       <>
-        <label>Play
-          <GiSpeaker onClick={onClick} />
-        </label>
-
+        <GiSpeaker onClick={onClick} />
       </>
     );
   };
