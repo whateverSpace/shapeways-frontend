@@ -428,10 +428,7 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
-          // console.log(`Segment ${i} has ${seg.counter} hits.`);
-          // mappedNoseColor = p.map(nose.x, 35, 650, 0, 360, true);
-          // mappedThing = p.int(mappedNoseColor);
-          // p.fill(mappedThing, mappedThing, mappedThing);
+         
           if (p.keyIsPressed === true && p.key === 'b') {
             seg.noAlpha(true);
           } else {
