@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
 import ml5 from 'ml5';
 import Synth from '../Synth/Synth';
@@ -18,15 +18,15 @@ const Sketch = () => {
     handlePlayPauseChange();
   };
 
+  useEventListener('keydown', (e) => {
+    if (e.keyCode === 32) {
+      handlePlayPauseChange();
+    }
+  });
+
   const handlePlayPauseChange = () => {
     setIsPlaying(!isPlaying);
   };
-
-  useEventListener('keydown', (e) => {
-    if (e.keyCode === 32) {
-      setIsPlaying(!isPlaying);
-    }
-  });
 
   useEventListener('click', (e) => {
     setIsPlaying(!isPlaying);
@@ -38,8 +38,8 @@ const Sketch = () => {
     let poseNet;
     let poses = [];
 
-    let targetRight = {x: 0, y: 0};
-    let targetLeft = {x: 0, y: 0};
+    let targetRight = { x: 0, y: 0 };
+    let targetLeft = { x: 0, y: 0 };
     let scoreRight;
     let scoreLeft;
     let scoreThreshold = 0.2;
@@ -59,7 +59,7 @@ const Sketch = () => {
     let mappedNoseColor;
     let mappedThing;
     let distInPixels;
-    let distance = {x: 0, y: 0};
+    let distance = { x: 0, y: 0 };
 
     // Begin Segment class
     class Segment {
@@ -69,7 +69,7 @@ const Sketch = () => {
         this.w = p.width / 3;
         this.h = p.height / 2;
         this.hit = false;
-        this.hitState = {l: 0, r: 0, n: 0};
+        this.hitState = { l: 0, r: 0, n: 0 };
         this.counter = 0;
         this.alpha = 0;
 
@@ -428,10 +428,7 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
-          // console.log(`Segment ${i} has ${seg.counter} hits.`);
-          // mappedNoseColor = p.map(nose.x, 35, 650, 0, 360, true);
-          // mappedThing = p.int(mappedNoseColor);
-          // p.fill(mappedThing, mappedThing, mappedThing);
+         
           if (p.keyIsPressed === true && p.key === 'b') {
             seg.noAlpha(true);
           } else {

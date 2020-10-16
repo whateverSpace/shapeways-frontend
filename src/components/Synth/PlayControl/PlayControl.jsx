@@ -1,28 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './PlayControl.css';
+import { GiSpeakerOff, GiSpeaker } from 'react-icons/gi';
+
 export const PlayControl = ({ isPlaying, onClick }) => {
 
   const Pause = ({ onClick }) => {
     return (
-      <label>Pause
-        <svg className="button" viewBox="0 0 60 60" onClick={onClick}>
-          <polygon points="0,0 15,0 15,60 0,60" />
-          <polygon points="25,0 40,0 40,60 25,60" />
-        </svg>
-      </label>
+      <>
+        <GiSpeakerOff onClick={onClick} />
+      </>
     );
   };
 
   const Play = ({ onClick }) => {
     return (
       <>
-        <label>Play
-          <svg className="button" viewBox="0 0 60 60" onClick={onClick}>
-            <polygon points="0,0 60,30 0,60" />
-          </svg>
-        </label>
-
+        <GiSpeaker onClick={onClick} />
       </>
     );
   };

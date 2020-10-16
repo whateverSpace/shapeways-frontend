@@ -7,7 +7,7 @@ export const makeNotesFromSegmentData = (hits) => {
   hits.forEach((segment, i) => {
     let segmentNoteMap = scales.C;
     // let segmentNoteMap = ['G4', 'G#4', 'F#4', 'C4', 'D#4', 'F4'];
-    if(segment > 0) {
+    if (segment > 0) {
       let dur = segment;
       notes.push({
         pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(),
@@ -28,13 +28,12 @@ export const makeNotesFromSegmentData = (hits) => {
 };
 
 export const makeVAENotesFromSegmentData = (hits) => {
-  let delayProb = 0;
   let step = 0;
   let notes = [];
   hits.forEach((segment, i) => {
     let segmentNoteMap = scales.C;
     // let segmentNoteMap = ['G4', 'G#4', 'F#4', 'C4', 'D#4', 'F4'];
-    if(segment > 0) {
+    if (segment > 0) {
       let dur = 2;
       notes.push({
         pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(),
@@ -48,7 +47,7 @@ export const makeVAENotesFromSegmentData = (hits) => {
   hits.forEach((segment, i) => {
     let segmentNoteMap = scales.C;
     // let segmentNoteMap = ['G4', 'G#4', 'F#4', 'C4', 'D#4', 'F4'];
-    if(segment > 0) {
+    if (segment > 0) {
       let dur = 2;
       notes.push({
         pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(),
@@ -76,7 +75,7 @@ export const makeChordsFromHits = (hits) => {
   hits.forEach((segment, i) => {
 
     // let segmentNoteMap = ['G4', 'G#4', 'F#4', 'C4', 'D#4', 'F4'];
-    if(segment > 0) {
+    if (segment > 0) {
 
       notes.push({
         pitch: Tone.Frequency(segmentNoteMap[i]).toMidi(),
