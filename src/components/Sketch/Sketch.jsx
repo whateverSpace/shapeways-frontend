@@ -3,35 +3,21 @@ import p5 from 'p5';
 import ml5 from 'ml5';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
-import PlayControl from '../Synth/PlayControl/PlayControl';
-import useEventListener from '@use-it/event-listener';
 
 const Sketch = () => {
   const myRef = useRef(null);
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [segForSynth, setSegForSynth] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
-
-  const handleClick = () => {
-    handlePlayPauseChange();
-  };
-
-  useEventListener('keydown', (e) => {
-    if (e.keyCode === 32) {
-      handlePlayPauseChange();
-    }
-  });
-
-  const handlePlayPauseChange = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  useEventListener('click', (e) => {
-    setIsPlaying(!isPlaying);
-  });
-
 
   const sketchStuff = (p) => {
     let video;
@@ -62,6 +48,7 @@ const Sketch = () => {
     let distance = { x: 0, y: 0 };
 
     // Begin Segment class
+
     class Segment {
       constructor(x, y) {
         this.x = x;
@@ -75,8 +62,6 @@ const Sketch = () => {
 
         this.mappedNoseColor = 0;
         this.mappedThing = 0;
-
-        this.alphaValue = 0.1;
       }
 
       display() {
@@ -86,10 +71,10 @@ const Sketch = () => {
           p.push();
           p.translate((p.width / 6) * 5, p.height / 4);
           p.scale(-1.0, 1.0);
-
+          // change mapped values to be ratio of canvas size
           mappedNoseColor = p.map(nose.x, 35, 650, 175, 360, true);
           mappedThing = p.int(mappedNoseColor);
-          p.fill(mappedThing, 69, 92, this.alphaValue);
+          p.fill(mappedThing, 69, 92, 0.1);
           p.strokeWeight(0.1);
           p.stroke(0, 0, 255, 0.3);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
@@ -97,15 +82,6 @@ const Sketch = () => {
         } else {
           this.hit = false;
           this.alpha = p.lerp(this.alpha, 0, 0.1);
-        }
-      }
-
-      noAlpha(truth) {
-        if (truth === true) {
-          this.alphaValue = 0;
-        }
-        if (truth === false) {
-          this.alphaValue = 0.1;
         }
       }
 
@@ -170,6 +146,9 @@ const Sketch = () => {
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
+
+      // (hue, saturation, brightness, alpha)
+      // (0-360, 0-255, 0-255, 0-1)
       p.colorMode(p.HSB);
 
       // places the origin at the center of each rectangle instead of top left corner
@@ -196,7 +175,7 @@ const Sketch = () => {
       video.hide();
 
       poseNet = ml5.poseNet(video, modelReady);
-      poseNet.on('pose', function(results) {
+      poseNet.on('pose', function (results) {
         poses = results;
       });
     };
@@ -226,6 +205,7 @@ const Sketch = () => {
         rightEye = pose['rightEye'];
         scoreRight = poses[0].pose.keypoints[10].score;
         scoreLeft = poses[0].pose.keypoints[9].score;
+
         // can redraw background as black or white
         if (p.keyIsPressed === true && p.key === 'a') {
           p.background(0);
@@ -238,8 +218,6 @@ const Sketch = () => {
         p.translate(p.width, 0);
         p.scale(-1.0, 1.0);
         p.push();
-        // drawing out appendages
-        // p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
         p.ellipse(nose.x, nose.y, 10);
         p.fill(0, 0, 255, 0.3);
         p.ellipse(leftEye.x, leftEye.y, 20);
@@ -252,14 +230,11 @@ const Sketch = () => {
 
         //shape stuff
         p.push();
-        // p.translate(p.width, 0);
-        // p.scale(-1.0, 1.0);
 
         // this p.translate determines the position of the first shape
         // probably use the x and y coordinates for one of the wrists here?
         // p.translate(p.mouseX, p.mouseY); // start point for the shapes
         p.translate(targetLeft.x, targetLeft.y);
-        // p.scale(-1.0, 1.0);
 
         // .spread() chooses the end point for the group of shapes
         // probably us the x and y coordinates for the other wrist here?
@@ -309,76 +284,48 @@ const Sketch = () => {
           targetLeft.x < 7 * (p.width / 12)
         ) {
           shapeGroup.rotateGroup(1);
-          // console.log('cool');
         }
         if (
           targetRight.x > 5 * (p.width / 12) &&
           targetRight.x < 7 * (p.width / 12)
         ) {
           shapeGroup.rotateGroup(-1);
-          // console.log('cool');
         }
 
-        //  .addShapes() will add a shape to the total every x milliseconds?
-        //if (p.keyIsPressed === true && p.key === 't') {
-        //  shapeGroup.addShapes(2000);
-        //}
+        //  .addShapes() will add a shape to the total every x milliseconds
         if (p.abs(targetLeft.x - targetRight.x) > p.width / 3) {
           shapeGroup.addShapes(500);
         }
-
-        // .removeShapes() will remove a shape from the total every x milliseconds?
-        //if (p.keyIsPressed === true && p.key === 'y') {
-        //  shapeGroup.removeShapes(1000);
-        //}
         if (p.abs(targetLeft.x - targetRight.x) < p.width / 3) {
           shapeGroup.removeShapes(250);
         }
 
         // .growY will make the rects grow in the y-direction
         // rate 5ish = fast, 100ish = slow
-        // if (p.keyIsPressed === true && p.key === 'u') {
-        //   shapeGroup.growY(75, 200);
-        // }
         if (targetLeft.y < p.height / 2) {
           shapeGroup.growY(35, 200);
         }
 
-        // .shrinkY will makethe rects shrink in the y-direction
+        // .shrinkY will make the rects shrink in the y-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'p') {
-        //  shapeGroup.shrinkY(75, 30);
-        //}
         if (targetLeft.y > p.height / 2) {
           shapeGroup.shrinkY(35, 30);
         }
 
         // .growX will make the rects grow in the x-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'i') {
-        //  shapeGroup.growX(75), 200;
-        // }
         if (targetRight.y < p.height / 2) {
           shapeGroup.growX(35, 200);
         }
 
         // .shrinkX will make the rects shrink in the x-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'o') {
-        //  shapeGroup.shrinkX(75, 30);
-        //}
         if (targetRight.y > p.height / 2) {
           shapeGroup.shrinkX(35, 30);
         }
 
         // .sizeGradient determines if the shapes will be all the same size
         // or an array from large to small
-        ///  if (p.keyIsPressed === true && p.key === 'l') {
-        //   shapeGroup.sizeGradient(true);
-        // } else {
-        //   shapeGroup.sizeGradient(false);
-        // }
-
         if (p.abs(targetLeft.y - targetRight.y) > p.height / 2) {
           shapeGroup.sizeGradient(true);
         } else {
@@ -428,12 +375,9 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
-         
-          if (p.keyIsPressed === true && p.key === 'b') {
-            seg.noAlpha(true);
-          } else {
-            seg.noAlpha(false);
-          }
+          mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+          mappedThing = p.int(mappedNoseColor);
+          p.fill(mappedThing, mappedThing, mappedThing);
           seg.display();
         }
         distInPixels = Math.floor(getDistance(targetLeft, targetRight));
@@ -441,14 +385,19 @@ const Sketch = () => {
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         distForSynth.current = distInPixels;
 
+        const segChange = segForSynth.map((segment, i) => {
+          if (segment !== segments[i].hit) {
+            return segments[i].hit;
+          } else return segment;
+        });
+        setSegForSynth(segChange);
+
         const segHitStateChange = segHitState.map((segment, i) => {
           if (segment !== segments[i].counter) {
             return segments[i].counter;
           } else return segment;
         });
-
         setSegHitState(segHitStateChange);
-        // end draw
       }
     };
     // here is the entire class for ShapeGroup
@@ -494,7 +443,6 @@ const Sketch = () => {
         this.strokeColorSingleTruth = false;
         this.strokeColorSpectrumTruth = false;
         this.fillAlphaAmount = 1;
-        //this.fillSaturationAmount = 255;
 
         // for onBeatGrow
         this.onBeatGrowTruth = false;
@@ -586,7 +534,6 @@ const Sketch = () => {
       //   this.spreadAmountX = endPointX / this.numberOfShapes;
       //   this.spreadAmountY = endPointY / this.numberOfShapes;
       // } // end spread()
-
       spread(startX, startY, endX, endY) {
         this.spreadTruth = true;
         this.leftX = startX;
@@ -664,7 +611,6 @@ const Sketch = () => {
         if (this.sizeGradientTruth === false) {
           this.sizeGradientAmount = 0;
         }
-        // console.log(this.sizeGradientAmount);
       }
 
       // changes fill color of shapes
@@ -716,20 +662,17 @@ const Sketch = () => {
   }; // end Sketch = (p)
 
   useEffect(() => {
-    // eslint-disable-next-line new-cap
     myP5.current = new p5(sketchStuff, myRef.current);
   }, []);
 
   return (
     <>
       <section>
-
         {loading && <h1 className={styles.loading}>loading models...</h1>}
         <div className={styles.box}>
           <div ref={myRef}></div>
         </div>
-        <Synth isPlaying={isPlaying} distForSynth={distForSynth} segHitState={segHitState} />
-        <PlayControl isPlaying={isPlaying} onChange={handlePlayPauseChange} onClick={handleClick} />
+        <Synth distForSynth={distForSynth} segHitState={segHitState} />
       </section>
     </>
   );
