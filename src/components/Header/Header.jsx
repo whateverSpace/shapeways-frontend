@@ -4,9 +4,9 @@ import styles from './Header.css';
 const Header = () => {
   return (
     <>
-      <section className={styles.Header}>
+      <header className={styles.Header}>
         <h1>shapeways</h1>
-      </section>
+      </header>
     </>
   );
 };
