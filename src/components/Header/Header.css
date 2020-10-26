@@ -4,13 +4,17 @@
 }
 
 .Header {
-  margin-top: 140px;
+    position: absolute;
+  top: 0;
   padding-left: 1rem;
   z-index: -1;
-  background-color: rgba(221, 255, 247, 0.01);
+
+
 
   h1 {
-    font-family: 'shapeFont';
-    font-size: 3vw;
+        font-family: 'shapeFont';
+        font-size: 2rem;
+        margin: 0rem;
+        line-height: 1;
   }
 }

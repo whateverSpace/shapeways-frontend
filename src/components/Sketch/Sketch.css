@@ -19,7 +19,11 @@ body {
     }
 
 }
-.loading { padding-left: 1rem;}
+.loading {
+    padding-left: 1rem;
+    position: absolute;
+    top: 40vh;
+}
 .hidden{
   display: none;
 }
