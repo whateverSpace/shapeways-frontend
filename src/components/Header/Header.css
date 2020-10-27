@@ -5,11 +5,9 @@
 
 .Header {
     position: absolute;
-  top: 0;
-  padding-left: 1rem;
-  z-index: -1;
-
-
+    top: 0;
+    padding-left: 1rem;
+    z-index: -1;
 
   h1 {
         font-family: 'shapeFont';

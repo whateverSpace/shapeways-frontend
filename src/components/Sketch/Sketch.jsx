@@ -724,8 +724,9 @@ const Sketch = () => {
     <>
       <section className={styles.Sketch}>
 
-        {loading && <h1 className={styles.loading}>loading models...</h1>}
+
         <div className={styles.box}>
+          {loading && <h1 className={styles.loading}>loading models...</h1>}
           <div ref={myRef}></div>
         </div>
         <Synth isPlaying={isPlaying} distForSynth={distForSynth} segHitState={segHitState} />
