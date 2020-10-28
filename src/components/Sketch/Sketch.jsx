@@ -428,7 +428,7 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
-         
+
           if (p.keyIsPressed === true && p.key === 'b') {
             seg.noAlpha(true);
           } else {
@@ -722,10 +722,11 @@ const Sketch = () => {
 
   return (
     <>
-      <section>
+      <section className={styles.Sketch}>
 
-        {loading && <h1 className={styles.loading}>loading models...</h1>}
+
         <div className={styles.box}>
+          {loading && <h1 className={styles.loading}>loading models...</h1>}
           <div ref={myRef}></div>
         </div>
         <Synth isPlaying={isPlaying} distForSynth={distForSynth} segHitState={segHitState} />

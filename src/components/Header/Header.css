@@ -3,14 +3,16 @@
   src: local('shapeFont'), url(../../fonts/shapeFont.otf) format('opentype');
 }
 
-h1 {
-  color: navy;
-  font-family: 'shapeFont';
-  font-size: 3vw;
-}
-
 .Header {
-  margin-top: -25vh;
-  z-index: -1;
-  background-color: rgba(221, 255, 247, 0.01);
+    position: absolute;
+    top: 0;
+    padding-left: 1rem;
+    z-index: -1;
+
+  h1 {
+        font-family: 'shapeFont';
+        font-size: 2rem;
+        margin: 0rem;
+        line-height: 1;
+  }
 }
