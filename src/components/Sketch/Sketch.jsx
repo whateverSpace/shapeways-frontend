@@ -9,7 +9,6 @@ const Sketch = () => {
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [isAudioOn, setIsAudioOn] = useState(false);
   const [segForSynth, setSegForSynth] = useState([
     false,
     false,
@@ -674,7 +673,6 @@ const Sketch = () => {
           <div ref={myRef}></div>
         </div>
         <Synth distForSynth={distForSynth} segHitState={segHitState} />
-        {!isAudioOn && <h3 className={styles.spacebar}>press space bar to start audio</h3>}
       </section>
     </>
   );

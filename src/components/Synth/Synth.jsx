@@ -4,6 +4,8 @@ import * as mm from '@magenta/music';
 import * as Tone from 'tone';
 import useEventListener from '@use-it/event-listener';
 import { makeNotesFromSegmentData } from '../../utils/buildNoteSequence';
+import styles from '../Sketch/Sketch.css';
+
 export default function Synth({ distForSynth, segHitState }) {
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -15,6 +17,7 @@ export default function Synth({ distForSynth, segHitState }) {
   const melodyPart = useRef(null);
   const melodyCore = useRef(null);
   const newPart = useRef(null);
+  const [isAudioOn, setIsAudioOn] = useState(false);
 
   if (distForSynth.current) Tone.Transport.bpm.value = 120;
   segHitState.forEach((segment, i) => {
@@ -145,8 +148,10 @@ export default function Synth({ distForSynth, segHitState }) {
 
   useEventListener('keydown', (e) => {
     if (e.keyCode === 32 && isPlaying) {
+      setIsAudioOn(false);
       stopMusic();
     } else if (e.keyCode === 32 && !isPlaying) {
+      setIsAudioOn(true);
       startMusic();
     }
   });
@@ -164,7 +169,9 @@ export default function Synth({ distForSynth, segHitState }) {
     setIsPlaying(false);
   };
 
-  return <></>;
+  return <>
+  {!isAudioOn && <h3 className={styles.spacebar}>press space bar to start audio</h3>}
+  </>;
 }
 
 Synth.propTypes = {
