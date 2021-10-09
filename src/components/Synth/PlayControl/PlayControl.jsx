@@ -21,14 +21,18 @@ export const PlayControl = ({ isPlaying, onClick }) => {
     );
   };
 
-  const Toggler = ({ onClick }) => {
-    if (isPlaying) return (<Play onClick={onClick} />);
+  const PlayPauseToggler = ({ onClick }) => {
+    /*
+    Toggles between returning the Play and Pause functions when clicked.
+    Updates return based on the state of isPlaying (which changes outside this component as well)
+    */
+    if(isPlaying) return (<Play onClick={onClick} />);
     else return (<Pause onClick={onClick} />);
   };
 
   return (
     <section className={styles.PlayControl}>
-      <Toggler onClick={onClick} />
+      <PlayPauseToggler onClick={onClick} />
     </section>
   );
 };
