@@ -26,7 +26,7 @@ export const PlayControl = ({ isPlaying, onClick }) => {
     Toggles between returning the Play and Pause functions when clicked.
     Updates return based on the state of isPlaying (which changes outside this component as well)
     */
-    if(isPlaying) return (<Play onClick={onClick} />);
+    if (isPlaying) return (<Play onClick={onClick} />);
     else return (<Pause onClick={onClick} />);
   };
 

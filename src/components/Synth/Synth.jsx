@@ -12,8 +12,6 @@ import {
 
 export default function Synth({
   isPlaying,
-  handleClick,
-  handlePlayPauseChange,
   distForSynth,
   segHitState
 }) {
@@ -204,6 +202,4 @@ Synth.propTypes = {
   isPlaying: PropTypes.bool,
   distForSynth: PropTypes.object,
   segHitState: PropTypes.array.isRequired,
-  handlePlayPauseChange: PropTypes.func,
-  handleClick: PropTypes.func
 };
