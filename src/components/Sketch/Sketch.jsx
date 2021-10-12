@@ -33,6 +33,7 @@ const Sketch = () => {
   });
 
 
+
   const sketchStuff = (p) => {
     let video;
     let poseNet;
@@ -97,15 +98,6 @@ const Sketch = () => {
         } else {
           this.hit = false;
           this.alpha = p.lerp(this.alpha, 0, 0.1);
-        }
-      }
-
-      noAlpha(truth) {
-        if (truth === true) {
-          this.alphaValue = 0;
-        }
-        if (truth === false) {
-          this.alphaValue = 0.1;
         }
       }
 
@@ -226,6 +218,7 @@ const Sketch = () => {
         rightEye = pose['rightEye'];
         scoreRight = poses[0].pose.keypoints[10].score;
         scoreLeft = poses[0].pose.keypoints[9].score;
+
         // can redraw background as black or white
         if (p.keyIsPressed === true && p.key === 'a') {
           p.background(0);
@@ -238,8 +231,6 @@ const Sketch = () => {
         p.translate(p.width, 0);
         p.scale(-1.0, 1.0);
         p.push();
-        // drawing out appendages
-        // p.line(targetLeft.x, targetLeft.y, targetRight.x, targetRight.y);
         p.ellipse(nose.x, nose.y, 10);
         p.fill(0, 0, 255, 0.3);
         p.ellipse(leftEye.x, leftEye.y, 20);
@@ -252,14 +243,11 @@ const Sketch = () => {
 
         //shape stuff
         p.push();
-        // p.translate(p.width, 0);
-        // p.scale(-1.0, 1.0);
 
         // this p.translate determines the position of the first shape
         // probably use the x and y coordinates for one of the wrists here?
         // p.translate(p.mouseX, p.mouseY); // start point for the shapes
         p.translate(targetLeft.x, targetLeft.y);
-        // p.scale(-1.0, 1.0);
 
         // .spread() chooses the end point for the group of shapes
         // probably us the x and y coordinates for the other wrist here?
@@ -309,76 +297,48 @@ const Sketch = () => {
           targetLeft.x < 7 * (p.width / 12)
         ) {
           shapeGroup.rotateGroup(1);
-          // console.log('cool');
         }
         if (
           targetRight.x > 5 * (p.width / 12) &&
           targetRight.x < 7 * (p.width / 12)
         ) {
           shapeGroup.rotateGroup(-1);
-          // console.log('cool');
         }
 
-        //  .addShapes() will add a shape to the total every x milliseconds?
-        //if (p.keyIsPressed === true && p.key === 't') {
-        //  shapeGroup.addShapes(2000);
-        //}
+        //  .addShapes() will add a shape to the total every x milliseconds
         if (p.abs(targetLeft.x - targetRight.x) > p.width / 3) {
           shapeGroup.addShapes(500);
         }
-
-        // .removeShapes() will remove a shape from the total every x milliseconds?
-        //if (p.keyIsPressed === true && p.key === 'y') {
-        //  shapeGroup.removeShapes(1000);
-        //}
         if (p.abs(targetLeft.x - targetRight.x) < p.width / 3) {
           shapeGroup.removeShapes(250);
         }
 
         // .growY will make the rects grow in the y-direction
         // rate 5ish = fast, 100ish = slow
-        // if (p.keyIsPressed === true && p.key === 'u') {
-        //   shapeGroup.growY(75, 200);
-        // }
         if (targetLeft.y < p.height / 2) {
           shapeGroup.growY(35, 200);
         }
 
-        // .shrinkY will makethe rects shrink in the y-direction
+        // .shrinkY will make the rects shrink in the y-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'p') {
-        //  shapeGroup.shrinkY(75, 30);
-        //}
         if (targetLeft.y > p.height / 2) {
           shapeGroup.shrinkY(35, 30);
         }
 
         // .growX will make the rects grow in the x-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'i') {
-        //  shapeGroup.growX(75), 200;
-        // }
         if (targetRight.y < p.height / 2) {
           shapeGroup.growX(35, 200);
         }
 
         // .shrinkX will make the rects shrink in the x-direction
         // rate 5ish = fast, 100ish = slow
-        //if (p.keyIsPressed === true && p.key === 'o') {
-        //  shapeGroup.shrinkX(75, 30);
-        //}
         if (targetRight.y > p.height / 2) {
           shapeGroup.shrinkX(35, 30);
         }
 
         // .sizeGradient determines if the shapes will be all the same size
         // or an array from large to small
-        ///  if (p.keyIsPressed === true && p.key === 'l') {
-        //   shapeGroup.sizeGradient(true);
-        // } else {
-        //   shapeGroup.sizeGradient(false);
-        // }
-
         if (p.abs(targetLeft.y - targetRight.y) > p.height / 2) {
           shapeGroup.sizeGradient(true);
         } else {
@@ -429,17 +389,17 @@ const Sketch = () => {
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
 
-          if (p.keyIsPressed === true && p.key === 'b') {
-            seg.noAlpha(true);
-          } else {
-            seg.noAlpha(false);
-          }
+          mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
+          mappedThing = p.int(mappedNoseColor);
+          p.fill(mappedThing, mappedThing, mappedThing);
+          
           seg.display();
         }
         distInPixels = Math.floor(getDistance(targetLeft, targetRight));
         distance.x = Math.floor(targetLeft.x - targetRight.x);
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         distForSynth.current = distInPixels;
+
 
         const segHitStateChange = segHitState.map((segment, i) => {
           if (segment !== segments[i].counter) {
@@ -448,7 +408,7 @@ const Sketch = () => {
         });
 
         setSegHitState(segHitStateChange);
-        // end draw
+
       }
     };
     // here is the entire class for ShapeGroup
@@ -494,7 +454,6 @@ const Sketch = () => {
         this.strokeColorSingleTruth = false;
         this.strokeColorSpectrumTruth = false;
         this.fillAlphaAmount = 1;
-        //this.fillSaturationAmount = 255;
 
         // for onBeatGrow
         this.onBeatGrowTruth = false;
@@ -586,7 +545,6 @@ const Sketch = () => {
       //   this.spreadAmountX = endPointX / this.numberOfShapes;
       //   this.spreadAmountY = endPointY / this.numberOfShapes;
       // } // end spread()
-
       spread(startX, startY, endX, endY) {
         this.spreadTruth = true;
         this.leftX = startX;
@@ -664,7 +622,6 @@ const Sketch = () => {
         if (this.sizeGradientTruth === false) {
           this.sizeGradientAmount = 0;
         }
-        // console.log(this.sizeGradientAmount);
       }
 
       // changes fill color of shapes

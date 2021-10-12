@@ -25,7 +25,6 @@ export default function Synth({
   const melodyCore = useRef(null);
   const newVAEPart = useRef(null);
 
-
   if (distForSynth.current) Tone.Transport.bpm.value = 100;
   segHitState.forEach((segment, i) => {
     if (segment !== segHitsChange[i]) setSegHitsChange(segHitState);
@@ -86,14 +85,18 @@ export default function Synth({
     let noteList = makeNotesFromSegmentData(segHitsChange);
 
     let seed = noteList;
-    let steps = 32;
-    let temperature = 1.0;
+
+    let steps = 16;
+    let temperature = 1.1; // RANDOMNESS OF NOTES
+
     let result = await melodyRNN.current.continueSequence(
       seed,
       steps,
       temperature
     );
+
     const melodyRNNTest = result.notes.map((note) => {
+
       return [
         Tone.Time(note.quantizedStartStep / 4).toBarsBeatsSixteenths(),
         {

@@ -24,6 +24,7 @@ export default class Segment {
     }
   }
 
+
   checkCollision (targetL, targetR) {
     this.hitLeft = collision(targetL.x, targetL.y, 5, this.x, this.y, this.w, this.h);
     this.hitRight = collision(targetR.x, targetR.y, 5, this.x, this.y, this.w, this.h);
