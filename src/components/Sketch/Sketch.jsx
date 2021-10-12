@@ -3,21 +3,36 @@ import p5 from 'p5';
 import ml5 from 'ml5';
 import Synth from '../Synth/Synth';
 import styles from './Sketch.css';
+import PlayControl from '../Synth/PlayControl/PlayControl';
+import useEventListener from '@use-it/event-listener';
 
 const Sketch = () => {
   const myRef = useRef(null);
   const myP5 = useRef(null);
   const distForSynth = useRef(null);
   const [loading, setLoading] = useState(true);
-  const [segForSynth, setSegForSynth] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [segHitState, setSegHitState] = useState([0, 0, 0, 0, 0, 0]);
+
+  const handleClick = () => {
+    handlePlayPauseChange();
+  };
+
+  useEventListener('keydown', (e) => {
+    if (e.keyCode === 32) {
+      handlePlayPauseChange();
+    }
+  });
+
+  const handlePlayPauseChange = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  useEventListener('click', (e) => {
+    setIsPlaying(!isPlaying);
+  });
+
+
 
   const sketchStuff = (p) => {
     let video;
@@ -48,7 +63,6 @@ const Sketch = () => {
     let distance = { x: 0, y: 0 };
 
     // Begin Segment class
-
     class Segment {
       constructor(x, y) {
         this.x = x;
@@ -62,6 +76,8 @@ const Sketch = () => {
 
         this.mappedNoseColor = 0;
         this.mappedThing = 0;
+
+        this.alphaValue = 0.1;
       }
 
       display() {
@@ -71,10 +87,10 @@ const Sketch = () => {
           p.push();
           p.translate((p.width / 6) * 5, p.height / 4);
           p.scale(-1.0, 1.0);
-          // change mapped values to be ratio of canvas size
+
           mappedNoseColor = p.map(nose.x, 35, 650, 175, 360, true);
           mappedThing = p.int(mappedNoseColor);
-          p.fill(mappedThing, 69, 92, 0.1);
+          p.fill(mappedThing, 69, 92, this.alphaValue);
           p.strokeWeight(0.1);
           p.stroke(0, 0, 255, 0.3);
           p.rect(this.x, this.y, p.width / 3, p.height / 2);
@@ -146,9 +162,6 @@ const Sketch = () => {
 
     p.setup = () => {
       p.createCanvas(p.windowWidth / 2, p.windowHeight / 2);
-
-      // (hue, saturation, brightness, alpha)
-      // (0-360, 0-255, 0-255, 0-1)
       p.colorMode(p.HSB);
 
       // places the origin at the center of each rectangle instead of top left corner
@@ -175,7 +188,7 @@ const Sketch = () => {
       video.hide();
 
       poseNet = ml5.poseNet(video, modelReady);
-      poseNet.on('pose', function (results) {
+      poseNet.on('pose', function(results) {
         poses = results;
       });
     };
@@ -375,9 +388,11 @@ const Sketch = () => {
           let seg = segments[i];
           seg.checkCollision(targetLeft, targetRight, nose);
           seg.counter = seg.hitState.l + seg.hitState.r + seg.hitState.n;
+
           mappedNoseColor = p.map(nose.x, 35, 650, 0, 255, true);
           mappedThing = p.int(mappedNoseColor);
           p.fill(mappedThing, mappedThing, mappedThing);
+          
           seg.display();
         }
         distInPixels = Math.floor(getDistance(targetLeft, targetRight));
@@ -385,19 +400,15 @@ const Sketch = () => {
         distance.y = Math.floor(Math.abs(targetLeft.y - targetRight.y));
         distForSynth.current = distInPixels;
 
-        const segChange = segForSynth.map((segment, i) => {
-          if (segment !== segments[i].hit) {
-            return segments[i].hit;
-          } else return segment;
-        });
-        setSegForSynth(segChange);
 
         const segHitStateChange = segHitState.map((segment, i) => {
           if (segment !== segments[i].counter) {
             return segments[i].counter;
           } else return segment;
         });
+
         setSegHitState(segHitStateChange);
+
       }
     };
     // here is the entire class for ShapeGroup
@@ -662,17 +673,21 @@ const Sketch = () => {
   }; // end Sketch = (p)
 
   useEffect(() => {
+    // eslint-disable-next-line new-cap
     myP5.current = new p5(sketchStuff, myRef.current);
   }, []);
 
   return (
     <>
-      <section>
-        {loading && <h1 className={styles.loading}>loading models...</h1>}
+      <section className={styles.Sketch}>
+
+
         <div className={styles.box}>
+          {loading && <h1 className={styles.loading}>loading models...</h1>}
           <div ref={myRef}></div>
         </div>
-        <Synth distForSynth={distForSynth} segHitState={segHitState} />
+        <Synth isPlaying={isPlaying} distForSynth={distForSynth} segHitState={segHitState} />
+        <PlayControl isPlaying={isPlaying} onChange={handlePlayPauseChange} onClick={handleClick} />
       </section>
     </>
   );

@@ -12,7 +12,7 @@ export default class Segment {
     this.alpha = 0;
   }
 
-  display() {
+  display () {
     if (this.hitLeft || this.hitRight) {
       //this.alpha = p5.lerp(this.alpha, 255, 0.3)
       p.fill(255, 0, 255, this.alpha);
@@ -24,7 +24,8 @@ export default class Segment {
     }
   }
 
-  checkCollision(targetL, targetR) {
+
+  checkCollision (targetL, targetR) {
     this.hitLeft = collision(targetL.x, targetL.y, 5, this.x, this.y, this.w, this.h);
     this.hitRight = collision(targetR.x, targetR.y, 5, this.x, this.y, this.w, this.h);
   }

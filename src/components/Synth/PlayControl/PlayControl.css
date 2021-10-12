@@ -1,0 +1,8 @@
+.PlayControl{
+    width: 40px;
+    height: auto;
+    position: absolute;
+    top: 0;
+    right: 1rem;
+    font-size: 32px;
+}
