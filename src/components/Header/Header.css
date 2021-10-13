@@ -3,15 +3,14 @@
   src: local('shapeFont'), url(../../fonts/shapeFont.otf) format('opentype');
 }
 
-
 h1 {
-  color: navy;
+  color: white;
   font-family: 'shapeFont';
   font-size: 3vw;
 }
 
 a {
-  color: navy;
+  color: white;
   text-decoration: none;
   cursor: default;
 }
