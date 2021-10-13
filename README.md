@@ -15,6 +15,8 @@ Requires [Google Chrome](https://www.google.com/chrome/) or a Chrome-compatible 
 
 [Play Shapeways Now](https://shapeways.netlify.app/)
 
+[Slides from Ben Beekman's presentation at Front End Small Talk meetup, 'Do Androids Dream of Electric Art'](https://docs.google.com/presentation/d/1BbijYacBkHUthx8EfnbJ66dmD2E-PFbJAAtvdleSxHY/)
+
 ## Instructions
 Make sure to allow access to your webcam when prompted.
 
@@ -56,3 +58,7 @@ We learned a lot about machine learning, finding creative ways to translate data
 
 ## What's Next for Shapeways?
 We have many plans. We already set up functions to change keys and melodies, but didn't implement gestures to trigger those changes. We're also planning to add sensor-influenced and constantly changing low end drone noises to the sonic experience. And we'd like to have the effects chain parameters change as tracking data changes, not just the synths themselves.
+
+# Developer Instructions
+
+Clone the repository, then navigate to the directory in the terminal and input `npm i` then `npm run start`.
